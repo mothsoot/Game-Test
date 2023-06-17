@@ -1,0 +1,13 @@
+{
+    "cSpell.words": [
+        "dstrect",
+        "SDLK",
+        "srcrect",
+        "WINDOWPOS"
+    ],
+    "files.associations": {
+        "ostream": "cpp",
+        "main": "cpp"
+    },
+    "C_Cpp.dimInactiveRegions": false
+}
