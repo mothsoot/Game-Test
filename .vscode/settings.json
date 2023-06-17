@@ -3,6 +3,7 @@
         "dstrect",
         "SDLK",
         "srcrect",
+        "subpixels",
         "WINDOWPOS"
     ],
     "files.associations": {

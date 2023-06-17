@@ -19,10 +19,28 @@ enum INPUT {
 #define SPRITE_DOWN_LEFT {29 * 5, 0, 29, 39};
 #define SPRITE_DOWN_RIGHT {29 * 4, 0, 29, 39};
 
-void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, SDL_Texture* &texture);
+struct Player {
+	int x = 5;
+	int y = 5;
 
-void render(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect &srcrect, int x, int y);
+	int ySpeed;
+	int xSpeed;
+	int ground_speed;
+	int ground_angle;
+
+	int hRadius;
+	int wRadius;
+
+	int hitbox_y = (hRadius - 3) * 2;
+	int hitbox_x = 8 * 2;
+
+	SDL_Rect sprite;
+	int direction;
+};
+
+void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, SDL_Texture* &texture);
+void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player);
 void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture);
 int getInput();
 SDL_Rect spriteDirection(int input);
-void movement(int input, int &x, int &y);
+void movement(int input, Player &player);

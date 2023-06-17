@@ -4,8 +4,6 @@ int main(int argc, char* args[])
 {
 	// variables
     bool quit = false;
-    int x = 5;
-    int y = 5;
 	
 	// initialize SDL
 	SDL_Window* window;
@@ -13,6 +11,9 @@ int main(int argc, char* args[])
 	SDL_Surface* image;
 	SDL_Texture* texture;
 	startUp(window, renderer, image, texture);
+
+	// initialize player
+	Player player;
 
 	// handle events
 	// loop getting player input
@@ -26,11 +27,11 @@ int main(int argc, char* args[])
 			quit = true;
 		}
 
-		SDL_Rect srcrect = spriteDirection(input);
-		movement(input, x, y);
+		player.sprite = spriteDirection(input);
+		movement(input, player);
 
 		// render sprite at (x, y)
-		render(renderer, texture, srcrect, x, y);
+		render(renderer, texture, player);
 		
 		// update screen
 		SDL_RenderPresent(renderer);
@@ -69,13 +70,13 @@ void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &textur
 	SDL_Quit();
 }
 
-void render(SDL_Renderer* renderer, SDL_Texture* texture, SDL_Rect &srcrect, int x, int y)
+void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player)
 {
 	// destination rectangle
-	SDL_Rect dstrect = {x, y, 29, 39}; // x coord, y coord, image width, image height
+	SDL_Rect dstrect = {player.x, player.y, 29, 39}; // x coord, y coord, image width, image height
 
 	SDL_RenderClear(renderer);
-	SDL_RenderCopy(renderer, texture, &srcrect, &dstrect);
+	SDL_RenderCopy(renderer, texture, &player.sprite, &dstrect);
 }
 
 int getInput()
@@ -145,20 +146,20 @@ SDL_Rect spriteDirection(int input)
 	return player;
 }
 
-void movement(int input, int &x, int &y)
+void movement(int input, Player &player)
 {
 	switch (input) {
 		case LEFT:
-			x--;
+			player.x--;
 			break;
 		case RIGHT:
-			x++;
+			player.x++;
 			break;
 		case UP:
-			y--;
+			player.y--;
 			break;
 		case DOWN:
-			y++;
+			player.y++;
 			break;
 	}
 }
