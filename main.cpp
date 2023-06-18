@@ -57,7 +57,7 @@ void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, 
 
 	SDL_FreeSurface(image);
 
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
 }
 
 void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture)

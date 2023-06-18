@@ -3,7 +3,7 @@
 #and may not be redistributed without written permission.
 
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp main.h
+OBJS = main.cpp main.h player.cpp player.h
 
 #CC specifies which compiler we're using
 CC = g++
