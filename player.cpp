@@ -1,47 +1,70 @@
 #include "player.h"
 
 // SENSORS
+// Right ground
 sensor sensorA(Player player)
 {
     sensor A;
-    A.pos_x = player.x - player.wRadius;
-    A.pos_y = player.y + player.hRadius;
-    
-    A.distance;
-    A.tile_angle;
-    A.tile_id;
+    A.x = player.x - player.wRadius;
+    A.y = player.y - player.hRadius;
 
     return A;
 }
 
+// Left ground
 sensor sensorB(Player player) 
 {
     sensor B;
-    int x, y;
-    x = player.x + player.wRadius;
-    y = player.y + player.hRadius;
+    B.x = player.x + player.wRadius;
+    B.y = player.y - player.hRadius;
 
     return B;
 }
 
+// Right ceiling
 sensor sensorC(Player player)
 {
+    sensor C;
+    C.x = player.x - player.wRadius;
+    C.y = player.y + player.hRadius;
 
+    return C;
 }
 
+// Left ceiling
 sensor sensorD(Player player)
 {
+    sensor D;
+    D.x = player.x + player.wRadius;
+    D.y = player.y + player.hRadius;
 
+    return D;
 }
 
+// Right wall
 sensor sensorE(Player player)
 {
-
+    sensor E;
+    if(player.ground_speed < 0) {
+        E.x = player.x - player.pushRadius;
+        E.y = player.y;
+        return E;
+    } else {
+        return;
+    }
 }
 
+// Left wall
 sensor sensorF(Player player)
 {
-
+    sensor F;
+    if(player.ground_speed < 0) {
+        F.x = player.x + player.pushRadius;
+        F.y = player.y;
+        return F;
+    } else {
+        return;
+    }
 }
 
 // INPUT STUFF
@@ -97,6 +120,7 @@ void speed(int input, Player player)
     }
 }
 
+/*
 bool collision_right(Player player) {
     for (int p = 4; p < player.hitbox_y - 4; p++) {
         float xx = player.x + player.hitbox_x / 2 + 1;
@@ -108,3 +132,4 @@ bool collision_right(Player player) {
         return false;
     }
 }
+*/

@@ -2,10 +2,6 @@
 
 #include "main.h"
 
-enum INPUT {
-	LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6
-};
-
 // POSITIONS & SPEED
 //int player_gravity; // 56 subpixels
 const float acceleration_speed = 0.046875; // 12 subpixels
@@ -34,15 +30,18 @@ struct Player {
 	SDL_Rect sprite;
 };
 
+// collisions
 struct sensor {
-    int pos_x;
-    int pos_y;
+    int x;
+    int y;
     int distance;
     float tile_angle;
     float tile_id;
 };
 
-
-
-
-
+sensor sensorA(Player player);
+sensor sensorB(Player player);
+sensor sensorC(Player player);
+sensor sensorD(Player player);
+sensor sensorE(Player player);
+sensor sensorF(Player player);

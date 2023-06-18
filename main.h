@@ -11,7 +11,7 @@ using std::endl;
 #include "player.h"
 
 // input directions
-
+enum INPUT { LEFT, RIGHT, UP, DOWN, QUIT, NONE };
 
 // sprite directions
 #define SPRITE_LEFT {29, 0, 29, 39}; // x coord, y coord, image width, image height
@@ -27,7 +27,7 @@ struct tile {
 	float angle; // 0-256 (0-FF in hex)
 };
 
-void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, SDL_Texture* &texture);
+void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &sprite, SDL_Texture* &texture);
 void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player);
 void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture);
 int getInput();
