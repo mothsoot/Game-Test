@@ -4,6 +4,7 @@
 using std::cout;
 using std::cerr;
 using std::endl;
+#include <cmath>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -26,6 +27,10 @@ struct Player;
 struct tile {
 	float angle; // 0-256 (0-FF in hex)
 };
+
+// input
+// update
+// render
 
 void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &sprite, SDL_Texture* &texture);
 void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player);

@@ -20,6 +20,7 @@ int main(int argc, char* args[])
 	// getting sprite to draw
 	// do movement
 	// drawing sprite on screen
+	// update
 	while (!quit)
 	{
         int input = getInput();
