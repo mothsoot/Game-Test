@@ -1,4 +1,5 @@
 #include "main.h"
+#include "player.h"
 
 int main(int argc, char* args[])
 {
@@ -8,9 +9,9 @@ int main(int argc, char* args[])
 	// initialize SDL
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	SDL_Surface* sprite;
+	SDL_Surface* image;
 	SDL_Texture* texture;
-	startUp(window, renderer, sprite, texture);
+	startUp(window, renderer, image, texture);
 
 	// initialize player
 	Player player;
@@ -29,7 +30,7 @@ int main(int argc, char* args[])
 		}
 
 		player.sprite = spriteDirection(input);
-		movement(input, player);
+		playerMovement(input, player);
 
 		// render sprite at (x, y)
 		render(renderer, texture, player);
@@ -44,7 +45,7 @@ int main(int argc, char* args[])
 	return 0;
 }
 
-void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &sprite, SDL_Texture* &texture)
+void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, SDL_Texture* &texture)
 {
 	SDL_Init(SDL_INIT_VIDEO);
 
@@ -53,10 +54,10 @@ void startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &sprite,
         // First  = window drawing in
         // Second = rendering driver (-1 sets to default)
         // Third  = sets SDL_RendererFlags (0 sets to default hardware rendering) 
-	sprite = SDL_LoadBMP("sonic-sprites.bmp");
-	texture = SDL_CreateTextureFromSurface(renderer, sprite);
+	image = SDL_LoadBMP("sonic-sprites.bmp");
+	texture = SDL_CreateTextureFromSurface(renderer, image);
 
-	SDL_FreeSurface(sprite);
+	SDL_FreeSurface(image);
 
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
 }
@@ -106,6 +107,9 @@ int getInput()
 					break;
 				case SDLK_DOWN:
 					input = DOWN;
+					break;
+				case SDLK_SPACE:
+					input = QUIT;
 					break;
 			}
 			break;

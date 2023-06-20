@@ -1,7 +1,7 @@
 #include "player.h"
 
-//void updatePlayer()
-//{
+void updatePlayer()
+{
     // NORMAL
     // check for special actions (balancing, etc.)
     // isSpinDash();
@@ -44,7 +44,102 @@
     // airCollision();
 
     // check hitboxes
-//}
+}
+
+void playerMovement(int input, Player player)
+{
+	get_groundSpeed(input, player);
+    get_xSpeed(player);
+    get_ySpeed(player);
+
+    player.x += player.xSpeed;
+    player.y += player.ySpeed;
+}
+
+void getMode(Player &player)
+{
+    float angle = player.groundAngle;
+    if(angle >= 0 && angle <= 45) {
+        player.mode = FLOOR;
+    } else if(angle >= 46 && angle <= 134) {
+        player.mode = LEFT_WALL;
+    } else if(angle >= 135 && angle <= 225) {
+        player.mode = CEILING;
+    } else if(angle >= 226 && angle <= 314) {
+        player.mode = RIGHT_WALL;
+    } else if(angle >= 315 && angle <= 360) {
+        player.mode = FLOOR;
+    }
+}
+
+// SPEED
+float get_groundSpeed(int input, Player player)
+{
+    float speed = player.groundSpeed;
+
+    if(input == LEFT) { // pressing left
+        while (speed > -top_speed) {
+            if(speed > 0) { // moving right
+                speed -= deceleration_speed;
+                if(speed <= 0) {
+                    speed = -0.5;
+                }
+            } else if(speed > -top_speed) { // moving left
+                speed -= acceleration_speed;
+                if(speed <= -top_speed) {
+                    speed = -top_speed; // limit
+                }
+            }
+        }
+    }
+
+    if(input == RIGHT) { // pressing right
+        while (speed < top_speed) {
+            if(speed < 0) { // moving left
+                speed += deceleration_speed;
+                if(speed >= 0) {
+                    speed = 0.5;
+                }
+            } else if(speed > top_speed) { // moving right
+                speed += acceleration_speed;
+                if(speed >= top_speed) {
+                    speed = top_speed; // limit
+                }
+            }
+        }
+    }
+
+    // friction
+    if(input == NONE) {
+        if(speed < 0) { 
+            speed += friction_speed;
+            if(speed >= 0) {
+                speed = 0;
+            }
+        } else if(speed > 0) {
+            speed -= friction_speed;
+            if(speed <= 0) {
+                speed = 0;
+            }
+        }
+    }
+
+    return speed;
+}
+
+float get_xSpeed(Player player)
+{
+    float x;
+    x = player.groundSpeed * cos(player.groundAngle);
+    return x;
+}
+
+float get_ySpeed(Player player)
+{
+    float y;
+    y = player.groundSpeed * -sin(player.groundAngle);
+    return y;
+}
 
 // SENSORS
 // Right ground
@@ -108,90 +203,6 @@ sensor sensorF(Player player)
         return F;
     }
 }
-
-// SPEED
-float get_groundSpeed(int input, Player player)
-{
-    float speed = player.groundSpeed;
-
-    if(input == LEFT) { // pressing left
-        while (speed > -top_speed) {
-            if(speed > 0) { // moving right
-                speed -= deceleration_speed;
-                if(speed <= 0) {
-                    speed = -0.5;
-                }
-            } else if(speed > -top_speed) { // moving left
-                speed -= acceleration_speed;
-                if(speed <= -top_speed) {
-                    speed = -top_speed; // limit
-                }
-            }
-        }
-    }
-
-    if(input == RIGHT) { // pressing right
-        while (speed < top_speed) {
-            if(speed < 0) { // moving left
-                speed += deceleration_speed;
-                if(speed >= 0) {
-                    speed = 0.5;
-                }
-            } else if(speed > top_speed) { // moving right
-                speed = (speed + acceleration_speed);
-                if(speed >= top_speed) {
-                    speed = top_speed; // limit
-                }
-            }
-        }
-    }
-
-    // friction
-    if(input == NONE) {
-        if(speed < 0) { 
-            speed += friction_speed;
-            if(speed >= 0) {
-                speed = 0;
-            }
-        } else if(speed > 0) {
-            speed -= friction_speed;
-            if(speed <= 0) {
-                speed = 0;
-            }
-        }
-    }
-
-    return speed;
-}
-
-float get_xSpeed(Player player)
-{
-    float x;
-
-    return x; 
-}
-
-float get_ySpeed(Player player)
-{
-    float y;
-
-    return y;
-}
-
-
-/*
-bool collision_right(Player player) {
-    for (int p = 4; p < player.hitbox_y - 4; p++) {
-        float xx = player.x + player.hitbox_x / 2 + 1;
-        float yy = player.y - player.hitbox_y / 2 + p + player.ySpeed;
-        if((yy > player.y - player.hitbox_y / 2) && (yy < player.y + player.hitbox_y / 2) &&
-        (xx > player.x - player.hitbox_x / 2) && (xx < player.x + player.hitbox_x / 2)) {
-            return true;
-        }
-        return false;
-    }
-}
-*/
 
 // JUMPING
 void jumpVelocity(Player player)
