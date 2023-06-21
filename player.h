@@ -3,10 +3,10 @@
 #include "main.h"
 
 // POSITIONS & SPEED
-const float acceleration_speed = 0.046875; // 12 subpixels
-const float deceleration_speed = 0.5; // 128 subpixels
-const float friction_speed = 0.046875; // 12 subpixels
-const float top_speed = 6;
+const float acceleration_speed = 500; // 0.046875; // 12 subpixels
+const float deceleration_speed = 200; // 0.5; // 128 subpixels
+const float friction_speed = 100; // 0.046875; // 12 subpixels
+const float top_speed = 500; // 6
 
 const float gravity_force = 0.21875; // 56 subpixels
 const float air_acceleration_speed = 0.09375; // 24 subpixels
@@ -24,13 +24,13 @@ const float slope_factor_rolldown = 0.3125; // 80 subpixels
 enum MODE {FLOOR, RIGHT_WALL, CEILING, LEFT_WALL};
 
 struct Player {
-	int x = 5; // x position
-	int y = 5; // y position
+	float x = 5; // x position
+	float y = 5; // y position
 
 	float ySpeed; // vertical velocity
 	float xSpeed; // horizontal velocity
-	float groundSpeed = 0; // velocity along ground
-	float groundAngle = 0;
+	float groundSpeed; // velocity along ground
+	float groundAngle;
 
 	int hRadius = 19; // 14 when jump/roll
 	int wRadius = 9; // 7 when jump/roll
@@ -41,7 +41,7 @@ struct Player {
 
 	int mode;
 
-	SDL_Rect sprite;
+	SDL_Rect sprite = {0, 0, 29, 39};
 };
 
 // collisions
@@ -60,11 +60,11 @@ sensor sensorD(Player player);
 sensor sensorE(Player player);
 sensor sensorF(Player player);
 
-void playerMovement(int input, Player player);
+void playerMovement(int input, Player &player);
 
 // speeds
 float get_groundSpeed(int input, Player player);
-float get_xSpeed(Player player);
+float get_xSpeed(int input, Player player);
 float get_ySpeed(Player player);
 
 // air

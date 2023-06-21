@@ -46,11 +46,11 @@ void updatePlayer()
     // check hitboxes
 }
 
-void playerMovement(int input, Player player)
+void playerMovement(int input, Player &player)
 {
-	get_groundSpeed(input, player);
-    get_xSpeed(player);
-    get_ySpeed(player);
+	// player.groundSpeed = get_groundSpeed(input, player);
+    player.xSpeed = get_xSpeed(input, player);
+    player.ySpeed = 0; //get_ySpeed(player);
 
     player.x += player.xSpeed;
     player.y += player.ySpeed;
@@ -127,11 +127,59 @@ float get_groundSpeed(int input, Player player)
     return speed;
 }
 
-float get_xSpeed(Player player)
+float get_xSpeed(int input, Player player)
 {
-    float x;
-    x = player.groundSpeed * cos(player.groundAngle);
-    return x;
+    float speed = player.xSpeed;
+    //x = player.groundSpeed * cos(player.groundAngle);
+    switch (input) {
+    case LEFT: // pressing left
+        while (speed > -top_speed) {
+            if(speed > 0) { // moving right
+                speed -= deceleration_speed;
+                if(speed <= 0) {
+                    speed = -0.5;
+                }
+            } else if(speed > -top_speed) { // moving left
+                speed -= acceleration_speed;
+                if(speed <= -top_speed) {
+                    speed = -top_speed; // limit
+                }
+            }
+        }
+        break;
+
+    case RIGHT: // pressing right
+        while (speed < top_speed) {
+            if(speed < 0) { // moving left
+                speed += deceleration_speed;
+                if(speed >= 0) {
+                    speed = 0.5;
+                }
+            } else if(speed > top_speed) { // moving right
+                speed += acceleration_speed;
+                if(speed >= top_speed) {
+                    speed = top_speed; // limit
+                }
+            }
+        }
+        break;
+
+    default:
+        if(speed < 0) { 
+            speed += friction_speed;
+            if(speed >= 0) {
+                speed = 0;
+            }
+        } else if(speed > 0) {
+            speed -= friction_speed;
+            if(speed <= 0) {
+                speed = 0;
+            }
+        }
+        break;
+    }
+
+    return speed;
 }
 
 float get_ySpeed(Player player)
