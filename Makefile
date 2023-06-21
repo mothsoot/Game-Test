@@ -29,12 +29,16 @@ OBJ_NAME = program
 #all : $(OBJS)
 #	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
-all: main.o player.o
+all: main.o player.o timer.o screen.o
 
-main.o: main.cpp main.h player.h
-	$(CC) -c main.cpp $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS)
+main.o: main.cpp main.h player.h timer.h screen.h
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c main.cpp
 player.o: player.cpp player.h main.h
-	$(CC) -c player.cpp $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS)
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c player.cpp
+timer.o: timer.cpp timer.h main.h
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c timer.cpp
+screen.o: screen.cpp screen.h player.h
+	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c screen.cpp
 
 clean:
-	rm -f main.o
+	rm -f main.o player.o timer.o screen.o
