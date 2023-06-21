@@ -5,6 +5,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 #include <cmath>
+#include "windows.h"
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -12,7 +13,7 @@ using std::endl;
 #include "player.h"
 
 // input directions
-enum INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
+enum KEY_INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
 
 // sprite directions
 #define SPRITE_LEFT {29, 0, 29, 39}; // x coord, y coord, image width, image height
@@ -23,6 +24,9 @@ enum INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
 #define SPRITE_DOWN_RIGHT {29 * 4, 0, 29, 39};
 #define SPRITE_SKID_LEFT {29 * 6, 0, 29, 39};
 #define SPRITE_SKID_RIGHT {29 * 7, 0, 20, 39};
+
+const int FPS = 60;
+const int SKIP_TICKS = 1000 / FPS;
 
 struct Player;
 

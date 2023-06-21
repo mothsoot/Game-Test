@@ -46,6 +46,14 @@ void updatePlayer()
     // check hitboxes
 }
 
+void updatePlayerr()
+{
+    // movement();
+    // gameplay();
+    // animation();
+    // anim.tick();
+}
+
 void playerMovement(int input, Player &player)
 {
 	// player.groundSpeed = get_groundSpeed(input, player);

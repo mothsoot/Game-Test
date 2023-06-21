@@ -26,5 +26,15 @@ LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image
 OBJ_NAME = program
 
 #This is the target that compiles our executable
-all : $(OBJS)
-	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+#all : $(OBJS)
+#	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
+
+all: main.o player.o
+
+main.o: main.cpp main.h player.h
+	$(CC) -c main.cpp $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS)
+player.o: player.cpp player.h main.h
+	$(CC) -c player.cpp $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS)
+
+clean:
+	rm -f main.o

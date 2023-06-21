@@ -21,6 +21,9 @@ int main(int argc, char* args[])
 
 	stepTimer.start();
 
+	float next_game_tick = SDL_GetTicks();
+	int sleep_time = 0;
+
 	// handle events
 	// loop getting player input
 	// getting sprite to draw
@@ -49,6 +52,15 @@ int main(int argc, char* args[])
 		
 		// update screen
 		SDL_RenderPresent(renderer);
+
+		next_game_tick += SKIP_TICKS;
+		sleep_time = next_game_tick - SDL_GetTicks();
+		if(sleep_time >= 0) {
+        Sleep(sleep_time);
+		}
+		else {
+			// Shit, we are running behind!
+		}
 	}
 	
 	// shutdown SDL
@@ -165,7 +177,7 @@ void handleEvent(SDL_Event e, Player &player)
 	static int direction;
 
     // key pressed
-	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+	if(e.type == SDL_KEYDOWN) { // && e.key.repeat == 0) {
         switch(e.key.keysym.sym) {
             case SDLK_UP:
 				player.ySpeed -= acceleration_speed;
@@ -188,18 +200,17 @@ void handleEvent(SDL_Event e, Player &player)
 				}
 				break;
             case SDLK_LEFT:
-				//player.xSpeed -= acceleration_speed;
 				player.sprite = SPRITE_LEFT;
 				direction = -1;
-		
             if(player.xSpeed > 0) { // moving right
                 player.xSpeed -= deceleration_speed;
-				player.sprite = SPRITE_SKID_LEFT;
-                //if(player.xSpeed <= 0) {
-                //    player.xSpeed = -0.5;
-                //}
+				//player.sprite = SPRITE_SKID_LEFT;
+                if(player.xSpeed <= 0) {
+                    player.xSpeed = -0.5;
+                }
             } else if(player.xSpeed >= 0) { // moving left
                 player.xSpeed -= acceleration_speed;
+				//player.sprite = SPRITE_LEFT;
                 if(player.xSpeed <= -top_speed) {
                     player.xSpeed = -top_speed; // limit
                 }
@@ -207,24 +218,21 @@ void handleEvent(SDL_Event e, Player &player)
 		
 				break;
             case SDLK_RIGHT:
-				// player.xSpeed += acceleration_speed;
-				//player.sprite = SPRITE_RIGHT;
+				player.sprite = SPRITE_RIGHT;
 				direction = 1;
-		
             if(player.xSpeed < 0) { // moving left
                 player.xSpeed += deceleration_speed;
-				player.sprite = SPRITE_SKID_RIGHT;
-                //if(player.xSpeed >= 0) {
-                //    player.xSpeed = 0.5;
-                //}
+				//player.sprite = SPRITE_SKID_RIGHT;
+                if(player.xSpeed >= 0) {
+                    player.xSpeed = 0.5;
+                }
             } else if(player.xSpeed >= 0) { // moving right
                 player.xSpeed += acceleration_speed;
-				player.sprite = SPRITE_RIGHT;
+				// player.sprite = SPRITE_RIGHT;
                 if(player.xSpeed >= top_speed) {
                     player.xSpeed = top_speed; // limit
                 }
             }
-        
 				break;
 		}			
     }
@@ -232,8 +240,6 @@ void handleEvent(SDL_Event e, Player &player)
 
     // key released
     else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
-		switch(e.key.keysym.sym) {
-			default:
 		if(player.xSpeed < 0) { // moving left
             player.xSpeed += friction_speed;
             if(player.xSpeed >= 0) {
@@ -262,9 +268,6 @@ void handleEvent(SDL_Event e, Player &player)
 				break;
         }
 		*/
-    }
-
-
 }
 
 void move(float time, Player &player)
@@ -278,11 +281,6 @@ void move(float time, Player &player)
     player.x += player.xSpeed * time;
 
     // too far left or right
-/*    if((player.x < 0) || (player.x + DOT_WIDTH > SCREEN_WIDTH)) {
-        // move back
-        player.x -= player.xSpeed;
-    }
-*/
 	if(player.x < 0) {
         player.x = 0;
     } else if(player.x > SCREEN_WIDTH - DOT_WIDTH) {
@@ -293,11 +291,6 @@ void move(float time, Player &player)
     player.y += player.ySpeed * time;
 
     // too far up or down
-/*    if((player.y < 0) || (player.y + DOT_HEIGHT > SCREEN_HEIGHT)) {
-        // move back
-        player.y -= player.ySpeed;
-    }
-*/
 	if(player.y < 0) {
         player.y = 0;
     } else if(player.y > SCREEN_HEIGHT - DOT_HEIGHT) {
