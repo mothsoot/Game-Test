@@ -9,23 +9,21 @@ const int SKIP_TICKS = 1000 / FPS;
 class timer
 {
     public:
-		//Initializes variables
+		// constructor
 		timer();
+        // destructor
+        ~timer();
 
-		//The various clock actions
 		void start();
 		void stop();
 
-		//Gets the timer's time
+		// gets timer's time
 		int getTicks();
 
-		//Checks the status of the timer
-		bool isStarted();
-
     private:
-		//The clock time when the timer started
+		// clock time when timer started
 		int startTicks;
 
-		//The timer status
+		// timer status
 		bool started;
 };

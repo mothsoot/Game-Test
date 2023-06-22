@@ -1,7 +1,6 @@
 #pragma once
 
-#include <SDL.h>
-#include "player.h"
+#include "main.h"
 
 // forward declaration
 struct Player;

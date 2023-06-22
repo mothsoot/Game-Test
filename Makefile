@@ -3,7 +3,7 @@
 #and may not be redistributed without written permission.
 
 #OBJS specifies which files to compile as part of the project
-OBJS = main.cpp main.h player.cpp player.h
+OBJS =  main.cpp player.cpp screen.cpp timer.cpp
 
 #CC specifies which compiler we're using
 CC = g++
@@ -29,16 +29,17 @@ OBJ_NAME = program
 #all : $(OBJS)
 #	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
-all: main.o player.o timer.o screen.o
+program: main.cpp player.cpp screen.cpp timer.cpp main.h player.h screen.h timer.h
+	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o program
 
-main.o: main.cpp main.h player.h timer.h screen.h
-	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c main.cpp
-player.o: player.cpp player.h main.h
-	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c player.cpp
-timer.o: timer.cpp timer.h main.h
-	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c timer.cpp
-screen.o: screen.cpp screen.h player.h
-	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c screen.cpp
+#main.o: main.cpp main.h player.h timer.h screen.h
+#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c main.cpp
+#player.o: player.cpp player.h main.h
+#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c player.cpp
+#timer.o: timer.cpp timer.h main.h
+#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c timer.cpp
+#screen.o: screen.cpp screen.h player.h main.h
+#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c screen.cpp
 
-clean:
-	rm -f main.o player.o timer.o screen.o
+#clean:
+#	rm main.o player.o timer.o screen.o

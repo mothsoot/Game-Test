@@ -1,10 +1,17 @@
 #include "timer.h"
 
+// constructor
 timer::timer()
 {
     // initialize variables
     startTicks = 0;
     started = false;
+}
+
+// destructor
+timer::~timer()
+{
+    // no action needed
 }
 
 void timer::start()
@@ -38,10 +45,4 @@ int timer::getTicks()
     }
 
     return time;
-}
-
-bool timer::isStarted()
-{
-	// timer is running
-    return started;
 }

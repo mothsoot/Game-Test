@@ -5,7 +5,7 @@ using std::cout;
 using std::cerr;
 using std::endl;
 #include <cmath>
-#include "windows.h"
+#include <windows.h>
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -26,9 +26,6 @@ enum KEY_INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
 #define SPRITE_DOWN_RIGHT {29 * 4, 0, 29, 39};
 #define SPRITE_SKID_LEFT {29 * 6, 0, 29, 39};
 #define SPRITE_SKID_RIGHT {29 * 7, 0, 20, 39};
-
-// forward declaration
-struct Player;
 
 struct tile {
 	float angle; // 0-256 (0-FF in hex)

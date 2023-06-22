@@ -1,5 +1,4 @@
 #include "main.h"
-#include "player.h"
 
 int main(int argc, char* args[])
 {
@@ -16,7 +15,6 @@ int main(int argc, char* args[])
 	// initialize player
 	Player player;
 
-	SDL_Event e;
 	timer stepTimer;
 
 	stepTimer.start();
@@ -32,27 +30,32 @@ int main(int argc, char* args[])
 	// update
 	while (!quit)
 	{
+		SDL_Event e;
+
+		// PollEvent returns 1 if there is an event in queue
+		// returns 0 if none
+		// while events in queue
         while (SDL_PollEvent(&e) != 0) {
 			if(e.type == SDL_QUIT) {
 				quit = true;
 			}
+
 			handleEvent(e, player);
 		}
 
 		float time = stepTimer.getTicks() / 1000.f;
-
-		//player.sprite = spriteDirection(e);
+		
 		move(time, player);
 
-		//Restart step timer
+		// restart step timer
         stepTimer.start();
 
 		// render sprite at (x, y)
 		render(renderer, texture, player);
-		
+
 		// update screen
 		SDL_RenderPresent(renderer);
-
+		
 		next_game_tick += SKIP_TICKS;
 		sleep_time = next_game_tick - SDL_GetTicks();
 		if(sleep_time >= 0) {
@@ -71,7 +74,7 @@ void handleEvent(SDL_Event e, Player &player)
 	static int direction;
 
     // key pressed
-	if(e.type == SDL_KEYDOWN) { // && e.key.repeat == 0) {
+	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
         switch(e.key.keysym.sym) {
             case SDLK_UP:
 				player.ySpeed -= acceleration_speed;
@@ -83,6 +86,7 @@ void handleEvent(SDL_Event e, Player &player)
 					player.sprite = SPRITE_UP_RIGHT;
 				}
 				break;
+
             case SDLK_DOWN:
 				player.ySpeed += acceleration_speed;
 				// sprite
@@ -92,57 +96,26 @@ void handleEvent(SDL_Event e, Player &player)
 					player.sprite = SPRITE_DOWN_RIGHT;
 				}
 				break;
+
             case SDLK_LEFT:
 				player.sprite = SPRITE_LEFT;
 				direction = -1;
-            	if(player.xSpeed > 0) { // moving right
-					player.xSpeed -= deceleration_speed;
-					//player.sprite = SPRITE_SKID_LEFT;
-                if(player.xSpeed <= 0) {
-                    player.xSpeed = -0.5;
-                }
-				} else if(player.xSpeed >= 0) { // moving left
-					player.xSpeed -= acceleration_speed;
-					//player.sprite = SPRITE_LEFT;
-					if(player.xSpeed <= -top_speed) {
-						player.xSpeed = -top_speed; // limit
-					}
-				}
+				player.xSpeed = player.get_xSpeed(LEFT);
 				break;
+
             case SDLK_RIGHT:
 				player.sprite = SPRITE_RIGHT;
 				direction = 1;
-				if(player.xSpeed < 0) { // moving left
-					player.xSpeed += deceleration_speed;
-					//player.sprite = SPRITE_SKID_RIGHT;
-					if(player.xSpeed >= 0) {
-						player.xSpeed = 0.5;
-					}
-				} else if(player.xSpeed >= 0) { // moving right
-					player.xSpeed += acceleration_speed;
-					// player.sprite = SPRITE_RIGHT;
-					if(player.xSpeed >= top_speed) {
-						player.xSpeed = top_speed; // limit
-					}
-				}
+				player.xSpeed = player.get_xSpeed(RIGHT);
 				break;
-		}			
-    }
+		}
+	}
     
     // key released
-    else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
-		if(player.xSpeed < 0) { // moving left
-            player.xSpeed += friction_speed;
-            if(player.xSpeed >= 0) {
-                player.xSpeed = 0;
-            }
-        } else if(player.xSpeed > 0) { // moving right
-            player.xSpeed -= friction_speed;
-            if(player.xSpeed <= 0) {
-                player.xSpeed = 0;
-            }
-        }
-		}
+	// if this frame receives no input
+    else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
+		player.xSpeed = player.get_friction();
+	}
 }
 
 void move(float time, Player &player)
@@ -208,4 +181,3 @@ int getInput(SDL_Event e)
 	
 	return input;
 }
-

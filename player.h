@@ -27,6 +27,9 @@ struct Player {
 	float x = 5; // x position
 	float y = 5; // y position
 
+	const float acceleration_speed = 500; // 0.046875; // 12 subpixels
+	const float deceleration_speed = 200; // 0.5; // 128 subpixels
+
 	float ySpeed; // vertical velocity
 	float xSpeed; // horizontal velocity
 	float groundSpeed; // velocity along ground
@@ -42,6 +45,11 @@ struct Player {
 	int mode;
 
 	SDL_Rect sprite = {0, 0, 29, 39};
+
+	float get_groundSpeed(int input, Player player);
+	float get_xSpeed(int input);
+	float get_ySpeed(Player player);
+	float get_friction();
 };
 
 // collisions
@@ -60,12 +68,8 @@ sensor sensorD(Player player);
 sensor sensorE(Player player);
 sensor sensorF(Player player);
 
-void playerMovement(int input, Player &player);
-
 // speeds
 float get_groundSpeed(int input, Player player);
-float get_xSpeed(int input, Player player);
-float get_ySpeed(Player player);
 
 // air
 void airAcceleration(int input, Player player);

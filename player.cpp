@@ -7,7 +7,7 @@ void updatePlayer()
     // isSpinDash();
     // adjust ground_speed based on groundAngle
     // isJump();
-    // adjust groundSpeed based on input + friction & accel/deccel
+    // adjust groundSpeed based on input + friction & accel/decel
     // wallCollision();
         // add xSpeed & ySpeed to sensor position here
     // isRoll();
@@ -24,7 +24,7 @@ void updatePlayer()
     // ROLLING
     // adjust ground_speed based on groundAngle
     // isJump();
-    // adjust groundSpeed based on input + friction & accel/deccel
+    // adjust groundSpeed based on input + friction & accel/decel
     // wallCollision();
     // setCamera();
     // movePlayer();
@@ -44,24 +44,6 @@ void updatePlayer()
     // airCollision();
 
     // check hitboxes
-}
-
-void updatePlayerr()
-{
-    // movement();
-    // gameplay();
-    // animation();
-    // anim.tick();
-}
-
-void playerMovement(int input, Player &player)
-{
-	// player.groundSpeed = get_groundSpeed(input, player);
-    player.xSpeed = get_xSpeed(input, player);
-    player.ySpeed = 0; //get_ySpeed(player);
-
-    player.x += player.xSpeed;
-    player.y += player.ySpeed;
 }
 
 void getMode(Player &player)
@@ -135,59 +117,58 @@ float get_groundSpeed(int input, Player player)
     return speed;
 }
 
-float get_xSpeed(int input, Player player)
+float Player::get_xSpeed(int input)
 {
-    float speed = player.xSpeed;
     //x = player.groundSpeed * cos(player.groundAngle);
     switch (input) {
     case LEFT: // pressing left
-        while (speed > -top_speed) {
-            if(speed > 0) { // moving right
-                speed -= deceleration_speed;
-                if(speed <= 0) {
-                    speed = -0.5;
-                }
-            } else if(speed > -top_speed) { // moving left
-                speed -= acceleration_speed;
-                if(speed <= -top_speed) {
-                    speed = -top_speed; // limit
-                }
-            }
+        if(xSpeed > 0) { // moving right
+			xSpeed -= deceleration_speed;
+			//player.sprite = SPRITE_SKID_LEFT;
+			if(xSpeed <= 0) {
+				xSpeed = -0.5;
+			}
+		} else if(xSpeed >= 0) { // moving left
+			xSpeed -= acceleration_speed;
+			//player.sprite = SPRITE_LEFT;
+			if(xSpeed <= -top_speed) {
+				xSpeed = -top_speed; // limit
+			}
         }
         break;
 
     case RIGHT: // pressing right
-        while (speed < top_speed) {
-            if(speed < 0) { // moving left
-                speed += deceleration_speed;
-                if(speed >= 0) {
-                    speed = 0.5;
-                }
-            } else if(speed > top_speed) { // moving right
-                speed += acceleration_speed;
-                if(speed >= top_speed) {
-                    speed = top_speed; // limit
-                }
-            }
-        }
+        if(xSpeed < 0) { // moving left
+			xSpeed += deceleration_speed;
+			//player.sprite = SPRITE_SKID_RIGHT;
+			if(xSpeed >= 0) {
+				xSpeed = 0.5;
+			}
+		} else if(xSpeed >= 0) { // moving right
+			xSpeed += acceleration_speed;
+			//player.sprite = SPRITE_RIGHT;
+			if(xSpeed >= top_speed) {
+				xSpeed = top_speed; // limit
+			}
+		}
         break;
 
     default:
-        if(speed < 0) { 
-            speed += friction_speed;
-            if(speed >= 0) {
-                speed = 0;
+        if(xSpeed < 0) { // moving left
+            xSpeed += friction_speed;
+            if(xSpeed >= 0) {
+                xSpeed = 0;
             }
-        } else if(speed > 0) {
-            speed -= friction_speed;
-            if(speed <= 0) {
-                speed = 0;
+        } else if(xSpeed > 0) { // moving right
+            xSpeed -= friction_speed;
+            if(xSpeed <= 0) {
+                xSpeed = 0;
             }
         }
         break;
     }
 
-    return speed;
+    return xSpeed;
 }
 
 float get_ySpeed(Player player)
@@ -195,6 +176,23 @@ float get_ySpeed(Player player)
     float y;
     y = player.groundSpeed * -sin(player.groundAngle);
     return y;
+}
+
+float Player::get_friction()
+{
+	if(xSpeed < 0) { // moving left
+            xSpeed += friction_speed;
+            if(xSpeed >= 0) {
+                xSpeed = 0;
+            }
+        } else if(xSpeed > 0) { // moving right
+            xSpeed -= friction_speed;
+            if(xSpeed <= 0) {
+                xSpeed = 0;
+            }
+        }
+
+    return xSpeed;
 }
 
 // SENSORS
