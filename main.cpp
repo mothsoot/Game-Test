@@ -40,7 +40,6 @@ int main(int argc, char* args[])
 			if(e.type == SDL_QUIT) {
 				quit = true;
 			}
-
 			handleEvent(e, player);
 		}
 
@@ -69,7 +68,6 @@ int main(int argc, char* args[])
 void handleEvent(SDL_Event e, Player &player)
 {
 	static int direction;
-
 
     // key pressed
 	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
@@ -124,23 +122,23 @@ void move(float time, Player &player)
 	float SCREEN_HEIGHT = 480;
 
     // move left or right
-    player.x += player.xSpeed * time;
+    player.pos.x += player.xSpeed * time;
 
     // too far left or right
-	if(player.x < 0) {
-        player.x = 0;
-    } else if(player.x > SCREEN_WIDTH - DOT_WIDTH) {
-        player.x = SCREEN_WIDTH - DOT_WIDTH;
+	if(player.pos.x < 0) {
+        player.pos.x = 0;
+    } else if(player.pos.x > SCREEN_WIDTH - DOT_WIDTH) {
+        player.pos.x = SCREEN_WIDTH - DOT_WIDTH;
     }
     
     // move up or down
-    player.y += player.ySpeed * time;
+    player.pos.y += player.ySpeed * time;
 
     // too far up or down
-	if(player.y < 0) {
-        player.y = 0;
-    } else if(player.y > SCREEN_HEIGHT - DOT_HEIGHT) {
-        player.y = SCREEN_HEIGHT - DOT_HEIGHT;
+	if(player.pos.y < 0) {
+        player.pos.y = 0;
+    } else if(player.pos.y > SCREEN_HEIGHT - DOT_HEIGHT) {
+        player.pos.y = SCREEN_HEIGHT - DOT_HEIGHT;
     }
 }
 

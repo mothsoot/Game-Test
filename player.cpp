@@ -3,8 +3,7 @@
 // constructor
 Player::Player()
 {
-    x = 5; // startPos.x;
-    y = 5; // startPos.y;
+    setPos(pos);
     xSpeed = 0;
     ySpeed = 0;
 }
@@ -61,6 +60,38 @@ void updatePlayer()
     // check hitboxes
 }
 
+Position Player::getPos()
+{
+    return pos;
+}
+
+void Player::setPos(Position &pos)
+{
+    pos.x = 5;
+    pos.y = 5;
+}
+
+Hitbox Player::getHitbox()
+{
+    return hitbox;
+}
+
+void Player::setHitbox(Hitbox &hitbox)
+{
+    hitbox.pos.x = pos.x;
+    hitbox.pos.y = pos.y;
+
+	hitbox.hRadius = hRadius - 3;
+	hitbox.wRadius = 8;
+
+    int isCrouch; // TEMP SO NO ERROR IN IF
+
+    if(isCrouch) {
+        hitbox.pos.y += 12;
+        hitbox.hRadius = 10;
+    }
+}
+
 void getMode(Player &player)
 {
     float angle = player.groundAngle;
@@ -112,30 +143,15 @@ float Player::get_xSpeed(int input)
 			}
 		}
         break;
-
-/*    default:
-        if(xSpeed < 0) { // moving left
-            xSpeed += friction_speed;
-            if(xSpeed >= 0) {
-                xSpeed = 0;
-            }
-        } else if(xSpeed > 0) { // moving right
-            xSpeed -= friction_speed;
-            if(xSpeed <= 0) {
-                xSpeed = 0;
-            }
-        }
-        break;*/
     }
 
     return xSpeed;
 }
 
-float get_ySpeed(Player player)
+float Player::get_ySpeed()
 {
-    float y;
-    y = player.groundSpeed * -sin(player.groundAngle);
-    return y;
+    ySpeed = groundSpeed * -sin(groundAngle);
+    return ySpeed;
 }
 
 float Player::get_friction()
@@ -158,37 +174,35 @@ float Player::get_friction()
 // STUFF TO IMPLEMENT LATER !!
 
 // SPEED FOR SLOPES
-float get_groundSpeed(int input, Player player)
+float Player::get_groundSpeed(int input)
 {
-    float speed = player.groundSpeed;
-
     if(input == LEFT) { // pressing left
-        while (speed > -top_speed) {
-            if(speed > 0) { // moving right
-                speed -= deceleration_speed;
-                if(speed <= 0) {
-                    speed = -0.5;
+        while (groundSpeed > -top_speed) {
+            if(groundSpeed > 0) { // moving right
+                groundSpeed -= deceleration_speed;
+                if(groundSpeed <= 0) {
+                    groundSpeed = -0.5;
                 }
-            } else if(speed > -top_speed) { // moving left
-                speed -= acceleration_speed;
-                if(speed <= -top_speed) {
-                    speed = -top_speed; // limit
+            } else if(groundSpeed > -top_speed) { // moving left
+                groundSpeed -= acceleration_speed;
+                if(groundSpeed <= -top_speed) {
+                    groundSpeed = -top_speed; // limit
                 }
             }
         }
     }
 
     if(input == RIGHT) { // pressing right
-        while (speed < top_speed) {
-            if(speed < 0) { // moving left
-                speed += deceleration_speed;
-                if(speed >= 0) {
-                    speed = 0.5;
+        while (groundSpeed < top_speed) {
+            if(groundSpeed < 0) { // moving left
+                groundSpeed += deceleration_speed;
+                if(groundSpeed >= 0) {
+                    groundSpeed = 0.5;
                 }
-            } else if(speed > top_speed) { // moving right
-                speed += acceleration_speed;
-                if(speed >= top_speed) {
-                    speed = top_speed; // limit
+            } else if(groundSpeed > top_speed) { // moving right
+                groundSpeed += acceleration_speed;
+                if(groundSpeed >= top_speed) {
+                    groundSpeed = top_speed; // limit
                 }
             }
         }
@@ -196,83 +210,20 @@ float get_groundSpeed(int input, Player player)
 
     // friction
     if(input == NONE) {
-        if(speed < 0) { 
-            speed += friction_speed;
-            if(speed >= 0) {
-                speed = 0;
+        if(groundSpeed < 0) { 
+            groundSpeed += friction_speed;
+            if(groundSpeed >= 0) {
+                groundSpeed = 0;
             }
-        } else if(speed > 0) {
-            speed -= friction_speed;
-            if(speed <= 0) {
-                speed = 0;
+        } else if(groundSpeed > 0) {
+            groundSpeed -= friction_speed;
+            if(groundSpeed <= 0) {
+                groundSpeed = 0;
             }
         }
     }
 
-    return speed;
-}
-
-// SENSORS
-// right ground
-sensor sensorA(Player player)
-{
-    sensor A;
-    A.x = player.x - player.wRadius;
-    A.y = player.y - player.hRadius;
-
-    return A;
-}
-
-// left ground
-sensor sensorB(Player player) 
-{
-    sensor B;
-    B.x = player.x + player.wRadius;
-    B.y = player.y - player.hRadius;
-
-    return B;
-}
-
-// right ceiling
-sensor sensorC(Player player)
-{
-    sensor C;
-    C.x = player.x - player.wRadius;
-    C.y = player.y + player.hRadius;
-
-    return C;
-}
-
-// left ceiling
-sensor sensorD(Player player)
-{
-    sensor D;
-    D.x = player.x + player.wRadius;
-    D.y = player.y + player.hRadius;
-
-    return D;
-}
-
-// right wall
-sensor sensorE(Player player)
-{
-    sensor E;
-    if(player.groundSpeed < 0) {
-        E.x = player.x - player.pushRadius;
-        E.y = player.y;
-        return E;
-    }
-}
-
-// left wall
-sensor sensorF(Player player)
-{
-    sensor F;
-    if(player.groundSpeed < 0) {
-        F.x = player.x + player.pushRadius;
-        F.y = player.y;
-        return F;
-    }
+    return groundSpeed;
 }
 
 // JUMPING

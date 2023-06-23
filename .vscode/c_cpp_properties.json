@@ -7,7 +7,8 @@
                 "${workspaceFolder}/**",
                 "${vcpkgRoot}/x86-windows/include",
                 "C:/Code/vcpkg/installed/x86-windows/include/SDL2",
-                "C:/Code/msys64/mingw64/include/SDL2"
+                "C:/Code/msys64/mingw64/include/SDL2",
+                "${workspaceFolder}/include"
             ],
             "defines": [
                 "_DEBUG",

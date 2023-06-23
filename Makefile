@@ -9,7 +9,7 @@ OBJS =  main.cpp player.cpp screen.cpp timer.cpp
 CC = g++
 
 #INCLUDE_PATHS specifies the additional include paths we'll need
-INCLUDE_PATHS = -IC:\Code\SDL\x86_64-w64-mingw32\include\SDL2
+INCLUDE_PATHS = -IC:\Code\SDL\x86_64-w64-mingw32\include\SDL2 -ID:\Code\Game-Test\include
 
 #LIBRARY_PATHS specifies the additional library paths we'll need
 LIBRARY_PATHS = -LC:\Code\SDL\x86_64-w64-mingw32\lib
@@ -29,7 +29,7 @@ OBJ_NAME = program
 #all : $(OBJS)
 #	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
-program: main.cpp player.cpp screen.cpp timer.cpp main.h player.h screen.h timer.h
+program: main.cpp player.cpp screen.cpp timer.cpp
 	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o program
 
 #main.o: main.cpp main.h player.h timer.h screen.h

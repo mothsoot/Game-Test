@@ -30,7 +30,7 @@ void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &textur
 void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player)
 {
 	// destination rectangle
-	SDL_Rect dstrect = {player.x, player.y, 29, 39}; // x coord, y coord, image width, image height
+	SDL_Rect dstrect = {player.pos.x, player.y, 29, 39}; // x coord, y coord, image width, image height
 
 	SDL_RenderClear(renderer);
 	SDL_RenderCopy(renderer, texture, &player.sprite, &dstrect);

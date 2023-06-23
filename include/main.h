@@ -26,12 +26,12 @@ enum KEY_INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
 #define SPRITE_SKID_LEFT {29 * 6, 0, 29, 39};
 #define SPRITE_SKID_RIGHT {29 * 7, 0, 20, 39};
 
-/*struct pos {
+/*struct Position {
 	int x;
 	int y;
 };*/
 
-struct tile {
+struct Tile {
 	float angle; // 0-256 (0-FF in hex)
 };
 

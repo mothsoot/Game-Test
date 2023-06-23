@@ -2,9 +2,6 @@
 
 #include "main.h"
 
-const int FPS = 60;
-const int SKIP_TICKS = 1000 / FPS;
-
 // application time based timer
 class timer
 {
