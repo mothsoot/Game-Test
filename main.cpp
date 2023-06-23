@@ -19,8 +19,9 @@ int main(int argc, char* args[])
 
 	stepTimer.start();
 
-	float next_game_tick = SDL_GetTicks();
-	int sleep_time = 0;
+	//pos startPos;
+	//startPos.x = 5;
+	//startPos.y = 5;
 
 	// handle events
 	// loop getting player input
@@ -44,7 +45,7 @@ int main(int argc, char* args[])
 		}
 
 		float time = stepTimer.getTicks() / 1000.f;
-		
+
 		move(time, player);
 
 		// restart step timer
@@ -56,11 +57,7 @@ int main(int argc, char* args[])
 		// update screen
 		SDL_RenderPresent(renderer);
 		
-		next_game_tick += SKIP_TICKS;
-		sleep_time = next_game_tick - SDL_GetTicks();
-		if(sleep_time >= 0) {
-        Sleep(sleep_time);
-		}
+		SDL_Delay(16);
 	}
 	
 	// shutdown SDL
@@ -72,6 +69,7 @@ int main(int argc, char* args[])
 void handleEvent(SDL_Event e, Player &player)
 {
 	static int direction;
+
 
     // key pressed
 	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
@@ -113,7 +111,7 @@ void handleEvent(SDL_Event e, Player &player)
     
     // key released
 	// if this frame receives no input
-    else if (e.type == SDL_KEYUP && e.key.repeat == 0) {
+    if (e.type == SDL_KEYUP && e.key.repeat == 0) {
 		player.xSpeed = player.get_friction();
 	}
 }

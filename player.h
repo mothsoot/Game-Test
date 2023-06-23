@@ -5,7 +5,7 @@
 // POSITIONS & SPEED
 const float acceleration_speed = 500; // 0.046875; // 12 subpixels
 const float deceleration_speed = 200; // 0.5; // 128 subpixels
-const float friction_speed = 100; // 0.046875; // 12 subpixels
+const float friction_speed = 500; // 0.046875; // 12 subpixels
 const float top_speed = 500; // 6
 
 const float gravity_force = 0.21875; // 56 subpixels
@@ -23,33 +23,37 @@ const float slope_factor_rolldown = 0.3125; // 80 subpixels
 
 enum MODE {FLOOR, RIGHT_WALL, CEILING, LEFT_WALL};
 
-struct Player {
-	float x = 5; // x position
-	float y = 5; // y position
+class Player {
+	public:
 
-	const float acceleration_speed = 500; // 0.046875; // 12 subpixels
-	const float deceleration_speed = 200; // 0.5; // 128 subpixels
+		Player();
+		~Player();
 
-	float ySpeed; // vertical velocity
-	float xSpeed; // horizontal velocity
-	float groundSpeed; // velocity along ground
-	float groundAngle;
+		float x; // x position
+		float y; // y position
 
-	int hRadius = 19; // 14 when jump/roll
-	int wRadius = 9; // 7 when jump/roll
-	int pushRadius = 10;
+		const float acceleration_speed = 500; // 0.046875; // 12 subpixels
+		const float deceleration_speed = 200; // 0.5; // 128 subpixels
 
-	int hitbox_y = (hRadius - 3) * 2;
-	int hitbox_x = 8 * 2;
+		float ySpeed; // vertical velocity
+		float xSpeed; // horizontal velocity
+		float groundSpeed; // velocity along ground
+		float groundAngle;
 
-	int mode;
+		int hRadius = 19; // 14 when jump/roll
+		int wRadius = 9; // 7 when jump/roll
+		int pushRadius = 10;
 
-	SDL_Rect sprite = {0, 0, 29, 39};
+		int hitbox_y = (hRadius - 3) * 2;
+		int hitbox_x = 8 * 2;
 
-	float get_groundSpeed(int input, Player player);
-	float get_xSpeed(int input);
-	float get_ySpeed(Player player);
-	float get_friction();
+		int mode;
+
+		SDL_Rect sprite = {0, 0, 29, 39};
+
+		float get_xSpeed(int input);
+		float get_ySpeed(Player player);
+		float get_friction();
 };
 
 // collisions
@@ -69,7 +73,7 @@ sensor sensorE(Player player);
 sensor sensorF(Player player);
 
 // speeds
-float get_groundSpeed(int input, Player player);
+float get_groundSpeed(int input, Player player); // IMPLEMENT FOR SLOPES
 
 // air
 void airAcceleration(int input, Player player);

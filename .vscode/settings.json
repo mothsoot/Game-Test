@@ -13,7 +13,13 @@
     "files.associations": {
         "ostream": "cpp",
         "main": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "*.tcc": "cpp",
+        "cmath": "cpp",
+        "random": "cpp",
+        "limits": "cpp",
+        "tuple": "cpp",
+        "type_traits": "cpp"
     },
     "C_Cpp.dimInactiveRegions": false
 }
