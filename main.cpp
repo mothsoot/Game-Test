@@ -10,18 +10,19 @@ int main(int argc, char* args[])
 	SDL_Renderer* renderer;
 	SDL_Surface* image;
 	SDL_Texture* texture;
-	startUp(window, renderer, image, texture);
+	//if(!startUp(window, renderer, image, texture)) {
+	//	cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
+	//	return 0;
+	//}
 
+	startUp(window, renderer, image, texture);
+	
 	// initialize player
 	Player player;
 
-	timer stepTimer;
+	Timer timer;
 
-	stepTimer.start();
-
-	//pos startPos;
-	//startPos.x = 5;
-	//startPos.y = 5;
+	timer.start();
 
 	// handle events
 	// loop getting player input
@@ -43,12 +44,12 @@ int main(int argc, char* args[])
 			handleEvent(e, player);
 		}
 
-		float time = stepTimer.getTicks() / 1000.f;
+		float time = timer.getTicks() / 1000.f;
 
-		move(time, player);
+		player.move(time, player);
 
-		// restart step timer
-        stepTimer.start();
+		// restart timer
+        timer.start();
 
 		// render sprite at (x, y)
 		render(renderer, texture, player);
@@ -73,7 +74,7 @@ void handleEvent(SDL_Event e, Player &player)
 	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
         switch(e.key.keysym.sym) {
             case SDLK_UP:
-				player.ySpeed -= acceleration_speed;
+				player.ySpeed -= ACCEL_SPEED;
 
 				// sprite
 				if(direction < 0) {
@@ -84,7 +85,7 @@ void handleEvent(SDL_Event e, Player &player)
 				break;
 
             case SDLK_DOWN:
-				player.ySpeed += acceleration_speed;
+				player.ySpeed += ACCEL_SPEED;
 				// sprite
 				if(direction < 0) {
 					player.sprite = SPRITE_DOWN_LEFT;
@@ -96,13 +97,13 @@ void handleEvent(SDL_Event e, Player &player)
             case SDLK_LEFT:
 				player.sprite = SPRITE_LEFT;
 				direction = -1;
-				player.xSpeed = player.get_xSpeed(LEFT);
+				player.xSpeed = player.get_xSpeed(KEY_LEFT);
 				break;
 
             case SDLK_RIGHT:
 				player.sprite = SPRITE_RIGHT;
 				direction = 1;
-				player.xSpeed = player.get_xSpeed(RIGHT);
+				player.xSpeed = player.get_xSpeed(KEY_RIGHT);
 				break;
 		}
 	}
@@ -114,34 +115,6 @@ void handleEvent(SDL_Event e, Player &player)
 	}
 }
 
-void move(float time, Player &player)
-{
-	float DOT_WIDTH = 29;
-	float DOT_HEIGHT = 38;
-	float SCREEN_WIDTH = 640;
-	float SCREEN_HEIGHT = 480;
-
-    // move left or right
-    player.pos.x += player.xSpeed * time;
-
-    // too far left or right
-	if(player.pos.x < 0) {
-        player.pos.x = 0;
-    } else if(player.pos.x > SCREEN_WIDTH - DOT_WIDTH) {
-        player.pos.x = SCREEN_WIDTH - DOT_WIDTH;
-    }
-    
-    // move up or down
-    player.pos.y += player.ySpeed * time;
-
-    // too far up or down
-	if(player.pos.y < 0) {
-        player.pos.y = 0;
-    } else if(player.pos.y > SCREEN_HEIGHT - DOT_HEIGHT) {
-        player.pos.y = SCREEN_HEIGHT - DOT_HEIGHT;
-    }
-}
-
 int getInput(SDL_Event e)
 {
 	SDL_PollEvent(&e);
@@ -151,25 +124,22 @@ int getInput(SDL_Event e)
 	switch (e.type)
 	{
 		case SDL_QUIT:
-			input = QUIT;
+			input = KEY_QUIT;
 			break;
 		case SDL_KEYDOWN:
 			switch (e.key.keysym.sym)
 			{
 				case SDLK_LEFT:
-					input = LEFT;
+					input = KEY_LEFT;
 					break;
 				case SDLK_RIGHT:
-					input = RIGHT;
+					input = KEY_RIGHT;
 					break;
 				case SDLK_UP:
-					input = UP;
+					input = KEY_UP;
 					break;
 				case SDLK_DOWN:
-					input = DOWN;
-					break;
-				case SDLK_SPACE:
-					input = QUIT;
+					input = KEY_DOWN;
 					break;
 			}
 			break;

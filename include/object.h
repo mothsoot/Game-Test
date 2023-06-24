@@ -3,7 +3,11 @@
 #include "main.h"
 
 class Object {
-    Position pos;
+    public:
+        Object();
+        ~Object();
+        
+        Position pos;
 
-    SDL_Rect sprite;
+        SDL_Rect sprite;
 };

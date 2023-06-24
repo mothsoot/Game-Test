@@ -1,48 +1,100 @@
 #include "timer.h"
 
 // constructor
-timer::timer()
+Timer::Timer()
 {
     // initialize variables
     startTicks = 0;
+    pausedTicks = 0;
+
     started = false;
+    paused = false;
 }
 
 // destructor
-timer::~timer()
+Timer::~Timer()
 {
     // no action needed
 }
 
-void timer::start()
+void Timer::start()
 {
     // start timer
     started = true;
 
+    paused = false;
+
     // get current clock time
     startTicks = SDL_GetTicks();
+    pausedTicks = 0;
 }
 
-void timer::stop()
+void Timer::stop()
 {
     // stop timer
     started = false;
 
+    paused = false;
+
 	// clear tick variables
 	startTicks = 0;
+    pausedTicks = 0;
 }
 
-int timer::getTicks()
+void Timer::pause()
+{
+    //If the timer is running and isn't already paused
+    if(started && !paused) {
+        //Pause the timer
+        paused = true;
+
+        //Calculate the paused ticks
+        pausedTicks = SDL_GetTicks() - startTicks;
+		startTicks = 0;
+    }
+}
+
+void Timer::unpause()
+{
+    // if the timer is running and paused
+    if(started && paused) {
+        // unpause timer
+        paused = false;
+
+        // reset starting ticks
+        startTicks = SDL_GetTicks() - pausedTicks;
+
+        // reset paused ticks
+        pausedTicks = 0;
+    }
+}
+
+int Timer::getTicks()
 {
 	// actual timer time
 	int time = 0;
 
-    // if timer running
-    if(started)
-    {
-        // current time - start time
-        time = SDL_GetTicks() - startTicks;
+    if(started) { // if timer running
+        if(paused) { // if timer paused
+            // return ticks when timer was paused
+            time = pausedTicks;
+        } else {
+            // return current time minus start time
+            time = SDL_GetTicks() - startTicks;
+        }
     }
 
     return time;
+}
+
+bool Timer::isStarted()
+{
+	// timer is running and paused or unpaused
+    return started;
+}
+
+bool Timer::isPaused()
+{
+	// timer is running and paused
+    return paused && started;
 }

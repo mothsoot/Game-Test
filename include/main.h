@@ -13,8 +13,11 @@ using std::endl;
 #include "player.h"
 #include "timer.h"
 
+const int SCREEN_WIDTH = 640;
+const int SCREEN_HEIGHT = 480;
+
 // input directions
-enum KEY_INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
+enum KEY_INPUT {KEY_LEFT = 1, KEY_RIGHT = 2, KEY_UP = 3, KEY_DOWN = 4, KEY_QUIT = 5};
 
 // sprite directions
 #define SPRITE_LEFT {29, 0, 29, 39}; // x coord, y coord, image width, image height
@@ -26,16 +29,12 @@ enum KEY_INPUT { LEFT = 1, RIGHT = 2, UP = 3, DOWN = 4, QUIT = 5, NONE = 6 };
 #define SPRITE_SKID_LEFT {29 * 6, 0, 29, 39};
 #define SPRITE_SKID_RIGHT {29 * 7, 0, 20, 39};
 
-/*struct Position {
-	int x;
-	int y;
-};*/
-
 struct Tile {
 	float angle; // 0-256 (0-FF in hex)
+
+	bool flagged;
 };
 
 void handleEvent(SDL_Event e, Player &player);
-void move(float time, Player &player);
 
 int getInput(SDL_Event e);

@@ -14,9 +14,37 @@ Player::~Player()
     // nothing to do here
 }
 
-void updatePlayer()
+void Player::update()
 {
+    // ROLLING
+    if(rolling == true) {
+    // adjust groundSpeed based on groundAngle
+    // isJump();
+    // get_groundSpeed();
+        // adjust groundSpeed based on input + friction & accel/decel
+    // wallCollision();
+    // setCamera();
+    // move();
+    // floorCollision();
+    // isSlipping()/isFalling();
+    }
+
+    // AIRBORNE
+    else if(airborne == true) {
+    // check for jump button release
+    // isSuper();
+    // update xSpeed based on input
+    // apply air drag
+    // move();
+    // apply gravity
+        // update ySpeed by adding gravity
+    // isUnderWater();
+    // groundAngle = 0;
+    // airCollision();
+    }
+
     // NORMAL
+    else {
     // check for special actions (balancing, etc.)
     // isSpinDash();
     // adjust ground_speed based on groundAngle
@@ -34,30 +62,44 @@ void updatePlayer()
         // align sprite to ground
     // isSlipping()/isFalling();
         // if groundSpeed too low on walls/ceilings
-
-    // ROLLING
-    // adjust ground_speed based on groundAngle
-    // isJump();
-    // adjust groundSpeed based on input + friction & accel/decel
-    // wallCollision();
-    // setCamera();
-    // movePlayer();
-    // floorCollision();
-    // isSlipping()/isFalling();
-
-    // AIRBORNE
-    // check for jump button release
-    // isSuper();
-    // update xSpeed based on input
-    // apply air drag
-    // movePlayer();
-    // apply gravity
-        // update ySpeed by adding gravity
-    // isUnderWater();
-    // groundAngle = 0;
-    // airCollision();
+    }
 
     // check hitboxes
+}
+
+void Player::move(float time, Player &player)
+{
+    // move left or right
+    pos.x += xSpeed * time;
+
+    // too far left or right
+	if(pos.x < 0) {
+        pos.x = 0;
+    } else if(pos.x > SCREEN_WIDTH - 29) {
+        pos.x = SCREEN_WIDTH - 29;
+    }
+    
+    // move up or down
+    pos.y += ySpeed * time;
+
+    // too far up or down
+	if(pos.y < 0) {
+        pos.y = 0;
+    } else if(pos.y > SCREEN_HEIGHT - 38) {
+        pos.y = SCREEN_HEIGHT - 38;
+    }
+}
+
+SDL_Rect Player::animation(int input, Player &player)
+{
+    // set direction
+    if(input == KEY_RIGHT) {
+        flipSprite = false;
+    } else if(input == KEY_LEFT) {
+        flipSprite = true;
+    }
+
+    return sprite;
 }
 
 Position Player::getPos()
@@ -92,19 +134,16 @@ void Player::setHitbox(Hitbox &hitbox)
     }
 }
 
-void getMode(Player &player)
+void Player::getMode(Player &player)
 {
-    float angle = player.groundAngle;
-    if(angle >= 0 && angle <= 45) {
+    if(0 <= groundAngle <= 45 || 315 <= groundAngle <= 360) {
         player.mode = FLOOR;
-    } else if(angle >= 46 && angle <= 134) {
+    } else if(46 <= groundAngle <= 134) {
         player.mode = LEFT_WALL;
-    } else if(angle >= 135 && angle <= 225) {
+    } else if(135 <= groundAngle <= 225) {
         player.mode = CEILING;
-    } else if(angle >= 226 && angle <= 314) {
+    } else if(226 <= groundAngle <= 314) {
         player.mode = RIGHT_WALL;
-    } else if(angle >= 315 && angle <= 360) {
-        player.mode = FLOOR;
     }
 }
 
@@ -112,34 +151,34 @@ float Player::get_xSpeed(int input)
 {
     //x = player.groundSpeed * cos(player.groundAngle);
     switch (input) {
-    case LEFT: // pressing left
+    case KEY_LEFT: // pressing left
         if(xSpeed > 0) { // moving right
-			xSpeed -= deceleration_speed;
+			xSpeed -= DECEL_SPEED;
 			//player.sprite = SPRITE_SKID_LEFT;
 			if(xSpeed <= 0) {
 				xSpeed = -0.5;
 			}
 		} else if(xSpeed >= 0) { // moving left
-			xSpeed -= acceleration_speed;
+			xSpeed -= ACCEL_SPEED;
 			//player.sprite = SPRITE_LEFT;
-			if(xSpeed <= -top_speed) {
-				xSpeed = -top_speed; // limit
+			if(xSpeed <= -TOP_SPEED) {
+				xSpeed = -TOP_SPEED; // limit
 			}
         }
         break;
 
-    case RIGHT: // pressing right
+    case KEY_RIGHT: // pressing right
         if(xSpeed < 0) { // moving left
-			xSpeed += deceleration_speed;
+			xSpeed += DECEL_SPEED;
 			//player.sprite = SPRITE_SKID_RIGHT;
 			if(xSpeed >= 0) {
 				xSpeed = 0.5;
 			}
 		} else if(xSpeed >= 0) { // moving right
-			xSpeed += acceleration_speed;
+			xSpeed += ACCEL_SPEED;
 			//player.sprite = SPRITE_RIGHT;
-			if(xSpeed >= top_speed) {
-				xSpeed = top_speed; // limit
+			if(xSpeed >= TOP_SPEED) {
+				xSpeed = TOP_SPEED; // limit
 			}
 		}
         break;
@@ -157,12 +196,12 @@ float Player::get_ySpeed()
 float Player::get_friction()
 {
 	if(xSpeed < 0) { // moving left
-            xSpeed += friction_speed;
+            xSpeed += FRICTION_SPEED;
             if(xSpeed >= 0) {
                 xSpeed = 0;
             }
         } else if(xSpeed > 0) { // moving right
-            xSpeed -= friction_speed;
+            xSpeed -= FRICTION_SPEED;
             if(xSpeed <= 0) {
                 xSpeed = 0;
             }
@@ -176,47 +215,47 @@ float Player::get_friction()
 // SPEED FOR SLOPES
 float Player::get_groundSpeed(int input)
 {
-    if(input == LEFT) { // pressing left
-        while (groundSpeed > -top_speed) {
+    if(input == KEY_LEFT) { // pressing left
+        while (groundSpeed > -TOP_SPEED) {
             if(groundSpeed > 0) { // moving right
-                groundSpeed -= deceleration_speed;
+                groundSpeed -= DECEL_SPEED;
                 if(groundSpeed <= 0) {
                     groundSpeed = -0.5;
                 }
-            } else if(groundSpeed > -top_speed) { // moving left
-                groundSpeed -= acceleration_speed;
-                if(groundSpeed <= -top_speed) {
-                    groundSpeed = -top_speed; // limit
+            } else if(groundSpeed > -TOP_SPEED) { // moving left
+                groundSpeed -= ACCEL_SPEED;
+                if(groundSpeed <= -TOP_SPEED) {
+                    groundSpeed = -TOP_SPEED; // limit
                 }
             }
         }
     }
 
-    if(input == RIGHT) { // pressing right
-        while (groundSpeed < top_speed) {
+    if(input == KEY_RIGHT) { // pressing right
+        while (groundSpeed < TOP_SPEED) {
             if(groundSpeed < 0) { // moving left
-                groundSpeed += deceleration_speed;
+                groundSpeed += DECEL_SPEED;
                 if(groundSpeed >= 0) {
                     groundSpeed = 0.5;
                 }
-            } else if(groundSpeed > top_speed) { // moving right
-                groundSpeed += acceleration_speed;
-                if(groundSpeed >= top_speed) {
-                    groundSpeed = top_speed; // limit
+            } else if(groundSpeed > TOP_SPEED) { // moving right
+                groundSpeed += ACCEL_SPEED;
+                if(groundSpeed >= TOP_SPEED) {
+                    groundSpeed = TOP_SPEED; // limit
                 }
             }
         }
     }
 
     // friction
-    if(input == NONE) {
+    if(input == NULL) {
         if(groundSpeed < 0) { 
-            groundSpeed += friction_speed;
+            groundSpeed += FRICTION_SPEED;
             if(groundSpeed >= 0) {
                 groundSpeed = 0;
             }
         } else if(groundSpeed > 0) {
-            groundSpeed -= friction_speed;
+            groundSpeed -= FRICTION_SPEED;
             if(groundSpeed <= 0) {
                 groundSpeed = 0;
             }
@@ -229,14 +268,14 @@ float Player::get_groundSpeed(int input)
 // JUMPING
 void jumpVelocity(Player player)
 {
-    player.xSpeed -= jump_force * sin(player.groundAngle);
-    player.ySpeed -= jump_force * cos(player.groundAngle);
+    player.xSpeed -= JUMP_FORCE * sin(player.groundAngle);
+    player.ySpeed -= JUMP_FORCE * cos(player.groundAngle);
 }
 
 void variableJumpHeight(int input, Player player)
 {
     // checked before updating player position & gravity is calculated
-    if(input == NONE) {
+    if(input == NULL) {
         if(player.ySpeed < -4) {
             player.ySpeed = -4;
         }
@@ -246,22 +285,22 @@ void variableJumpHeight(int input, Player player)
 // AIRBORNE
 void airAcceleration(int input, Player player)
 {
-    if(input == RIGHT) {
-        player.xSpeed -= air_acceleration_speed;
+    if(input == KEY_RIGHT) {
+        player.xSpeed -= AIR_ACCEL_SPEED;
     }
-    if(input == LEFT) {
-        player.xSpeed += air_acceleration_speed;
+    if(input == KEY_LEFT) {
+        player.xSpeed += AIR_ACCEL_SPEED;
     }
 
-    if(player.xSpeed >= top_speed) {
-        player.xSpeed = top_speed;
+    if(player.xSpeed >= TOP_SPEED) {
+        player.xSpeed = TOP_SPEED;
     }
 }
 
 void gravity(Player player)
 {
     // for every step player is airborne
-    player.ySpeed += gravity_force;
+    player.ySpeed += GRAVITY_FORCE;
 }
 
 void airDrag(Player player)
@@ -283,19 +322,19 @@ void airRotation(Player player)
 /*
 void underwater()
 {
-    acceleration_speed = 0.0234375;
-    deceleration_speed = 0.25;
-    friction_speed = 0.0234375;
-    top_speed = 3;
+    ACCEL_SPEED = 0.0234375;
+    DECEL_SPEED = 0.25;
+    FRICTION_SPEED = 0.0234375;
+    TOP_SPEED = 3;
 
-    air_acceleration_speed = 0.046875;
+    AIR_ACCEL_SPEED = 0.046875;
 
-    roll_friction_speed = 0.01171875;
-    roll_deceleration_speed = 0.125; // unchanged
+    ROLL_FRICTION_SPEED = 0.01171875;
+    ROLL_DECEL_SPEED = 0.125; // unchanged
 
-    gravity_force = 0.0625;
-    jump_force = 3.5;
-    jump_release = -2;
+    GRAVITY_FORCE = 0.0625;
+    JUMP_FORCE = 3.5;
+    JUMP_RELEASE = -2;
 
     // upon entering water
     player.xSpeed *= 0.5;

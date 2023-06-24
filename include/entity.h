@@ -3,8 +3,7 @@
 #include "main.h"
 
 enum TYPE {
-    PLAYER,
-    ENEMY
+    TYPE_PLAYER
 };
 
 class Entity {
@@ -15,4 +14,5 @@ class Entity {
         Position pos;
 
         SDL_Rect sprite;
+
 };

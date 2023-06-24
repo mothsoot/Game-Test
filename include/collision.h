@@ -2,20 +2,26 @@
 
 #include "player.h"
 
-class Position; // forward declaration
+struct Position;
 class Player;
 
-class Sensor {
-    public:
-        Position pos;
+struct Sensor {
+    Position pos;
 
-        int distance;
-        float tile_angle;
-        float tile_id;
+    int distance;
+    float tileAngle;
+    float tileID;
 };
 
 class Collision {
     public:
+        Collision();
+        ~Collision();
+
+        bool wallCollision(Player player);
+        bool groundCollision(Player player);
+        bool ceilingCollision(Player player);
+
         Sensor sensorA(Player player);
         Sensor sensorB(Player player);
         Sensor sensorC(Player player);
