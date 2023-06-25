@@ -44,15 +44,19 @@ void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &textur
 	SDL_Quit();
 }
 
-void render( SDL_Renderer* renderer, SDL_Texture* texture, Player player)
+void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player)
 {
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
+	SDL_RendererFlip flip;
+	if(player.flipSprite == true) {
+		flip = SDL_FLIP_HORIZONTAL;
+	} else {
+		flip = SDL_FLIP_NONE;
+	}
 	// SDL_FLIP_NONE, SDL_FLIP_HORIZONTAL, SDL_FLIP_VERTICAL
 
 	// destination rectangle
 	SDL_Rect dstrect = {player.pos.x, player.pos.y, 29, 39}; // x coord, y coord, image width, image height
 
 	SDL_RenderClear(renderer);
-//	SDL_RenderCopy(renderer, texture, &player.sprite, &dstrect);
 	SDL_RenderCopyEx(renderer, texture, &player.sprite, &dstrect, player.groundAngle, NULL, flip);
 }

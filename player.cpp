@@ -90,32 +90,10 @@ void Player::move(float time, Player &player)
     }
 }
 
-SDL_Rect Player::animation(int input, Player &player)
-{
-    // set direction
-    if(input == KEY_RIGHT) {
-        flipSprite = false;
-    } else if(input == KEY_LEFT) {
-        flipSprite = true;
-    }
-
-    return sprite;
-}
-
-Position Player::getPos()
-{
-    return pos;
-}
-
 void Player::setPos(Position &pos)
 {
     pos.x = 5;
     pos.y = 5;
-}
-
-Hitbox Player::getHitbox()
-{
-    return hitbox;
 }
 
 void Player::setHitbox(Hitbox &hitbox)
@@ -126,74 +104,113 @@ void Player::setHitbox(Hitbox &hitbox)
 	hitbox.hRadius = hRadius - 3;
 	hitbox.wRadius = 8;
 
-    int isCrouch; // TEMP SO NO ERROR IN IF
-
-    if(isCrouch) {
+    if(action == ACTION_CROUCH) {
         hitbox.pos.y += 12;
         hitbox.hRadius = 10;
     }
 }
 
-void Player::getMode(Player &player)
+SDL_Rect Player::setSprite(int input)
+{
+    switch(action) {
+        case ACTION_NORMAL:
+            switch(input) {
+                case KEY_RIGHT:
+                    sprite = SPRITE;
+                    flipSprite = false;
+                    break;
+                case KEY_LEFT:
+                    sprite = SPRITE;
+                    flipSprite = true;
+                    break;
+                case KEY_UP:
+                    sprite = SPRITE_UP;
+                    break;
+                case KEY_DOWN:
+                    sprite = SPRITE_DOWN;
+                    break;
+            }
+        case ACTION_SKID:
+            sprite = SPRITE_SKID;
+            break;
+    }
+
+    return sprite;
+}
+
+// mode for collisions
+void Player::setMode(Player &player)
 {
     if(0 <= groundAngle <= 45 || 315 <= groundAngle <= 360) {
-        player.mode = FLOOR;
+        mode = FLOOR;
     } else if(46 <= groundAngle <= 134) {
-        player.mode = LEFT_WALL;
+        mode = LEFT_WALL;
     } else if(135 <= groundAngle <= 225) {
-        player.mode = CEILING;
+        mode = CEILING;
     } else if(226 <= groundAngle <= 314) {
-        player.mode = RIGHT_WALL;
+        mode = RIGHT_WALL;
     }
 }
 
-float Player::get_xSpeed(int input)
+void Player::setxSpeed(int input, Player &player)
 {
     //x = player.groundSpeed * cos(player.groundAngle);
+
     switch (input) {
-    case KEY_LEFT: // pressing left
-        if(xSpeed > 0) { // moving right
-			xSpeed -= DECEL_SPEED;
-			//player.sprite = SPRITE_SKID_LEFT;
-			if(xSpeed <= 0) {
-				xSpeed = -0.5;
-			}
-		} else if(xSpeed >= 0) { // moving left
-			xSpeed -= ACCEL_SPEED;
-			//player.sprite = SPRITE_LEFT;
-			if(xSpeed <= -TOP_SPEED) {
-				xSpeed = -TOP_SPEED; // limit
-			}
-        }
-        break;
+        case KEY_LEFT: // pressing left
+            if(xSpeed > 0) { // moving right
+                xSpeed -= DECEL_SPEED;
+
+                sprite = SPRITE_SKID;
+                flipSprite = false;
+
+                // quick turnaround
+                if(xSpeed <= 0) {
+                    xSpeed = -0.5;
+                }
+		    } else if(xSpeed >= 0) { // moving left
+                xSpeed -= ACCEL_SPEED;
+
+                if(xSpeed <= -TOP_SPEED) {
+				    xSpeed = -TOP_SPEED; // limit
+                }
+            }
+            break;
 
     case KEY_RIGHT: // pressing right
         if(xSpeed < 0) { // moving left
 			xSpeed += DECEL_SPEED;
-			//player.sprite = SPRITE_SKID_RIGHT;
+
+			sprite = SPRITE_SKID;
+            flipSprite = true;
+
+            // quick turnaround
 			if(xSpeed >= 0) {
 				xSpeed = 0.5;
 			}
 		} else if(xSpeed >= 0) { // moving right
 			xSpeed += ACCEL_SPEED;
-			//player.sprite = SPRITE_RIGHT;
+
 			if(xSpeed >= TOP_SPEED) {
 				xSpeed = TOP_SPEED; // limit
 			}
 		}
         break;
     }
-
-    return xSpeed;
 }
 
-float Player::get_ySpeed()
+void Player::setySpeed(int input, Player &player)
 {
-    ySpeed = groundSpeed * -sin(groundAngle);
-    return ySpeed;
+    // ySpeed = groundSpeed * -sin(groundAngle);
+    
+    if(input == KEY_UP) {
+        ySpeed -= ACCEL_SPEED;
+    } else if(input == KEY_DOWN) {
+        ySpeed += ACCEL_SPEED;
+    }
 }
 
-float Player::get_friction()
+void Player::setFriction(Player &player)
 {
 	if(xSpeed < 0) { // moving left
             xSpeed += FRICTION_SPEED;
@@ -206,14 +223,12 @@ float Player::get_friction()
                 xSpeed = 0;
             }
         }
-
-    return xSpeed;
 }
 
 // STUFF TO IMPLEMENT LATER !!
 
 // SPEED FOR SLOPES
-float Player::get_groundSpeed(int input)
+void Player::setGroundSpeed(int input, Player &player)
 {
     if(input == KEY_LEFT) { // pressing left
         while (groundSpeed > -TOP_SPEED) {
@@ -261,11 +276,10 @@ float Player::get_groundSpeed(int input)
             }
         }
     }
-
-    return groundSpeed;
 }
 
 // JUMPING
+/*
 void jumpVelocity(Player player)
 {
     player.xSpeed -= JUMP_FORCE * sin(player.groundAngle);
@@ -317,7 +331,7 @@ void airRotation(Player player)
     // depending on quadrant, smoothly return to 0
     player.groundAngle += 2.8125;
 }
-
+*/
 // MISC
 /*
 void underwater()

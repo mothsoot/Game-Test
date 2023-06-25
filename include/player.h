@@ -32,9 +32,10 @@ enum MODE {
 enum ACTION {
 	ACTION_NORMAL,
     ACTION_JUMP,
+	ACTION_CROUCH,
     ACTION_ROLL,
     ACTION_SKID,
-    ACTION_SPINDASH,
+    ACTION_SPINDASH
 };
 
 struct Position {
@@ -62,37 +63,47 @@ class Player{
 
 		Position pos;
 		void setPos(Position &pos);
-		Position getPos();
-
-		float ySpeed; // vertical velocity
-		float xSpeed; // horizontal velocity
-		float groundSpeed; // velocity along ground
+		Position getPos() { return pos; }
+		
 		float groundAngle; // angle on ground
-		float get_groundSpeed(int input); // IMPLEMENT FOR SLOPES
-		float get_xSpeed(int input);
-		float get_ySpeed();
-		float get_friction();
+
+		void setxSpeed(int input, Player &player);
+		void setFriction(Player &player);
+		float getxSpeed() { return xSpeed; }
+		void setySpeed(int input, Player &player);
+		float getySpeed() { return ySpeed; }
+		void setGroundSpeed(int input, Player &player); // IMPLEMENT FOR SLOPES
+		float getGroundSpeed() { return groundSpeed; }
 
 		int hRadius = 19; // 14 when jump/roll
 		int wRadius = 9; // 7 when jump/roll
 		int pushRadius = 10;
 
-		int mode = FLOOR;
-		void getMode(Player &player);
+		void setMode(Player &player);
+		int getMode() { return mode; }
 
-		int action;
+		int setAction();
+		int getAction() { return action; }
 
 		bool airborne = false;
 		bool rolling = false;
 
 		void setHitbox(Hitbox &hitbox);
-		Hitbox getHitbox();
+		Hitbox getHitbox() { return hitbox; }
 
 		//Collision collisions;
 
 		SDL_Rect sprite = {0, 0, 29, 39};
+		SDL_Rect setSprite(int input);
 
 	private:
+		float xSpeed; // horizontal velocity
+		float ySpeed; // vertical velocity
+		float groundSpeed; // velocity along ground
+		
+		int mode = FLOOR; // mode for collisions
+		int action;
+
 		Hitbox hitbox;
 };
 

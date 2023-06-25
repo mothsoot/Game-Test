@@ -20,14 +20,10 @@ const int SCREEN_HEIGHT = 480;
 enum KEY_INPUT {KEY_LEFT = 1, KEY_RIGHT = 2, KEY_UP = 3, KEY_DOWN = 4, KEY_QUIT = 5};
 
 // sprite directions
-#define SPRITE_LEFT {29, 0, 29, 39}; // x coord, y coord, image width, image height
-#define SPRITE_RIGHT {0, 0, 29, 39};
-#define SPRITE_UP_LEFT {29 * 3, 0, 29, 39};
-#define SPRITE_UP_RIGHT {29 * 2, 0, 29, 39};
-#define SPRITE_DOWN_LEFT {29 * 5, 0, 29, 39};
-#define SPRITE_DOWN_RIGHT {29 * 4, 0, 29, 39};
-#define SPRITE_SKID_LEFT {29 * 6, 0, 29, 39};
-#define SPRITE_SKID_RIGHT {29 * 7, 0, 20, 39};
+#define SPRITE {0, 0, 29, 39}; // x coord, y coord, image width, image height
+#define SPRITE_UP {29, 0, 29, 39};
+#define SPRITE_DOWN {29 * 2, 0, 29, 39};
+#define SPRITE_SKID {29 * 3, 0, 29, 39};
 
 struct Tile {
 	float angle; // 0-256 (0-FF in hex)

@@ -10,18 +10,17 @@ int main(int argc, char* args[])
 	SDL_Renderer* renderer;
 	SDL_Surface* image;
 	SDL_Texture* texture;
-	//if(!startUp(window, renderer, image, texture)) {
-	//	cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
-	//	return 0;
-	//}
 
-	startUp(window, renderer, image, texture);
-	
+	if(!startUp(window, renderer, image, texture)) {
+		cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
+		return 0;
+	}
+
 	// initialize player
 	Player player;
 
+	// initialize timer
 	Timer timer;
-
 	timer.start();
 
 	// handle events
@@ -57,6 +56,7 @@ int main(int argc, char* args[])
 		// update screen
 		SDL_RenderPresent(renderer);
 		
+		// delay for frame rate
 		SDL_Delay(16);
 	}
 	
@@ -68,42 +68,35 @@ int main(int argc, char* args[])
 
 void handleEvent(SDL_Event e, Player &player)
 {
-	static int direction;
-
     // key pressed
 	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
         switch(e.key.keysym.sym) {
             case SDLK_UP:
-				player.ySpeed -= ACCEL_SPEED;
+				player.setySpeed(KEY_UP, player);
 
 				// sprite
-				if(direction < 0) {
-					player.sprite = SPRITE_UP_LEFT;
-				} else {
-					player.sprite = SPRITE_UP_RIGHT;
-				}
+				player.sprite = SPRITE_UP;
 				break;
 
             case SDLK_DOWN:
-				player.ySpeed += ACCEL_SPEED;
+				player.setySpeed(KEY_DOWN, player);
+				
 				// sprite
-				if(direction < 0) {
-					player.sprite = SPRITE_DOWN_LEFT;
-				} else {
-					player.sprite = SPRITE_DOWN_RIGHT;
-				}
+				player.sprite = SPRITE_DOWN;
 				break;
 
             case SDLK_LEFT:
-				player.sprite = SPRITE_LEFT;
-				direction = -1;
-				player.xSpeed = player.get_xSpeed(KEY_LEFT);
+				player.sprite = SPRITE;
+				player.flipSprite = true;
+
+				player.setxSpeed(KEY_LEFT, player);
 				break;
 
             case SDLK_RIGHT:
-				player.sprite = SPRITE_RIGHT;
-				direction = 1;
-				player.xSpeed = player.get_xSpeed(KEY_RIGHT);
+				player.sprite = SPRITE;
+				player.flipSprite = false;
+
+				player.setxSpeed(KEY_RIGHT, player);
 				break;
 		}
 	}
@@ -111,7 +104,7 @@ void handleEvent(SDL_Event e, Player &player)
     // key released
 	// if this frame receives no input
     if (e.type == SDL_KEYUP && e.key.repeat == 0) {
-		player.xSpeed = player.get_friction();
+		player.setFriction(player);
 	}
 }
 

@@ -2,10 +2,13 @@
     "cSpell.words": [
         "decel",
         "dstrect",
+        "getx",
+        "gety",
         "hitboxes",
         "rolldown",
         "rollup",
         "SDLK",
+        "sety",
         "SPINDASH",
         "srcrect",
         "subpixels",
