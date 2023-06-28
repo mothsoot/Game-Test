@@ -5,6 +5,7 @@
         "getx",
         "gety",
         "hitboxes",
+        "LWALL",
         "rolldown",
         "rollup",
         "SDLK",

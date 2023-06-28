@@ -20,7 +20,7 @@ void Player::update()
     if(rolling == true) {
     // adjust groundSpeed based on groundAngle
     // isJump();
-    // get_groundSpeed();
+    // setGroundSpeed();
         // adjust groundSpeed based on input + friction & accel/decel
     // wallCollision();
     // setCamera();
@@ -47,7 +47,7 @@ void Player::update()
     else {
     // check for special actions (balancing, etc.)
     // isSpinDash();
-    // adjust ground_speed based on groundAngle
+    // adjust groundSpeed based on groundAngle
     // isJump();
     // adjust groundSpeed based on input + friction & accel/decel
     // wallCollision();
@@ -92,7 +92,7 @@ void Player::move(float time, Player &player)
 
 void Player::setPos(Position &pos)
 {
-    pos.x = 5;
+    pos.x = 100;
     pos.y = 5;
 }
 
@@ -144,85 +144,118 @@ void Player::setMode(Player &player)
     if(0 <= groundAngle <= 45 || 315 <= groundAngle <= 360) {
         mode = FLOOR;
     } else if(46 <= groundAngle <= 134) {
-        mode = LEFT_WALL;
+        mode = LWALL;
     } else if(135 <= groundAngle <= 225) {
         mode = CEILING;
     } else if(226 <= groundAngle <= 314) {
-        mode = RIGHT_WALL;
+        mode = RWALL;
     }
 }
 
-void Player::setxSpeed(int input, Player &player)
+void Player::setxSpeed(SDL_Event e, Player &player)
 {
-    //x = player.groundSpeed * cos(player.groundAngle);
+    //xSpeed = player.groundSpeed * cos(player.groundAngle);
 
-    switch (input) {
-        case KEY_LEFT: // pressing left
+    switch (e.key.keysym.sym) {
+        case SDLK_LEFT: // pressing left
+            /*
             if(xSpeed > 0) { // moving right
-                xSpeed -= DECEL_SPEED;
-
                 sprite = SPRITE_SKID;
                 flipSprite = false;
+
+                xSpeed -= -DECEL_SPEED;
 
                 // quick turnaround
                 if(xSpeed <= 0) {
                     xSpeed = -0.5;
                 }
-		    } else if(xSpeed >= 0) { // moving left
+            */
+		    // } else if(xSpeed <= 0) { // moving left
+                sprite = SPRITE;
+                flipSprite = false;
+
                 xSpeed -= ACCEL_SPEED;
 
                 if(xSpeed <= -TOP_SPEED) {
 				    xSpeed = -TOP_SPEED; // limit
                 }
-            }
+            /*
+            } else if(xSpeed == 0) {
+                // sprite = SPRITE_STAND;
+                // flipSprite = true;
+
+                xSpeed -= ACCEL_SPEED;
+            }*/
             break;
 
-    case KEY_RIGHT: // pressing right
-        if(xSpeed < 0) { // moving left
-			xSpeed += DECEL_SPEED;
+        case SDLK_RIGHT: // pressing right
+            /*
+            if(xSpeed < 0) { // moving left
+                sprite = SPRITE_SKID;
+                flipSprite = true;
 
-			sprite = SPRITE_SKID;
-            flipSprite = true;
+                xSpeed -= DECEL_SPEED;
 
-            // quick turnaround
-			if(xSpeed >= 0) {
-				xSpeed = 0.5;
-			}
-		} else if(xSpeed >= 0) { // moving right
-			xSpeed += ACCEL_SPEED;
+                // quick turnaround
+                if(xSpeed >= 0) {
+                    xSpeed = 0.5;
+                }
+            */
+		    // } else if(xSpeed >= 0) { // moving right
+                sprite = SPRITE;
+                flipSprite = false;
 
-			if(xSpeed >= TOP_SPEED) {
-				xSpeed = TOP_SPEED; // limit
-			}
-		}
-        break;
+                xSpeed += ACCEL_SPEED;
+
+                if(xSpeed >= TOP_SPEED) {
+				    xSpeed = TOP_SPEED; // limit
+                }
+            /*
+            } else if(xSpeed == 0) {
+                // sprite = SPRITE_STAND;
+                // flipSprite = false;
+
+                xSpeed += ACCEL_SPEED;
+            }
+            */
+            break;
     }
 }
 
-void Player::setySpeed(int input, Player &player)
+void Player::setySpeed(SDL_Event e, Player &player)
 {
     // ySpeed = groundSpeed * -sin(groundAngle);
     
-    if(input == KEY_UP) {
-        ySpeed -= ACCEL_SPEED;
-    } else if(input == KEY_DOWN) {
-        ySpeed += ACCEL_SPEED;
+    switch(e.key.keysym.sym) {
+        case SDLK_UP:
+            sprite = SPRITE_UP;
+
+            ySpeed -= ACCEL_SPEED;
+            break;
+
+        case SDLK_DOWN:
+            sprite = SPRITE_DOWN;
+
+            ySpeed += ACCEL_SPEED;
+            break;
     }
 }
 
 void Player::setFriction(Player &player)
 {
 	if(xSpeed < 0) { // moving left
-            xSpeed += FRICTION_SPEED;
-            if(xSpeed >= 0) {
-                xSpeed = 0;
-            }
-        } else if(xSpeed > 0) { // moving right
-            xSpeed -= FRICTION_SPEED;
-            if(xSpeed <= 0) {
-                xSpeed = 0;
-            }
+        xSpeed += FRICTION_SPEED;
+
+        if(xSpeed >= 0) {
+            xSpeed = 0;
         }
+    } else if(xSpeed > 0) { // moving right
+        xSpeed -= FRICTION_SPEED;
+
+        if(xSpeed <= 0) {
+            xSpeed = 0;
+        }
+    }
 }
 
 // STUFF TO IMPLEMENT LATER !!
@@ -230,8 +263,9 @@ void Player::setFriction(Player &player)
 // SPEED FOR SLOPES
 void Player::setGroundSpeed(int input, Player &player)
 {
-    if(input == KEY_LEFT) { // pressing left
-        while (groundSpeed > -TOP_SPEED) {
+    switch (input) {
+        case KEY_LEFT: // pressing left
+        while (groundSpeed >= -TOP_SPEED) {
             if(groundSpeed > 0) { // moving right
                 groundSpeed -= DECEL_SPEED;
                 if(groundSpeed <= 0) {
@@ -244,26 +278,25 @@ void Player::setGroundSpeed(int input, Player &player)
                 }
             }
         }
-    }
+        break;
 
-    if(input == KEY_RIGHT) { // pressing right
-        while (groundSpeed < TOP_SPEED) {
+        case KEY_RIGHT: // pressing right
+        while (groundSpeed <= TOP_SPEED) {
             if(groundSpeed < 0) { // moving left
                 groundSpeed += DECEL_SPEED;
                 if(groundSpeed >= 0) {
                     groundSpeed = 0.5;
                 }
-            } else if(groundSpeed > TOP_SPEED) { // moving right
+            } else if(groundSpeed <= TOP_SPEED) { // moving right
                 groundSpeed += ACCEL_SPEED;
                 if(groundSpeed >= TOP_SPEED) {
                     groundSpeed = TOP_SPEED; // limit
                 }
             }
         }
-    }
+        break;
 
-    // friction
-    if(input == NULL) {
+        case NULL:
         if(groundSpeed < 0) { 
             groundSpeed += FRICTION_SPEED;
             if(groundSpeed >= 0) {
@@ -275,6 +308,7 @@ void Player::setGroundSpeed(int input, Player &player)
                 groundSpeed = 0;
             }
         }
+        break;
     }
 }
 

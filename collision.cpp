@@ -157,7 +157,7 @@ bool Collision::wallCollision(Player player)
         }
     }
 
-    if(player.groundSpeed > 0) { // moving left
+    if(player.groundSpeed < 0) { // moving left
         Sensor wall = sensorF(player);
 
         if() { // check if collide with wall
@@ -189,7 +189,7 @@ void hitWall(Sensor wall, Player &player)
         }
     }
 
-    if(player.mode == RIGHT_WALL || player.mode == LEFT_WALL) {
+    if(player.mode == RWALL || player.mode == LWALL) {
         if(wall.distance > 0) {
             // ignore
             // no collision
@@ -226,6 +226,34 @@ Sensor Collision::sensorA(Player player)
     Sensor A;
     A.pos.x = player.pos.x - player.wRadius;
     A.pos.y = player.pos.y - player.hRadius;
+
+    // A.detected_height = A.pos.x - tile.pos.x;
+
+    if(1 <= A.detected_height <= 15) {
+        // good, no more checks needed
+    }
+
+    // surface is likely in adjacent tile
+    else if(A.detected_height == 16) {
+        // sensor regression
+
+        // check UP by one solid tile
+        if(A.detected_height == 0) { // or if empty
+            // return distance to first tile
+        }
+    }
+    else if(A.detected_height == 0) { // or if emtpy
+        // sensor extension
+
+        // check DOWN by one solid tile
+        if(A.detected_height == 0) { // or if empty
+            // no surface found
+            // return distance to second tile
+        }
+    }
+
+    // calculate distance to tile found
+
 
     return A;
 }

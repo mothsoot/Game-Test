@@ -13,9 +13,6 @@ using std::endl;
 #include "player.h"
 #include "timer.h"
 
-const int SCREEN_WIDTH = 640;
-const int SCREEN_HEIGHT = 480;
-
 // input directions
 enum KEY_INPUT {KEY_LEFT = 1, KEY_RIGHT = 2, KEY_UP = 3, KEY_DOWN = 4, KEY_QUIT = 5};
 
@@ -24,12 +21,6 @@ enum KEY_INPUT {KEY_LEFT = 1, KEY_RIGHT = 2, KEY_UP = 3, KEY_DOWN = 4, KEY_QUIT 
 #define SPRITE_UP {29, 0, 29, 39};
 #define SPRITE_DOWN {29 * 2, 0, 29, 39};
 #define SPRITE_SKID {29 * 3, 0, 29, 39};
-
-struct Tile {
-	float angle; // 0-256 (0-FF in hex)
-
-	bool flagged;
-};
 
 void handleEvent(SDL_Event e, Player &player);
 

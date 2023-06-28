@@ -4,9 +4,9 @@
 //#include "collision.h"
 
 // POSITIONS & SPEED
-const float ACCEL_SPEED = 500; // 0.046875; // 12 subpixels
-const float DECEL_SPEED = 100; // 0.5; // 128 subpixels
-const float FRICTION_SPEED = 500; // 0.046875; // 12 subpixels
+const float ACCEL_SPEED = 100; // 0.046875; // 12 subpixels
+const float DECEL_SPEED = 500; // 0.5; // 128 subpixels
+const float FRICTION_SPEED = 100; // 0.046875; // 12 subpixels
 const float TOP_SPEED = 500; // 6
 
 const float GRAVITY_FORCE = 0.21875; // 56 subpixels
@@ -22,11 +22,11 @@ const float SLOPE_FACTOR = 0.125; // 32 subpixels
 const float SLOPE_FACTOR_ROLLUP = 0.078125; // 20 subpixels
 const float SLOPE_FACTOR_ROLLDOWN = 0.3125; // 80 subpixels
 
-enum MODE {
+enum COLLISION_MODE {
 	FLOOR,
-	RIGHT_WALL,
+	RWALL,
 	CEILING,
-	LEFT_WALL
+	LWALL
 };
 
 enum ACTION {
@@ -50,13 +50,14 @@ struct Hitbox {
 	int wRadius;
 };
 
-class Player{
+class Player {
 	public:
 		Player();
 		~Player();
 
 		void update();
 		void move(float time, Player &player);
+		// void draw();
 
 		SDL_Rect animation(int input, Player &player);
 		bool flipSprite;
@@ -67,10 +68,12 @@ class Player{
 		
 		float groundAngle; // angle on ground
 
-		void setxSpeed(int input, Player &player);
+		void setSpeed_TEMP(SDL_Event e, Player &player);
+
+		void setxSpeed(SDL_Event e, Player &player);
 		void setFriction(Player &player);
 		float getxSpeed() { return xSpeed; }
-		void setySpeed(int input, Player &player);
+		void setySpeed(SDL_Event e, Player &player);
 		float getySpeed() { return ySpeed; }
 		void setGroundSpeed(int input, Player &player); // IMPLEMENT FOR SLOPES
 		float getGroundSpeed() { return groundSpeed; }
@@ -82,7 +85,7 @@ class Player{
 		void setMode(Player &player);
 		int getMode() { return mode; }
 
-		int setAction();
+		void setAction(Player &player);
 		int getAction() { return action; }
 
 		bool airborne = false;
@@ -97,11 +100,12 @@ class Player{
 		SDL_Rect setSprite(int input);
 
 	private:
-		float xSpeed; // horizontal velocity
-		float ySpeed; // vertical velocity
+		float xSpeed = 0; // horizontal velocity in pixels/frame
+		float ySpeed = 0; // vertical velocity
 		float groundSpeed; // velocity along ground
 		
-		int mode = FLOOR; // mode for collisions
+		int mode;
+
 		int action;
 
 		Hitbox hitbox;

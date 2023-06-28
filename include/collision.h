@@ -5,8 +5,19 @@
 struct Position;
 class Player;
 
+enum COLLISION_MODE {
+	FLOOR,
+	RWALL,
+	CEILING,
+	LWALL
+};
+
 struct Sensor {
     Position pos;
+
+    bool collided;
+
+    int detected_height;
 
     int distance;
     float tileAngle;
@@ -28,4 +39,7 @@ class Collision {
         Sensor sensorD(Player player);
         Sensor sensorE(Player player);
         Sensor sensorF(Player player);
+
+    private:
+
 };
