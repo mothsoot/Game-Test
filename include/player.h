@@ -2,6 +2,8 @@
 
 #include "main.h"
 //#include "collision.h"
+#include "screen.h"
+#include "object.h"
 
 // POSITIONS & SPEED
 const float ACCEL_SPEED = 100; // 0.046875; // 12 subpixels
@@ -38,77 +40,38 @@ enum ACTION {
     ACTION_SPINDASH
 };
 
-struct Position {
-	int x;
-	int y;
-};
-
-struct Hitbox {
-	Position pos;
-
-	int hRadius;
-	int wRadius;
-};
-
-class Player {
+class Player : public Object {
 	public:
-		Player();
+		Player(); // : Object();
 		~Player();
 
 		void update();
 		void move(float time, Player &player);
 		// void draw();
 
-		SDL_Rect animation(int input, Player &player);
-		bool flipSprite;
-
-		Position pos;
-		void setPos(Position &pos);
-		Position getPos() { return pos; }
-		
-		float groundAngle; // angle on ground
-
-		void setSpeed_TEMP(SDL_Event e, Player &player);
-
 		void setxSpeed(SDL_Event e, Player &player);
-		void setFriction(Player &player);
-		float getxSpeed() { return xSpeed; }
 		void setySpeed(SDL_Event e, Player &player);
-		float getySpeed() { return ySpeed; }
-		void setGroundSpeed(int input, Player &player); // IMPLEMENT FOR SLOPES
-		float getGroundSpeed() { return groundSpeed; }
+		void setFriction(Player &player);
+		void setGroundSpeed(SDL_Event e, Player &player); // IMPLEMENT FOR SLOPES
 
+		// COLLISIONS
 		int hRadius = 19; // 14 when jump/roll
 		int wRadius = 9; // 7 when jump/roll
 		int pushRadius = 10;
 
-		void setMode(Player &player);
-		int getMode() { return mode; }
-
-		void setAction(Player &player);
-		int getAction() { return action; }
-
-		bool airborne = false;
-		bool rolling = false;
-
-		void setHitbox(Hitbox &hitbox);
-		Hitbox getHitbox() { return hitbox; }
-
-		//Collision collisions;
-
+		// SPRITE
 		SDL_Rect sprite = {0, 0, 29, 39};
 		SDL_Rect setSprite(int input);
+		bool flipSprite;
 
-	private:
-		float xSpeed = 0; // horizontal velocity in pixels/frame
-		float ySpeed = 0; // vertical velocity
-		float groundSpeed; // velocity along ground
-		
-		int mode;
+		float groundSpeed;
+        float groundAngle;
 
 		int action;
 
-		Hitbox hitbox;
+	private:
+        float xSpeed;
+        float ySpeed;
 };
 
 // air

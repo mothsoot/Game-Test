@@ -6,9 +6,6 @@ using std::cerr;
 using std::endl;
 #include <cmath>
 
-#include <SDL.h>
-#include <SDL_image.h>
-
 #include "screen.h"
 #include "player.h"
 #include "timer.h"
@@ -23,5 +20,3 @@ enum KEY_INPUT {KEY_LEFT = 1, KEY_RIGHT = 2, KEY_UP = 3, KEY_DOWN = 4, KEY_QUIT 
 #define SPRITE_SKID {29 * 3, 0, 29, 39};
 
 void handleEvent(SDL_Event e, Player &player);
-
-int getInput(SDL_Event e);

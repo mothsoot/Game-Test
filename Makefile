@@ -3,7 +3,7 @@
 #and may not be redistributed without written permission.
 
 #OBJS specifies which files to compile as part of the project
-OBJS =  main.cpp player.cpp screen.cpp timer.cpp
+OBJS =  main.cpp player.cpp screen.cpp timer.cpp object.cpp
 
 #CC specifies which compiler we're using
 CC = g++
@@ -29,7 +29,7 @@ OBJ_NAME = program
 #all : $(OBJS)
 #	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
 
-program: main.cpp player.cpp screen.cpp timer.cpp
+program: $(OBJS)
 	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o program
 
 #main.o: main.cpp main.h player.h timer.h screen.h

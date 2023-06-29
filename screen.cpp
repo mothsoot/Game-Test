@@ -1,6 +1,6 @@
 #include "screen.h"
 
-bool startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, SDL_Texture* &texture)
+bool startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture)
 {
 	bool success = true;
 
@@ -21,11 +21,11 @@ bool startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Surface* &image, 
                 cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << endl;
                 success = false;
             } else {
-				image = SDL_LoadBMP("sonic-sprites.bmp");
-				texture = SDL_CreateTextureFromSurface(renderer, image);
+				texture = loadTexture(renderer);
+				//image = SDL_LoadBMP("sonic-sprites.bmp");
+				//texture = SDL_CreateTextureFromSurface(renderer, image);
 
-				SDL_FreeSurface(image);
-				SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
+				//SDL_FreeSurface(image);
 			}
 		}
 	}
@@ -44,7 +44,18 @@ void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &textur
 	SDL_Quit();
 }
 
-void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player)
+void prep(SDL_Renderer* renderer)
+{
+	SDL_RenderClear(renderer);
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
+}
+
+void present(SDL_Renderer* renderer)
+{
+	SDL_RenderPresent(renderer);
+}
+
+void drawPlayer(SDL_Renderer* renderer, SDL_Texture* texture, Player player)
 {
 	SDL_RendererFlip flip;
 	if(player.flipSprite == true) {
@@ -57,6 +68,18 @@ void render(SDL_Renderer* renderer, SDL_Texture* texture, Player player)
 	// destination rectangle
 	SDL_Rect dstrect = {player.pos.x, player.pos.y, 29, 39}; // x coord, y coord, image width, image height
 
-	SDL_RenderClear(renderer);
 	SDL_RenderCopyEx(renderer, texture, &player.sprite, &dstrect, player.groundAngle, NULL, flip);
+}
+
+SDL_Texture *loadTexture(SDL_Renderer* renderer) //, char* filename)
+{
+	SDL_Surface *image;
+	SDL_Texture *texture;
+
+	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", "sonic-sprites.bmp");
+
+	image = SDL_LoadBMP("sonic-sprites.bmp");
+	texture = SDL_CreateTextureFromSurface(renderer, image);
+
+	return texture;
 }

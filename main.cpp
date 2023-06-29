@@ -8,10 +8,9 @@ int main(int argc, char* args[])
 	// initialize SDL
 	SDL_Window* window;
 	SDL_Renderer* renderer;
-	SDL_Surface* image;
 	SDL_Texture* texture;
 
-	if(!startUp(window, renderer, image, texture)) {
+	if(!startUp(window, renderer, texture)) {
 		cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
 		return 0;
 	}
@@ -35,6 +34,8 @@ int main(int argc, char* args[])
 	// update
 	while (!quit)
 	{
+		prep(renderer);
+
 		SDL_Event e;
 
 		// PollEvent returns 1 if there is an event in queue
@@ -55,10 +56,9 @@ int main(int argc, char* args[])
         stepTimer.start();
 
 		// render sprite at (x, y)
-		render(renderer, texture, player);
+		drawPlayer(renderer, texture, player);
 
-		// update screen
-		SDL_RenderPresent(renderer);
+		present(renderer);
 		
 		// delay for frame rate
 		SDL_Delay(16);

@@ -1,6 +1,10 @@
 #pragma once;
 
-#include "main.h"
+#include "screen.h"
+
+// TILE 16x16
+// CHUNK 256x256 pixel chunks
+// BLOCK 16x16 pixel blocks
 
 enum TILE_TYPE {
     TOP_SOLID, // downward sensors
@@ -10,20 +14,30 @@ enum TILE_TYPE {
 
 class Tile {
     public:
+        SDL_Rect sprite;
+        SDL_RendererFlip flip;
+
+        // collision data
+        int type;
+
+        int hArray[16]; // left to right
+        int wArray[16]; // top to bottom
+
+        float angle; // 0-256 (0-FF in hex)
         void setAngle(Tile &tile);
         float getAngle() { return angle; }
 
+        bool flagged;
         void setFlagged(Tile &tile);
 
     private:
-	    float angle; // 0-256 (0-FF in hex)
-        bool flagged;
+    
 };
 
 // FOR IN .CPP FILE BUT DONT WANT TO MAKE YET
 void Tile::setAngle(Tile &tile)
 {
-/*    switch(player.cMode) {
+/*    switch(player.mode) {
         case CMODE_FLOOR:
             return floorAngle;
             break;
