@@ -1,6 +1,7 @@
 #pragma once
 
-//#include "main.h"
+#include <SDL.h>
+//#include "screen.h"
 
 enum OBJECT_TYPE {
     TYPE_UNKNOWN,
@@ -13,27 +14,37 @@ struct Position {
 	int y;
 };
 
+struct Radius {
+    int h;
+    int w;
+    int push;
+};
+
 struct Hitbox {
 	Position pos;
 
-	int hRadius;
-	int wRadius;
+	Radius radius;
 };
 
 class Object {
     public:
-        Object() {}
+        Object();
         ~Object() {}
 
+        //virtual void create();
+        //virtual void draw();
         //virtual void update();
-        // virtual void draw();
 
         Position pos;
-        void setPos(Position &pos);
+        Position setPos(int x, int y);
+
+        SDL_Rect sprite;
+        bool flipSprite;
 
         // Collision collision;
-        int hRadius;
-        int wRadius;
+        Radius radius;
+        Radius setRadius(int h, int w);
+        Radius setRadius(int h, int w, int push);
 
         Hitbox hitbox;
         //void setHitbox(Player player, Hitbox &hitbox);

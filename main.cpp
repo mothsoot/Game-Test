@@ -2,25 +2,20 @@
 
 int main(int argc, char* args[])
 {
-	// variables
+	// game running flag
     bool quit = false;
-	
-	// initialize SDL
-	SDL_Window* window;
-	SDL_Renderer* renderer;
-	SDL_Texture* texture;
 
-	if(!startUp(window, renderer, texture)) {
+	// initialize screen
+	Screen screen;
+
+	if(!screen.startUp()) {
 		cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
 		return 0;
 	}
 
-	// universal timer
-	Timer gameTimer;
-	gameTimer.start();
-
 	// initialize player
 	Player player;
+	player.create();
 
 	// initialize timer
 	Timer stepTimer;
@@ -34,7 +29,7 @@ int main(int argc, char* args[])
 	// update
 	while (!quit)
 	{
-		prep(renderer);
+		screen.prep();
 
 		SDL_Event e;
 
@@ -45,41 +40,28 @@ int main(int argc, char* args[])
 			if(e.type == SDL_QUIT) {
 				quit = true;
 			}
-			handleEvent(e, player);
+			//handleEvent(e, player);
+			player.update(e);
 		}
 
 		float time = stepTimer.getTicks() / 1000.f;
 
-		player.move(time, player);
+		player.move(time);
 
 		// restart timer
         stepTimer.start();
 
 		// render sprite at (x, y)
-		drawPlayer(renderer, texture, player);
+		player.draw(screen);
 
-		present(renderer);
+		screen.present();
 		
 		// delay for frame rate
 		SDL_Delay(16);
 	}
-	
+
 	// shutdown SDL
-	shutDown(window, renderer, texture);
+	screen.shutDown();
 
 	return 0;
-}
-
-void handleEvent(SDL_Event e, Player &player)
-{
-    // key pressed
-	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
-		player.setxSpeed(e, player);
-	}
-
-    // key released
-	// if this frame receives no input
-    else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
-		player.setFriction(player);
-	}
 }

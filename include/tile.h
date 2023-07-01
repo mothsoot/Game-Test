@@ -2,39 +2,72 @@
 
 #include "screen.h"
 
-// TILE 16x16
-// CHUNK 256x256 pixel chunks
-// BLOCK 16x16 pixel blocks
-
 enum TILE_TYPE {
-    TOP_SOLID, // downward sensors
-    SIDE_BOTTOM_SOLID, // sideways/upward sensors
-    FULL_SOLID // all sensors
+    TILE_NONE,
+    TILE_TOPSOLID, // downward sensors
+    TILE_SIDEBOTTOMSOLID, // sideways/upward sensors
+    TILE_FULLSOLID // all sensors
 };
 
 class Tile {
+    // 8x8 pixels
     public:
-        SDL_Rect sprite;
-        SDL_RendererFlip flip;
+        Tile();
+        ~Tile() {}
+
+        Position pos;
+
+        int tileID;
+        int typeID;
+        float tileAngle; // 0-256 (0-FF in hex)
+        
+        void setID(Tile &tile);
+        void setAngle(Tile &tile);
 
         // collision data
-        int type;
-
         int hArray[16]; // left to right
         int wArray[16]; // top to bottom
 
-        float angle; // 0-256 (0-FF in hex)
-        void setAngle(Tile &tile);
-        float getAngle() { return angle; }
-
         bool flagged;
         void setFlagged(Tile &tile);
+
+        SDL_Rect sprite;
+        SDL_RendererFlip flip;
 
     private:
     
 };
 
+class Block {
+    // 16x16 pixels
+    public:
+        Block();
+        ~Block() {}
+
+        int blockID;
+};
+
+class Chunk {
+    // 256x256 pixels (S1/SCD), 128x128 pixels (S2/S3/S&K)
+    public:
+        Chunk();
+        ~Chunk() {}
+
+        int chunkID;
+};
+
 // FOR IN .CPP FILE BUT DONT WANT TO MAKE YET
+Tile::Tile()
+{
+    tileID = 0;
+    typeID = TILE_NONE;
+}
+
+void Tile::setID(Tile &tile)
+{
+    
+}
+
 void Tile::setAngle(Tile &tile)
 {
 /*    switch(player.mode) {
@@ -58,7 +91,17 @@ void Tile::setAngle(Tile &tile)
 
 void Tile::setFlagged(Tile &tile)
 {
-    if(angle == 255) {
+    if(tileAngle == 255) {
         flagged == true;
     }
+}
+
+Block::Block()
+{
+    blockID = 0;
+}
+
+Chunk::Chunk()
+{
+    chunkID = 0;
 }

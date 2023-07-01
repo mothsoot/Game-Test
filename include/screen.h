@@ -2,6 +2,7 @@
 
 #include <SDL.h>
 #include <SDL_image.h>
+#include <SDL_ttf.h>
 
 #include "main.h"
 
@@ -23,15 +24,26 @@ const int CAMERA_TOP_SPEED = 16;
 // forward declaration
 class Player;
 
-bool startUp(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture);
-void drawPlayer(SDL_Renderer* renderer, SDL_Texture* texture, Player player);
-void shutDown(SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture);
+class Screen {
+    public:
+        SDL_Window* window = nullptr;
+        SDL_Texture* texture = nullptr;
+        SDL_Renderer* renderer = nullptr;
 
-void prep(SDL_Renderer* renderer);
-void present(SDL_Renderer* renderer);
+        bool startUp();
+        void draw(int x, int y, SDL_Rect sprite, bool flipSprite);
+        void shutDown();
 
-SDL_Texture *loadTexture(SDL_Renderer* renderer);
+        void drawText();
 
-// void loadSprites();
-// void drawSprite();
-// void drawTile();
+        void prep();
+        void present();
+
+        SDL_Texture* loadSprites();
+        SDL_Texture* loadFromRenderedText(std::string textureText, SDL_Color textColor);
+
+        SDL_Color textColour = {0, 0, 0};
+
+    private:
+
+};

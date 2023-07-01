@@ -1,22 +1,21 @@
 #include "player.h"
 
 // constructor
-Player::Player()
+void Player::create()
 {
     type = TYPE_PLAYER;
+    action = ACTION_NORMAL;
+    mode = FLOOR;
 
-    setPos(pos);
+    setPos(5,5);
+    setRadius(19, 9, 10); // height, width, push. 14, 7, 10 when jump/roll
     xSpeed = 0;
     ySpeed = 0;
+
+    sprite = SPRITE;
 }
 
-// destructor
-Player::~Player()
-{
-    // nothing to do here
-}
-
-void Player::update()
+void Player::update(SDL_Event e)
 {
     // ROLLING
     //if(rolling == true) {
@@ -46,36 +45,44 @@ void Player::update()
     //}
 
     // NORMAL
-    //else {
+    if(action == ACTION_NORMAL) {
     // check for special actions (balancing, etc.)
     // isSpinDash();
     // adjust groundSpeed based on groundAngle
     // isJump();
-    // adjust groundSpeed based on input + friction & accel/decel
+    // setGroundSpeed(e, player);
+        // adjust groundSpeed based on input + friction & accel/decel
     // wallCollision();
         // add xSpeed & ySpeed to sensor position here
     // isRoll();
     // setCamera();
-    // movePlayer();
+    
+    // HANDLE EVENT
+    // key pressed
+	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+		setxSpeed(e);
+		setySpeed(e);
+	}
+
+    // key released
+	// if this frame receives no input
+    else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
+		setFriction();
+	}
         // calculate xSpeed & ySpeed from groundSpeed & groundAngle
+    //move(time, player)
         // update xPos & yPos based on xSpeed & ySpeed
     // floorCollision();
         // update groundAngle
         // align sprite to ground
     // isSlipping()/isFalling();
         // if groundSpeed too low on walls/ceilings
-    //}
+    }
 
     // check hitboxes
 }
-/*
-void Player::setPos(Position &pos)
-{
-    pos.x = 100;
-    pos.y = 5;
-}*/
 
-void Player::move(float time, Player &player)
+void Player::move(float time)
 {
     // move left or right
     pos.x += xSpeed * time;
@@ -98,7 +105,12 @@ void Player::move(float time, Player &player)
     }
 }
 
-SDL_Rect Player::setSprite(int input)
+void Player::draw(Screen screen)
+{
+    screen.draw(pos.x, pos.y, sprite, flipSprite);
+}
+
+void Player::setSprite(int input)
 {
     switch(action) {
         case ACTION_NORMAL:
@@ -120,17 +132,19 @@ SDL_Rect Player::setSprite(int input)
             }
         case ACTION_SKID:
             sprite = SPRITE_SKID;
+            if(groundSpeed < 0) { // moving left
+                flipSprite = false;
+            } else if(groundSpeed > 0) { // moving right
+                flipSprite = true;
+            }
             break;
     }
-
-    return sprite;
 }
 
 // mode for collisions
-/*
-void Player::setMode(Player &player)
+void Player::setMode()
 {
-    if(0 <= groundAngle <= 45 || 315 <= groundAngle <= 360) {
+    if((0 <= groundAngle <= 45) || (315 <= groundAngle <= 360)) {
         mode = FLOOR;
     } else if(46 <= groundAngle <= 134) {
         mode = LWALL;
@@ -140,57 +154,53 @@ void Player::setMode(Player &player)
         mode = RWALL;
     }
 }
-*/
-void Player::setxSpeed(SDL_Event e, Player &player)
-{
-    //xSpeed = player.groundSpeed * cos(player.groundAngle);
 
+float Player::getxSpeed()
+{
+    xSpeed = groundSpeed * cos(groundAngle);
+    return xSpeed;
+}
+
+void Player::setxSpeed(SDL_Event e)
+{
     switch (e.key.keysym.sym) {
         case SDLK_LEFT: // pressing left
-            /*
+            
             if(xSpeed > 0) { // moving right
                 sprite = SPRITE_SKID;
                 flipSprite = false;
 
-                xSpeed -= -DECEL_SPEED;
+                xSpeed = 0; // += DECEL_SPEED;
 
-                // quick turnaround
+                /* // quick turnaround
                 if(xSpeed <= 0) {
                     xSpeed = -0.5;
-                }
-            */
-		    // } else if(xSpeed <= 0) { // moving left
+                } */
+		     } else if(xSpeed <= 0) { // moving left
                 sprite = SPRITE;
                 flipSprite = true;
 
-                xSpeed -= ACCEL_SPEED;
+                xSpeed += -ACCEL_SPEED;
 
                 if(xSpeed <= -TOP_SPEED) {
 				    xSpeed = -TOP_SPEED; // limit
                 }
-            /*
-            } else if(xSpeed == 0) {
-                // sprite = SPRITE_STAND;
-                // flipSprite = true;
-
-                xSpeed -= ACCEL_SPEED;
-            }*/
+            }
             break;
 
         case SDLK_RIGHT: // pressing right
-            /*
             if(xSpeed < 0) { // moving left
                 sprite = SPRITE_SKID;
                 flipSprite = true;
 
-                xSpeed -= DECEL_SPEED;
+                xSpeed = 0; // -= DECEL_SPEED;
 
-                // quick turnaround
+                /* // quick turnaround
                 if(xSpeed >= 0) {
                     xSpeed = 0.5;
-                }
-            */
-		    // } else if(xSpeed >= 0) { // moving right
+                }*/
+            
+		    } else if(xSpeed >= 0) { // moving right
                 sprite = SPRITE;
                 flipSprite = false;
 
@@ -199,38 +209,31 @@ void Player::setxSpeed(SDL_Event e, Player &player)
                 if(xSpeed >= TOP_SPEED) {
 				    xSpeed = TOP_SPEED; // limit
                 }
-            /*
-            } else if(xSpeed == 0) {
-                // sprite = SPRITE_STAND;
-                // flipSprite = false;
-
-                xSpeed += ACCEL_SPEED;
             }
-            */
             break;
     }
 }
 
-void Player::setySpeed(SDL_Event e, Player &player)
+float Player::getySpeed()
 {
-    // ySpeed = groundSpeed * -sin(groundAngle);
-    
+    ySpeed = groundSpeed * -sin(groundAngle);
+    return ySpeed;
+}
+
+void Player::setySpeed(SDL_Event e)
+{
     switch(e.key.keysym.sym) {
         case SDLK_UP:
             sprite = SPRITE_UP;
-
-            ySpeed -= ACCEL_SPEED;
             break;
 
         case SDLK_DOWN:
             sprite = SPRITE_DOWN;
-
-            ySpeed += ACCEL_SPEED;
             break;
     }
 }
 
-void Player::setFriction(Player &player)
+void Player::setFriction()
 {
 	if(xSpeed < 0) { // moving left
         xSpeed += FRICTION_SPEED;
@@ -250,97 +253,103 @@ void Player::setFriction(Player &player)
 // STUFF TO IMPLEMENT LATER !!
 
 // SPEED FOR SLOPES
-void Player::setGroundSpeed(SDL_Event e, Player &player)
+void Player::setGroundSpeed(SDL_Event e)
 {
     switch (e.key.keysym.sym) {
         case SDLK_LEFT: // pressing left
-        while (groundSpeed >= -TOP_SPEED) {
-            if(groundSpeed > 0) { // moving right
-                groundSpeed -= DECEL_SPEED;
-                if(groundSpeed <= 0) {
-                    groundSpeed = -0.5;
-                }
-            } else if(groundSpeed > -TOP_SPEED) { // moving left
-                groundSpeed -= ACCEL_SPEED;
-                if(groundSpeed <= -TOP_SPEED) {
-                    groundSpeed = -TOP_SPEED; // limit
+            while (groundSpeed >= -TOP_SPEED) {
+                if(groundSpeed > 0) { // moving right
+                    groundSpeed -= DECEL_SPEED;
+                    if(groundSpeed <= 0) {
+                        groundSpeed = -0.5;
+                    }
+                } else if(groundSpeed > -TOP_SPEED) { // moving left
+                    groundSpeed -= ACCEL_SPEED;
+                    if(groundSpeed <= -TOP_SPEED) {
+                        groundSpeed = -TOP_SPEED; // limit
+                    }
                 }
             }
-        }
-        break;
+            break;
 
         case SDLK_RIGHT: // pressing right
-        while (groundSpeed <= TOP_SPEED) {
-            if(groundSpeed < 0) { // moving left
-                groundSpeed += DECEL_SPEED;
-                if(groundSpeed >= 0) {
-                    groundSpeed = 0.5;
-                }
-            } else if(groundSpeed <= TOP_SPEED) { // moving right
-                groundSpeed += ACCEL_SPEED;
-                if(groundSpeed >= TOP_SPEED) {
-                    groundSpeed = TOP_SPEED; // limit
+            while (groundSpeed <= TOP_SPEED) {
+                if(groundSpeed < 0) { // moving left
+                    groundSpeed += DECEL_SPEED;
+                    if(groundSpeed >= 0) {
+                        groundSpeed = 0.5;
+                    }
+                } else if(groundSpeed <= TOP_SPEED) { // moving right
+                    groundSpeed += ACCEL_SPEED;
+                    if(groundSpeed >= TOP_SPEED) {
+                        groundSpeed = TOP_SPEED; // limit
+                    }
                 }
             }
-        }
-        break;
+            break;
     }
 }
 
 // JUMPING
 /*
-void jumpVelocity(Player player)
+void Player::jumpVelocity()
 {
-    player.xSpeed -= JUMP_FORCE * sin(player.groundAngle);
-    player.ySpeed -= JUMP_FORCE * cos(player.groundAngle);
+    // if player hits jump button, do this
+    xSpeed -= JUMP_FORCE * sin(groundAngle);
+    ySpeed -= JUMP_FORCE * cos(groundAngle);
 }
 
-void variableJumpHeight(int input, Player player)
+void Player::variableJumpHeight(SDL_Event e, Player &player)
 {
     // checked before updating player position & gravity is calculated
-    if(input == NULL) {
-        if(player.ySpeed < -4) {
-            player.ySpeed = -4;
-        }
+    switch (e.key.keysym.sym) {
+        case NULL:
+            if(ySpeed < -4) {
+                ySpeed = -4;
+            }
+            break;
     }
 }
 
 // AIRBORNE
-void airAcceleration(int input, Player player)
+void Player::airAcceleration(SDL_Event e)
 {
-    if(input == KEY_RIGHT) {
-        player.xSpeed -= AIR_ACCEL_SPEED;
-    }
-    if(input == KEY_LEFT) {
-        player.xSpeed += AIR_ACCEL_SPEED;
+    switch (e.key.keysym.sym) {
+        case SDLK_RIGHT:
+            xSpeed -= AIR_ACCEL_SPEED;
+            break;
+        case SDLK_LEFT:
+            xSpeed += AIR_ACCEL_SPEED;
+            break;
     }
 
-    if(player.xSpeed >= TOP_SPEED) {
-        player.xSpeed = TOP_SPEED;
+    if(xSpeed >= TOP_SPEED) {
+        xSpeed = TOP_SPEED;
     }
 }
 
-void gravity(Player player)
+void Player::gravity()
 {
     // for every step player is airborne
-    player.ySpeed += GRAVITY_FORCE;
+    ySpeed += GRAVITY_FORCE;
 }
 
-void airDrag(Player player)
+void Player::airDrag()
 {
     // calculated before gravity
-    if (player.ySpeed < 0 && player.ySpeed > -4) {
-        player.xSpeed = player.xSpeed - ((player.xSpeed / 0.125) / 256);
+    if(ySpeed < 0 && ySpeed > -4) {
+        xSpeed -= ((xSpeed / 0.125) / 256);
     }
 }
 
-void airRotation(Player player)
+void Player::airRotation()
 {
     // for every frame
     // depending on quadrant, smoothly return to 0
-    player.groundAngle += 2.8125;
+    groundAngle += 2.8125;
 }
 */
+
 // MISC
 /*
 void underwater()

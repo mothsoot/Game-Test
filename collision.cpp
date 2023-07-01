@@ -18,7 +18,7 @@ bool Collision::groundCollision(Player player)
         ground.tileAngle = B.tileAngle;
     }
 
-    if(player.airborne == false) {
+    if() // player isnt airborne
         if(ground.distance < -14 || ground.distance > 14) {
             // no collision
             return false;
@@ -31,7 +31,7 @@ bool Collision::groundCollision(Player player)
 
         if() { // check if tile is flagged
             // snap to nearest 90 degree
-            // snapped_angle = (round(Ground Angle / 90) mod 4) * 90;
+            // snapped_angle = (round(Ground Angle / 90) % 4) * 90;
             return true;
         } else {
             // player.groundAngle = ground.tileAngle;
@@ -93,7 +93,7 @@ void landingGround(Sensor ground, Player &player)
     player.airborne = false;
     // get tile angle landed on
     player.groundAngle = ground.tileAngle;
-        
+
     // shallow slope
     if(0 <= player.groundAngle <= 23 || 339 <= player.groundAngle <= 360) { // 255-240 & 15-0 in hex
         player.groundSpeed = player.xSpeed;
@@ -134,7 +134,7 @@ bool Collision::ceilingCollision(Player player)
         return false;
     } else {
         // collision
-        // player.pos.y -= ceiling.distance;
+        player.pos.y -= ceiling.distance;
         return true;
     }
 }
@@ -143,9 +143,10 @@ bool Collision::wallCollision(Player player)
 {
     // if collide with wall
     // if moving towards wall
+    Sensor wall;
 
     if(player.groundSpeed > 0) { // moving right
-        Sensor wall = sensorE(player);
+        wall = sensorE(player);
 
         if() { // check if collide with wall
             // no collision
@@ -158,7 +159,7 @@ bool Collision::wallCollision(Player player)
     }
 
     if(player.groundSpeed < 0) { // moving left
-        Sensor wall = sensorF(player);
+        wall = sensorF(player);
 
         if() { // check if collide with wall
             // no collision
@@ -224,8 +225,8 @@ void hitWall(Sensor wall, Player &player)
 Sensor Collision::sensorA(Player player)
 {
     Sensor A;
-    A.pos.x = player.pos.x - player.wRadius;
-    A.pos.y = player.pos.y - player.hRadius;
+    A.pos.x = player.pos.x - player.radius.w;
+    A.pos.y = player.pos.y - player.radius.h;
 
     // A.detected_height = A.pos.x - tile.pos.x;
 
@@ -262,8 +263,8 @@ Sensor Collision::sensorA(Player player)
 Sensor Collision::sensorB(Player player) 
 {
     Sensor B;
-    B.pos.x = player.pos.x + player.wRadius;
-    B.pos.y = player.pos.y - player.hRadius;
+    B.pos.x = player.pos.x + player.radius.w;
+    B.pos.y = player.pos.y - player.radius.h;
 
     return B;
 }
@@ -272,8 +273,8 @@ Sensor Collision::sensorB(Player player)
 Sensor Collision::sensorC(Player player)
 {
     Sensor C;
-    C.pos.x = player.pos.x - player.wRadius;
-    C.pos.y = player.pos.y + player.hRadius;
+    C.pos.x = player.pos.x - player.radius.w;
+    C.pos.y = player.pos.y + player.radius.h;
 
     return C;
 }
@@ -282,8 +283,8 @@ Sensor Collision::sensorC(Player player)
 Sensor Collision::sensorD(Player player)
 {
     Sensor D;
-    D.pos.x = player.pos.x + player.wRadius;
-    D.pos.y = player.pos.y + player.hRadius;
+    D.pos.x = player.pos.x + player.radius.w;
+    D.pos.y = player.pos.y + player.radius.h;
 
     return D;
 }
@@ -293,7 +294,7 @@ Sensor sensorE(Player player)
 {
     Sensor E;
     
-    E.pos.x = player.pos.x - player.pushRadius;
+    E.pos.x = player.pos.x - player.radius.push;
     if(player.groundAngle != 0 || player.airborne == true) {
         E.pos.y = player.pos.y;
     } else {
@@ -306,7 +307,7 @@ Sensor sensorE(Player player)
 Sensor sensorF(Player player)
 {
     Sensor F;
-    F.pos.x = player.pos.x + player.pushRadius;
+    F.pos.x = player.pos.x + player.radius.push;
     if(player.groundAngle != 0 || player.airborne == true) {
         F.pos.y = player.pos.y;
     } else {

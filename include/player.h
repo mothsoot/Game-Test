@@ -40,42 +40,44 @@ enum ACTION {
     ACTION_SPINDASH
 };
 
+class Screen;
+
 class Player : public Object {
 	public:
-		Player(); // : Object();
-		~Player();
+		Player(): Object() {}
+		//~Player() {}
 
-		void update();
-		void move(float time, Player &player);
-		// void draw();
+		void create();
+		void update(SDL_Event e);
+		void move(float time);
+		void draw(Screen screen);
 
-		void setxSpeed(SDL_Event e, Player &player);
-		void setySpeed(SDL_Event e, Player &player);
-		void setFriction(Player &player);
-		void setGroundSpeed(SDL_Event e, Player &player); // IMPLEMENT FOR SLOPES
+		void setxSpeed(SDL_Event e);
+		void setySpeed(SDL_Event e);
+		void setFriction();
+		void setGroundSpeed(SDL_Event e); // IMPLEMENT FOR SLOPES
 
-		// COLLISIONS
-		int hRadius = 19; // 14 when jump/roll
-		int wRadius = 9; // 7 when jump/roll
-		int pushRadius = 10;
+		int mode;
+		void setMode();
 
 		// SPRITE
-		SDL_Rect sprite = {0, 0, 29, 39};
-		SDL_Rect setSprite(int input);
-		bool flipSprite;
+		void setSprite(int input);
 
-		float groundSpeed;
         float groundAngle;
 
 		int action;
 
+		float getxSpeed();
+		float getySpeed();
+
 	private:
         float xSpeed;
         float ySpeed;
+		float groundSpeed;
 };
 
 // air
-void airAcceleration(int input, Player player);
-void gravity(Player player);
-void airDrag(Player player);
-void airRotation(Player player);
+void airAcceleration(int input);
+void gravity();
+void airDrag();
+void airRotation();

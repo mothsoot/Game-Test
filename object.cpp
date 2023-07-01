@@ -1,20 +1,36 @@
 #include "object.h"
 
-void Object::setPos(Position &pos)
-{
-    pos.x = 100;
-    pos.y = 5;
-}
-
-/*Object::Object()
+Object::Object()
 {
     type = TYPE_UNKNOWN;
-    pos.x = 0;
-    pos.y = 0;
-}*/
+}
 
-/*
-void Object::setHitbox(Player player, Hitbox &hitbox)
+Position Object::setPos(int x, int y)
+{
+    pos.x = x;
+    pos.y = y;
+
+    return pos;
+}
+
+Radius Object::setRadius(int h, int w)
+{
+    radius.h = h;
+    radius.w = w;
+
+    return radius;
+}
+
+Radius Object::setRadius(int h, int w, int push)
+{
+    radius.h = h;
+    radius.w = w;
+    radius.push = push;
+
+    return radius;
+}
+
+/*void Object::setHitbox(Player player, Hitbox &hitbox)
 {
     hitbox.pos.x = player.pos.x;
     hitbox.pos.y = player.pos.y;

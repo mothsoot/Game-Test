@@ -2,6 +2,7 @@
     "cSpell.words": [
         "decel",
         "dstrect",
+        "FULLSOLID",
         "getx",
         "gety",
         "hitboxes",
@@ -10,9 +11,11 @@
         "rollup",
         "SDLK",
         "sety",
+        "SIDEBOTTOMSOLID",
         "SPINDASH",
         "srcrect",
         "subpixels",
+        "TOPSOLID",
         "WINDOWPOS"
     ],
     "files.associations": {
