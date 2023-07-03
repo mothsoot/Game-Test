@@ -33,9 +33,10 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
         return false;
     }
 
-	texture = loadSprites("sonic-sprites.png");
-	// ringSprites = loadSprites("ring.png");
-	// textTexture = loadText("NiseSegaSonic.ttf");
+	sonicSprites = loadSprites("resources/sonic-sprites.png");
+	ringSprites = loadSprites("resources/ring.png");
+	// textTexture = loadText("resources/NiseSegaSonic.ttf");
+	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
 
@@ -44,8 +45,8 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 
 void Screen::shutDown()
 {
-	SDL_DestroyTexture(texture);
-	// SDL_DestroyTexture(ringSprite);
+	SDL_DestroyTexture(sonicSprites);
+	SDL_DestroyTexture(ringSprites);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	window = nullptr;
@@ -69,7 +70,7 @@ void Screen::present()
 	SDL_RenderPresent(renderer);
 }
 
-void Screen::draw(int x, int y, SDL_Rect sprite, bool flipSprite)
+void Screen::drawSprite(int x, int y, SDL_Rect sprite, bool flipSprite)
 {
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
 	if(flipSprite == true) {
@@ -82,7 +83,17 @@ void Screen::draw(int x, int y, SDL_Rect sprite, bool flipSprite)
 	// destination rectangle
 	SDL_Rect dstrect = {x, y, sprite.w, sprite.h}; // x coord, y coord, image width, image height
 
-	SDL_RenderCopyEx(renderer, texture, &sprite, &dstrect, NULL, NULL, flip);
+	SDL_RenderCopyEx(renderer, sonicSprites, &sprite, &dstrect, NULL, NULL, flip);
+}
+
+void Screen::drawSprite(int x, int y, SDL_Rect sprite)
+{
+	SDL_RendererFlip flip = SDL_FLIP_NONE;
+
+	// destination rectangle
+	SDL_Rect dstrect = {x, y, sprite.w, sprite.h}; // x coord, y coord, image width, image height
+
+	SDL_RenderCopyEx(renderer, ringSprites, &sprite, &dstrect, NULL, NULL, flip);
 }
 
 void Screen::drawText(int x, int y)
@@ -90,6 +101,7 @@ void Screen::drawText(int x, int y)
 	int texW = 0;
 	int texH = 0;
 	SDL_QueryTexture(textTexture, NULL, NULL, &texW, &texH);
+
 	// destination rectangle
 	SDL_Rect dstrect = {x, y, texW, texH}; // x coord, y coord, image width, image height
 
@@ -100,12 +112,10 @@ SDL_Texture* Screen::loadSprites(string file)
 {
 	SDL_Surface* image = nullptr;
 
-	SDL_LogMessage(SDL_LOG_CATEGORY_APPLICATION, SDL_LOG_PRIORITY_INFO, "Loading %s", file.c_str()); // "sonic-sprites.png");
+	image = IMG_Load(file.c_str());
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
 
-	image = IMG_Load(file.c_str()); // "sonic-sprites.png");
-	texture = SDL_CreateTextureFromSurface(renderer, image);
-
-	//delete image;
+	// delete image
 	SDL_FreeSurface(image);
 
 	return texture;
@@ -113,18 +123,13 @@ SDL_Texture* Screen::loadSprites(string file)
 
 SDL_Texture* Screen::loadText(string text)
 {
-	font = TTF_OpenFont("NiseSegaSonic.ttf", 10);
-	SDL_Colour textColour = {0, 0, 0};
-
-    //Render text surface
+    // render text surface
     SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColour);
 
-    //Create texture from surface pixels
+    // create texture
     textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
-    //Get rid of old surface
     SDL_FreeSurface(textSurface);
 
-    //Return success
     return textTexture;
 }

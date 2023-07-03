@@ -13,19 +13,3 @@ class Ring: public Object {
     private:
 };
 
-// FOR IN .CPP FILE
-void Ring::create()
-{
-    type = TYPE_RING;
-
-    setPos(10, 10);
-    setRadius(8, 8);
-
-    // sprite = RING;
-}
-
-void Ring::draw(Screen screen)
-{
-    screen.draw(pos.x, pos.y, sprite, flipSprite);
-}
-

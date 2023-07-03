@@ -21,11 +21,14 @@ const int V_BORDER_BOTTOM = V_FOCAL_POINT + 32;
 // if player on ground
 const int CAMERA_TOP_SPEED = 16;
 
-// player sprite directions
+// player sprite
 #define SPRITE {0, 0, 29, 39}; // x coord, y coord, image width, image height
 #define SPRITE_UP {29, 0, 29, 39};
 #define SPRITE_DOWN {29 * 2, 0, 29, 39};
 #define SPRITE_SKID {29 * 3, 0, 29, 39};
+
+// ring sprite
+#define SPRITE_RING {0, 0, 16, 16};
 
 // forward declaration
 class Player;
@@ -33,13 +36,18 @@ class Player;
 class Screen {
     public:
         SDL_Window* window = nullptr;
-        SDL_Texture* texture = nullptr;
         SDL_Renderer* renderer = nullptr;
         TTF_Font* font = nullptr;
+
+        SDL_Texture* sonicSprites = nullptr;
+        SDL_Texture* ringSprites = nullptr;
         SDL_Texture* textTexture = nullptr;
 
+        SDL_Colour textColour = {0, 0, 0}; // black
+
         bool startUp();
-        void draw(int x, int y, SDL_Rect sprite, bool flipSprite);
+        void drawSprite(int x, int y, SDL_Rect sprite, bool flipSprite);
+        void drawSprite(int x, int y, SDL_Rect sprite);
         void shutDown();
 
         void drawText(int x, int y);

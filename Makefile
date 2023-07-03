@@ -1,45 +1,35 @@
-#Copyright Notice:
-#The files within this zip file are copyrighted by Lazy Foo' Productions (2004-2014)
-#and may not be redistributed without written permission.
+# files to compile
+OBJS = main.o player.o screen.o timer.o object.o ring.o math.o
 
-#OBJS specifies which files to compile as part of the project
-OBJS =  main.cpp player.cpp screen.cpp timer.cpp object.cpp
-
-#CC specifies which compiler we're using
+# compiler
 CC = g++
 
-#INCLUDE_PATHS specifies the additional include paths we'll need
-INCLUDE_PATHS = -IC:\Code\SDL\x86_64-w64-mingw32\include\SDL2 -ID:\Code\Game-Test\include
+# additional paths
+INCLUDE = -IC:\Code\SDL\x86_64-w64-mingw32\include\SDL2 -ID:\Code\Game-Test\include
+LIBRARIES = -LC:\Code\SDL\x86_64-w64-mingw32\lib
 
-#LIBRARY_PATHS specifies the additional library paths we'll need
-LIBRARY_PATHS = -LC:\Code\SDL\x86_64-w64-mingw32\lib
+# flags
+COMPILER = -w -Wl,-subsystem,windows -Wall -Wextra
+LINKER = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
-#COMPILER_FLAGS specifies the additional compilation options we're using
-# -w suppresses all warnings
-# -Wl,-subsystem,windows gets rid of the console window
-COMPILER_FLAGS = -w -Wl,-subsystem,windows -Wall -Wextra
+# actual commands
+build/all: $(OBJS)
+	$(CC) $(OBJS) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -o program
 
-#LINKER_FLAGS specifies the libraries we're linking against
-LINKER_FLAGS = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
+main.o: main.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c main.cpp
+player.o: player.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c player.cpp
+timer.o: timer.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c timer.cpp
+screen.o: screen.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c screen.cpp
+object.o: object.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c object.cpp
+ring.o: ring.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c ring.cpp
+math.o: math.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c math.cpp
 
-#OBJ_NAME specifies the name of our exectuable
-OBJ_NAME = program
-
-#This is the target that compiles our executable
-#all : $(OBJS)
-#	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o $(OBJ_NAME)
-
-program: $(OBJS)
-	$(CC) $(OBJS) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -o program
-
-#main.o: main.cpp main.h player.h timer.h screen.h
-#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c main.cpp
-#player.o: player.cpp player.h main.h
-#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c player.cpp
-#timer.o: timer.cpp timer.h main.h
-#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c timer.cpp
-#screen.o: screen.cpp screen.h player.h main.h
-#	$(CC) $(INCLUDE_PATHS) $(LIBRARY_PATHS) $(COMPILER_FLAGS) $(LINKER_FLAGS) -c screen.cpp
-
-#clean:
-#	rm main.o player.o timer.o screen.o
+clean:
+	rm $(OBJS)

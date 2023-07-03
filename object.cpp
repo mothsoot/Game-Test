@@ -7,8 +7,12 @@ Object::Object()
 
 Position Object::setPos(int x, int y)
 {
-    pos.x = x;
-    pos.y = y;
+    // SDL draws from top-left corner
+    // want position in center of sprite
+    // player center is x - 9, y - 19 (x - 14, y - 7 when crouch/roll)
+
+    pos.x = x - 9;
+    pos.y = y - 19;
 
     return pos;
 }

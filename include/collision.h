@@ -1,8 +1,8 @@
 #pragma once
 
+#include "object.h"
 #include "player.h"
 
-struct Position;
 class Player;
 
 enum COLLISION_MODE {
@@ -22,6 +22,8 @@ struct Sensor {
     int distance;
     float tileAngle;
     float tileID;
+    
+    bool flagged;
 };
 
 class Collision {
@@ -43,3 +45,5 @@ class Collision {
     private:
 
 };
+
+

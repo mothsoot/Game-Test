@@ -1,7 +1,7 @@
 #pragma once
 
 #include "main.h"
-//#include "collision.h"
+#include "collision.h"
 #include "screen.h"
 #include "object.h"
 
@@ -24,17 +24,11 @@ const float SLOPE_FACTOR = 0.125; // 32 subpixels
 const float SLOPE_FACTOR_ROLLUP = 0.078125; // 20 subpixels
 const float SLOPE_FACTOR_ROLLDOWN = 0.3125; // 80 subpixels
 
-enum COLLISION_MODE {
-	FLOOR,
-	RWALL,
-	CEILING,
-	LWALL
-};
-
 enum ACTION {
 	ACTION_NORMAL,
     ACTION_JUMP,
 	ACTION_CROUCH,
+	ACTION_LOOKUP,
     ACTION_ROLL,
     ACTION_SKID,
     ACTION_SPINDASH
@@ -52,6 +46,10 @@ class Player : public Object {
 		void move(float time);
 		void draw(Screen screen);
 
+		float xSpeed;
+        float ySpeed;
+		float groundSpeed;
+
 		void setxSpeed(SDL_Event e);
 		void setySpeed(SDL_Event e);
 		void setFriction();
@@ -67,21 +65,21 @@ class Player : public Object {
 
 		int action;
 
+		bool grounded = true;
+
+		bool collide;
+
 		float getxSpeed();
 		float getySpeed();
 
-		float returnxSpeed() { return xSpeed; }
-		float returnySpeed() { return ySpeed; }
-		float returngroundSpeed() { return groundSpeed; }
+
+		// STUFF TO WORK ON LATER
+		void jumpVelocity();
+		void variableJumpHeight(SDL_Event e);
+		void airAcceleration(SDL_Event e);
+		void gravity();
+		void airDrag();
+		void airRotation();
 
 	private:
-        float xSpeed;
-        float ySpeed;
-		float groundSpeed;
 };
-
-// air
-void airAcceleration(int input);
-void gravity();
-void airDrag();
-void airRotation();

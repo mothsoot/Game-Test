@@ -18,6 +18,9 @@ int main(int argc, char* args[])
 	Player player;
 	player.create();
 
+	Ring ring;
+	ring.create();
+
 	// initialize timer for frames
 	Timer stepTimer;
 	stepTimer.start();
@@ -54,6 +57,7 @@ int main(int argc, char* args[])
 
 		// render sprite at (x, y)
 		player.draw(screen);
+		ring.draw(screen);
 
 		if(debug) {
 			debugText(player, screen);
@@ -75,16 +79,22 @@ void debugText(Player player, Screen screen)
 {
 	static stringstream text1;
 	static stringstream text2;
+	static stringstream text3;
 
 	text1.str("");
 	text2.str("");
+	text3.str("");
 
-	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y;
+	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y << "\nCollide? " << player.collide;
 	screen.loadText(text1.str().c_str());
+	screen.drawText(1, (SCREEN_HEIGHT - 30));
+
+	text2 << "X Speed: " << player.xSpeed << "\nY Speed: " << player.ySpeed;
+	text2 << "\nGround Speed: " << player.groundSpeed;
+	screen.loadText(text2.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 20));
 
-	text2 << "\nX Speed: " << player.returnxSpeed() << "\nY Speed: " << player.returnySpeed();
-	text2 << "\nGround Speed: " << player.returngroundSpeed();
-	screen.loadText(text2.str().c_str());
+	text3 << "Height Radius: " << player.radius.h << "\nWidth Radius: " << player.radius.w;
+	screen.loadText(text3.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 10));
 }
