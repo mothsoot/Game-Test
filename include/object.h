@@ -31,9 +31,11 @@ class Object {
         Object();
         ~Object() {}
 
-        //virtual void create();
+        // virtual void create();
         //virtual void draw();
         //virtual void update();
+
+        int type;
 
         Position pos;
         Position setPos(int x, int y);
@@ -48,8 +50,6 @@ class Object {
 
         Hitbox hitbox;
         //void setHitbox(Player player, Hitbox &hitbox);
-
-        int type;
         
     private:
 

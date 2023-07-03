@@ -1,16 +1,14 @@
 #pragma once
 
 #include "object.h"
+#include "screen.h"
 
 class Ring: public Object {
     public:
         Ring(): Object() {};
 
         void create();
-        void draw();
-        
-        int hRadius = 8;
-        int wRadius = 8;
+        void draw(Screen screen);
 
     private:
 };
@@ -26,8 +24,8 @@ void Ring::create()
     // sprite = RING;
 }
 
-void Ring::draw()
+void Ring::draw(Screen screen)
 {
-    //screen.draw(pos, sprite);
+    screen.draw(pos.x, pos.y, sprite, flipSprite);
 }
 

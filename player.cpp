@@ -11,6 +11,8 @@ void Player::create()
     setRadius(19, 9, 10); // height, width, push. 14, 7, 10 when jump/roll
     xSpeed = 0;
     ySpeed = 0;
+    groundSpeed = 0;
+    groundAngle = 0;
 
     sprite = SPRITE;
 }
@@ -18,7 +20,7 @@ void Player::create()
 void Player::update(SDL_Event e)
 {
     // ROLLING
-    //if(rolling == true) {
+    //if(rolling) {
     // adjust groundSpeed based on groundAngle
     // isJump();
     // setGroundSpeed();
@@ -31,7 +33,7 @@ void Player::update(SDL_Event e)
     //}
 
     // AIRBORNE
-    //else if(airborne == true) {
+    //else if(airborne) {
     // check for jump button release
     // isSuper();
     // update xSpeed based on input
@@ -59,18 +61,20 @@ void Player::update(SDL_Event e)
     
     // HANDLE EVENT
     // key pressed
-	if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
-		setxSpeed(e);
+	//if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
+        setGroundSpeed(e);
+		xSpeed = getxSpeed();
 		setySpeed(e);
-	}
+	//}
 
     // key released
 	// if this frame receives no input
-    else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
-		setFriction();
-	}
+    //if(e.type == SDL_KEYUP && e.key.repeat == 0) {
+	//	setFriction();
+	//}
         // calculate xSpeed & ySpeed from groundSpeed & groundAngle
-    //move(time, player)
+    
+    //move(time)
         // update xPos & yPos based on xSpeed & ySpeed
     // floorCollision();
         // update groundAngle
@@ -163,19 +167,20 @@ float Player::getxSpeed()
 
 void Player::setxSpeed(SDL_Event e)
 {
+    if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
     switch (e.key.keysym.sym) {
         case SDLK_LEFT: // pressing left
-            
             if(xSpeed > 0) { // moving right
                 sprite = SPRITE_SKID;
                 flipSprite = false;
 
-                xSpeed = 0; // += DECEL_SPEED;
+                // xSpeed -= DECEL_SPEED;
 
                 /* // quick turnaround
                 if(xSpeed <= 0) {
                     xSpeed = -0.5;
-                } */
+                }*/
+            
 		     } else if(xSpeed <= 0) { // moving left
                 sprite = SPRITE;
                 flipSprite = true;
@@ -193,7 +198,7 @@ void Player::setxSpeed(SDL_Event e)
                 sprite = SPRITE_SKID;
                 flipSprite = true;
 
-                xSpeed = 0; // -= DECEL_SPEED;
+                // xSpeed += DECEL_SPEED;
 
                 /* // quick turnaround
                 if(xSpeed >= 0) {
@@ -212,6 +217,10 @@ void Player::setxSpeed(SDL_Event e)
             }
             break;
     }
+
+    } else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
+        setFriction();
+    }
 }
 
 float Player::getySpeed()
@@ -222,6 +231,7 @@ float Player::getySpeed()
 
 void Player::setySpeed(SDL_Event e)
 {
+    if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
     switch(e.key.keysym.sym) {
         case SDLK_UP:
             sprite = SPRITE_UP;
@@ -231,21 +241,24 @@ void Player::setySpeed(SDL_Event e)
             sprite = SPRITE_DOWN;
             break;
     }
+    } else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
+        sprite = SPRITE;
+    }
 }
 
 void Player::setFriction()
 {
-	if(xSpeed < 0) { // moving left
-        xSpeed += FRICTION_SPEED;
+	if(groundSpeed < 0) { // moving left
+        groundSpeed += FRICTION_SPEED;
 
-        if(xSpeed >= 0) {
-            xSpeed = 0;
+        if(groundSpeed >= 0) {
+            groundSpeed = 0;
         }
-    } else if(xSpeed > 0) { // moving right
-        xSpeed -= FRICTION_SPEED;
+    } else if(groundSpeed > 0) { // moving right
+        groundSpeed -= FRICTION_SPEED;
 
-        if(xSpeed <= 0) {
-            xSpeed = 0;
+        if(groundSpeed <= 0) {
+            groundSpeed = 0;
         }
     }
 }
@@ -255,38 +268,60 @@ void Player::setFriction()
 // SPEED FOR SLOPES
 void Player::setGroundSpeed(SDL_Event e)
 {
+    if(e.type == SDL_KEYDOWN && e.key.repeat == 0) {
     switch (e.key.keysym.sym) {
         case SDLK_LEFT: // pressing left
-            while (groundSpeed >= -TOP_SPEED) {
+            //while (groundSpeed >= -TOP_SPEED) {
                 if(groundSpeed > 0) { // moving right
-                    groundSpeed -= DECEL_SPEED;
-                    if(groundSpeed <= 0) {
+                    sprite = SPRITE_SKID;
+                    flipSprite = false;
+
+                    // groundSpeed -= DECEL_SPEED;
+
+                    // quick turnaround
+                    /* if(groundSpeed <= 0) {
                         groundSpeed = -0.5;
-                    }
-                } else if(groundSpeed > -TOP_SPEED) { // moving left
+                    }*/
+                } else if(groundSpeed >= -TOP_SPEED) { // moving left
+                    sprite = SPRITE;
+                    flipSprite = true;
+
                     groundSpeed -= ACCEL_SPEED;
+
                     if(groundSpeed <= -TOP_SPEED) {
                         groundSpeed = -TOP_SPEED; // limit
                     }
                 }
-            }
+            //}
             break;
 
         case SDLK_RIGHT: // pressing right
-            while (groundSpeed <= TOP_SPEED) {
+            //while (groundSpeed <= TOP_SPEED) {
                 if(groundSpeed < 0) { // moving left
-                    groundSpeed += DECEL_SPEED;
-                    if(groundSpeed >= 0) {
+                    sprite = SPRITE_SKID;
+                    flipSprite = true;
+                    // groundSpeed += DECEL_SPEED;
+                    
+                    // quick turnaround
+                    /* if(groundSpeed >= 0) {
                         groundSpeed = 0.5;
-                    }
+                    }*/
+
                 } else if(groundSpeed <= TOP_SPEED) { // moving right
+                    sprite = SPRITE;
+                    flipSprite = false;
+
                     groundSpeed += ACCEL_SPEED;
+
                     if(groundSpeed >= TOP_SPEED) {
                         groundSpeed = TOP_SPEED; // limit
                     }
                 }
-            }
+            //}
             break;
+    }
+    } else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
+        setFriction();
     }
 }
 

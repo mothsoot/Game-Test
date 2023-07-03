@@ -2,8 +2,9 @@
 
 int main(int argc, char* args[])
 {
-	// game running flag
+	// game flags
     bool quit = false;
+	bool debug = true;
 
 	// initialize screen
 	Screen screen;
@@ -17,7 +18,7 @@ int main(int argc, char* args[])
 	Player player;
 	player.create();
 
-	// initialize timer
+	// initialize timer for frames
 	Timer stepTimer;
 	stepTimer.start();
 
@@ -40,7 +41,7 @@ int main(int argc, char* args[])
 			if(e.type == SDL_QUIT) {
 				quit = true;
 			}
-			//handleEvent(e, player);
+
 			player.update(e);
 		}
 
@@ -54,6 +55,10 @@ int main(int argc, char* args[])
 		// render sprite at (x, y)
 		player.draw(screen);
 
+		if(debug) {
+			debugText(player, screen);
+		}
+
 		screen.present();
 		
 		// delay for frame rate
@@ -64,4 +69,22 @@ int main(int argc, char* args[])
 	screen.shutDown();
 
 	return 0;
+}
+
+void debugText(Player player, Screen screen)
+{
+	static stringstream text1;
+	static stringstream text2;
+
+	text1.str("");
+	text2.str("");
+
+	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y;
+	screen.loadText(text1.str().c_str());
+	screen.drawText(1, (SCREEN_HEIGHT - 20));
+
+	text2 << "\nX Speed: " << player.returnxSpeed() << "\nY Speed: " << player.returnySpeed();
+	text2 << "\nGround Speed: " << player.returngroundSpeed();
+	screen.loadText(text2.str().c_str());
+	screen.drawText(1, (SCREEN_HEIGHT - 10));
 }

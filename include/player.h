@@ -70,6 +70,10 @@ class Player : public Object {
 		float getxSpeed();
 		float getySpeed();
 
+		float returnxSpeed() { return xSpeed; }
+		float returnySpeed() { return ySpeed; }
+		float returngroundSpeed() { return groundSpeed; }
+
 	private:
         float xSpeed;
         float ySpeed;

@@ -18,7 +18,7 @@ bool Collision::groundCollision(Player player)
         ground.tileAngle = B.tileAngle;
     }
 
-    if() // player isnt airborne
+    if(!player.airborne) { // player isnt airborne
         if(ground.distance < -14 || ground.distance > 14) {
             // no collision
             return false;
@@ -29,7 +29,7 @@ bool Collision::groundCollision(Player player)
             // player.pos.x += ground.distance;
         }
 
-        if() { // check if tile is flagged
+        if(tile.flagged) { // check if tile is flagged
             // snap to nearest 90 degree
             // snapped_angle = (round(Ground Angle / 90) % 4) * 90;
             return true;
@@ -39,7 +39,7 @@ bool Collision::groundCollision(Player player)
         }
     }
 
-    else if(player.airborne == true) { // player airborne
+    else if(player.airborne) { // player airborne
         if(ground.distance >= 0) {
             // sensor not overlapping ground
             // no collision
@@ -206,7 +206,7 @@ void hitWall(Sensor wall, Player &player)
         }
     }
 
-    if(player.airborne == true) {
+    if(player.airborne) {
         if(wall.distance > 0) {
             // ignore
             // no collision
@@ -295,7 +295,7 @@ Sensor sensorE(Player player)
     Sensor E;
     
     E.pos.x = player.pos.x - player.radius.push;
-    if(player.groundAngle != 0 || player.airborne == true) {
+    if(player.groundAngle != 0 || player.airborne) {
         E.pos.y = player.pos.y;
     } else {
         E.pos.y =  player.pos.y + 8;
@@ -308,7 +308,7 @@ Sensor sensorF(Player player)
 {
     Sensor F;
     F.pos.x = player.pos.x + player.radius.push;
-    if(player.groundAngle != 0 || player.airborne == true) {
+    if(player.groundAngle != 0 || player.airborne) {
         F.pos.y = player.pos.y;
     } else {
         F.pos.y =  player.pos.y + 8;
