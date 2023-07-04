@@ -5,11 +5,17 @@
 
 class Ring: public Object {
     public:
-        Ring(): Object() {};
+        const int GRAVITY = 0.09375; // 24 subpixels
 
-        void create();
+        Ring();
+
         void draw(Screen screen);
 
     private:
+};
+
+class Spring: public Object {
+    public:
+        Spring();
 };
 

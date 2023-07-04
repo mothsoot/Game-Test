@@ -1,5 +1,5 @@
 # files to compile
-OBJS = main.o player.o screen.o timer.o object.o ring.o math.o
+OBJS = main.o player.o screen.o timer.o object.o items.o math.o
 
 # compiler
 CC = g++
@@ -13,7 +13,7 @@ COMPILER = -w -Wl,-subsystem,windows -Wall -Wextra
 LINKER = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 # actual commands
-build/all: $(OBJS)
+all: $(OBJS)
 	$(CC) $(OBJS) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -o program
 
 main.o: main.cpp
@@ -26,8 +26,8 @@ screen.o: screen.cpp
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c screen.cpp
 object.o: object.cpp
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c object.cpp
-ring.o: ring.cpp
-	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c ring.cpp
+items.o: items.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c items.cpp
 math.o: math.cpp
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c math.cpp
 

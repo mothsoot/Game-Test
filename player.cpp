@@ -1,7 +1,7 @@
 #include "player.h"
 
 // constructor
-void Player::create()
+Player::Player()
 {
     type = TYPE_PLAYER;
     action = ACTION_NORMAL;
@@ -25,7 +25,7 @@ void Player::update(SDL_Event e)
 
         if(sign(groundSpeed) == sign(sin(groundAngle))) {
             groundSpeed -= SLOPE_FACTOR_ROLLUP * sin(groundAngle);
-        } else {
+        } else if(sign(groundSpeed) != sign(sin(groundAngle))) {
             groundSpeed -= SLOPE_FACTOR_ROLLDOWN * sin(groundAngle);
         }
             // adjust groundSpeed based on groundAngle
@@ -60,14 +60,19 @@ void Player::update(SDL_Event e)
     else {
         setRadius(19, 9);
         // check for special actions (balancing, etc.)
-        // isSpinDash();
+        /*if(action == ACTION_CROUCH) {
+            setRadius(14, 7);
+            // isSpinDash();
+        }*/
+
         if(mode != CEILING) {
             groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
         }
-        // adjust groundSpeed based on groundAngle
+            // adjust groundSpeed based on groundAngle
         // isJump();
-        // setGroundSpeed(e, player);
+        setGroundSpeed(e);
             // adjust groundSpeed based on input + friction & accel/decel
+        
         // wallCollision();
             /* if(groundSpeed < 0) { // moving left
                 sensorF.pos.x += xSpeed;
@@ -79,9 +84,9 @@ void Player::update(SDL_Event e)
         // setCamera();
     
         // HANDLE EVENT
-        setGroundSpeed(e);
         xSpeed = getxSpeed();
 		setySpeed(e);
+        // ySpeed = getySpeed();
             // calculate xSpeed & ySpeed from groundSpeed & groundAngle
 
         if(action == ACTION_CROUCH) {
@@ -94,7 +99,7 @@ void Player::update(SDL_Event e)
         // groundCollision();
         // groundAngle = sensor.tileAngle;
             // update groundAngle
-        // pos.y += sensor.distance;
+        // pos.y += groundSensor.distance;
             // align sprite to ground
 
         // isSlipping()/isFalling();
@@ -348,6 +353,7 @@ void Player::setGroundSpeed(SDL_Event e)
             //}
             break;
     }
+
     } else if(e.type == SDL_KEYUP && e.key.repeat == 0) {
         setFriction();
     }

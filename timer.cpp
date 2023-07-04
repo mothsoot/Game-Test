@@ -43,12 +43,12 @@ void Timer::stop()
 
 void Timer::pause()
 {
-    //If the timer is running and isn't already paused
+    // if timer is running and isn't already paused
     if(started && !paused) {
-        //Pause the timer
+        // pause timer
         paused = true;
 
-        //Calculate the paused ticks
+        // calculate paused ticks
         pausedTicks = SDL_GetTicks() - startTicks;
 		startTicks = 0;
     }

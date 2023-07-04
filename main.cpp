@@ -16,10 +16,8 @@ int main(int argc, char* args[])
 
 	// initialize player
 	Player player;
-	player.create();
-
+	// initialize ring
 	Ring ring;
-	ring.create();
 
 	// initialize timer for frames
 	Timer stepTimer;
@@ -40,13 +38,13 @@ int main(int argc, char* args[])
 		// PollEvent returns 1 if there is an event in queue
 		// returns 0 if none
 		// while events in queue
-        while (SDL_PollEvent(&e) != 0) {
-			if(e.type == SDL_QUIT) {
-				quit = true;
-			}
-
-			player.update(e);
+        // while (SDL_PollEvent(&e) != 0) {
+		SDL_PollEvent(&e);
+		if(e.type == SDL_QUIT) {
+			quit = true;
 		}
+		//}
+		player.update(e);
 
 		float time = stepTimer.getTicks() / 1000.f;
 
@@ -77,13 +75,19 @@ int main(int argc, char* args[])
 
 void debugText(Player player, Screen screen)
 {
+	static stringstream action;
 	static stringstream text1;
 	static stringstream text2;
 	static stringstream text3;
 
+	action.str("");
 	text1.str("");
 	text2.str("");
 	text3.str("");
+
+	action << "Action: " << player.action;
+	screen.loadText(action.str().c_str());
+	screen.drawText(1, (SCREEN_HEIGHT - 40));
 
 	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y << "\nCollide? " << player.collide;
 	screen.loadText(text1.str().c_str());

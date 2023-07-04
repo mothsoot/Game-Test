@@ -11,7 +11,7 @@ using std::stringstream;
 
 #include "screen.h"
 #include "player.h"
-#include "ring.h"
+#include "items.h"
 #include "timer.h"
 #include "math.h"
 

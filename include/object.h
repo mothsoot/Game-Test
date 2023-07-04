@@ -23,7 +23,7 @@ struct Radius {
 struct Hitbox {
 	Position pos;
 
-	Radius radius;
+    Radius radius;
 };
 
 class Object {
@@ -32,8 +32,8 @@ class Object {
         ~Object() {}
 
         // virtual void create();
-        //virtual void draw();
-        //virtual void update();
+        // virtual void draw();
+        // virtual void update();
 
         int type;
 
@@ -49,8 +49,9 @@ class Object {
         Radius setRadius(int h, int w, int push);
 
         Hitbox hitbox;
-        //void setHitbox(Player player, Hitbox &hitbox);
+        // void setHitbox();
         
     private:
 
 };
+

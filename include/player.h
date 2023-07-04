@@ -38,7 +38,7 @@ class Screen;
 
 class Player : public Object {
 	public:
-		Player(): Object() {}
+		Player(); // : Object() {}
 		//~Player() {}
 
 		void create();
