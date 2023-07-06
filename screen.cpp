@@ -35,7 +35,6 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 
 	sonicSprites = loadSprites("resources/sonic-sprites.png");
 	ringSprites = loadSprites("resources/ring.png");
-	// textTexture = loadText("resources/NiseSegaSonic.ttf");
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white

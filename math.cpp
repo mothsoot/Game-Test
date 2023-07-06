@@ -30,23 +30,23 @@ int subpixel_to_decimal(int pixel, int subpixel)
 // HEX ANGLES
 
 // returns a sine value from -256 to 255
-int angle_hex_sin(int hex_ang)
+int angle_hex_sin(int hexAngle)
 {
-	int list_index = hex_ang % 256;
-	return HEX_SINCOSLIST[list_index];
+	int listIndex = hexAngle % 256;
+	return HEX_SINCOSLIST[listIndex];
 }
 
 // returns a cosine value from -256 to 255
-int angle_hex_cos(int hex_ang)
+int angle_hex_cos(int hexAngle)
 {
-	int list_index = (hex_ang + 64) % 256;
-	return HEX_SINCOSLIST[list_index];
+	int listIndex = (hexAngle + 64) % 256;
+	return HEX_SINCOSLIST[listIndex];
 }
 
 // returns a degree angle converted from a hex angle
-int angle_hex_to_degrees(int hex_ang)
+int angle_hex_to_degrees(int hexAngle)
 {
-	return ((256 - hex_ang) / 256) * 360;
+	return ((256 - hexAngle) / 256) * 360;
 }
 
 // returns a hex angle converted from a degree angle
@@ -55,20 +55,20 @@ int angle_hex_to_degrees(int hex_ang)
 //	return floor(((360 - deg_ang) / 360) * 256);
 //}
 
-int angle_hex_point_direction(int xdist, int ydist)
+int angle_hex_point_direction(int xDist, int yDist)
 {
 	// default
-	if (xdist == 0 && ydist == 0) {
+	if (xDist == 0 && yDist == 0) {
         return 64;
     }
 
 	// force positive
-	int xx = absolute(xdist);
-	int yy = absolute(ydist);
-		
+	int xx = absolute(xDist);
+	int yy = absolute(yDist);
+
 	int angle = 0;
-		
-	// Get initial angle
+
+	// get initial angle
 	if (yy >= xx) {
 		int compare = (xx * 256) / yy;
 		angle = 64 - HEX_ANGLELIST[compare];
@@ -76,14 +76,14 @@ int angle_hex_point_direction(int xdist, int ydist)
 		int compare = (yy * 256) / xx;
 		angle = HEX_ANGLELIST[compare];
 	}
-		
-	// Check angle
-	if (xdist <= 0) {
+
+	// check angle
+	if (xDist <= 0) {
 		angle = -angle;
 		angle += 128;
 	}
 		
-	if (ydist <= 0) {
+	if (yDist <= 0) {
 		angle = -angle;
 		angle += 256;
 	}

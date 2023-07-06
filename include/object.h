@@ -6,7 +6,8 @@
 enum OBJECT_TYPE {
     TYPE_UNKNOWN,
     TYPE_PLAYER,
-    TYPE_RING
+    TYPE_RING,
+    TYPE_SPRING
 };
 
 struct Position {
@@ -36,6 +37,8 @@ class Object {
         // virtual void update();
 
         int type;
+
+        bool active;
 
         Position pos;
         Position setPos(int x, int y);

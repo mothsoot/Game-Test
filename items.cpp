@@ -1,8 +1,7 @@
 #include "items.h"
 
 // RINGS
-
-Ring::Ring()
+void Ring::create()
 {
     type = TYPE_RING;
 
@@ -17,10 +16,15 @@ void Ring::draw(Screen screen)
     screen.drawSprite(pos.x, pos.y, sprite);
 }
 
-// SPRING
+void Ring::destroy()
+{
 
+}
+
+// SPRING
 Spring::Spring()
 {
+    type = TYPE_SPRING;
     // type = TYPE_SPRING_HOR;
     // type = TYPE_SPRING_VERT;
 

@@ -21,15 +21,15 @@ class Tile {
         int typeID;
         float tileAngle; // 0-256 (0-FF in hex)
         
-        void setID(Tile &tile);
-        void setAngle(Tile &tile);
+        void setID();
+        void setAngle();
 
         // collision data
         int hArray[16]; // left to right
         int wArray[16]; // top to bottom
 
         bool flagged;
-        void setFlagged(Tile &tile);
+        void setFlagged();
 
         SDL_Rect sprite;
         SDL_RendererFlip flip;
@@ -63,14 +63,14 @@ Tile::Tile()
     typeID = TILE_NONE;
 }
 
-void Tile::setID(Tile &tile)
+void Tile::setID()
 {
     
 }
 
-void Tile::setAngle(Tile &tile)
+void Tile::setAngle()
 {
-/*    switch(player.mode) {
+    /*switch(player.mode) {
         case CMODE_FLOOR:
             return floorAngle;
             break;
@@ -89,7 +89,7 @@ void Tile::setAngle(Tile &tile)
     }*/
 }
 
-void Tile::setFlagged(Tile &tile)
+void Tile::setFlagged()
 {
     if(tileAngle == 255) {
         flagged == true;

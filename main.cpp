@@ -18,6 +18,7 @@ int main(int argc, char* args[])
 	Player player;
 	// initialize ring
 	Ring ring;
+	ring.create();
 
 	// initialize timer for frames
 	Timer stepTimer;
@@ -38,22 +39,25 @@ int main(int argc, char* args[])
 		// PollEvent returns 1 if there is an event in queue
 		// returns 0 if none
 		// while events in queue
-        // while (SDL_PollEvent(&e) != 0) {
-		SDL_PollEvent(&e);
-		if(e.type == SDL_QUIT) {
-			quit = true;
+        while (SDL_PollEvent(&e) != 0) {
+			if(e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
+				quit = true;
+			}
+
+			player.input.keyState(e);
 		}
-		//}
-		player.update(e);
+
+		player.update();
 
 		float time = stepTimer.getTicks() / 1000.f;
 
+		// move player
 		player.move(time);
 
 		// restart timer
         stepTimer.start();
 
-		// render sprite at (x, y)
+		// render sprites
 		player.draw(screen);
 		ring.draw(screen);
 
@@ -61,10 +65,10 @@ int main(int argc, char* args[])
 			debugText(player, screen);
 		}
 
-		screen.present();
-		
 		// delay for frame rate
 		SDL_Delay(16);
+
+		screen.present();
 	}
 
 	// shutdown SDL
@@ -75,21 +79,41 @@ int main(int argc, char* args[])
 
 void debugText(Player player, Screen screen)
 {
-	static stringstream action;
-	static stringstream text1;
-	static stringstream text2;
-	static stringstream text3;
+	stringstream action;
+	stringstream keyPress;
+	stringstream text1;
+	stringstream text2;
+	stringstream text3;
 
 	action.str("");
+	keyPress.str("");
 	text1.str("");
 	text2.str("");
 	text3.str("");
 
 	action << "Action: " << player.action;
 	screen.loadText(action.str().c_str());
+	screen.drawText(1, (SCREEN_HEIGHT - 50));
+
+	keyPress << "Key: ";
+	if(player.input.key == UP) {
+		keyPress << "UP";
+	} else if(player.input.key == DOWN) {
+		keyPress << "DOWN";
+	} else if(player.input.key == LEFT) {
+		keyPress << "LEFT";
+	} else if(player.input.key == RIGHT) {
+		keyPress << "RIGHT";
+	}
+	screen.loadText(keyPress.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 40));
 
-	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y << "\nCollide? " << player.collide;
+	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y << "\nCollide? ";
+	if(player.collide.floor || player.collide.lWall || player.collide.rWall || player.collide.ceiling) {
+		text1 << "true";
+	} else if(!player.collide.floor || !player.collide.lWall || !player.collide.rWall || !player.collide.ceiling) {
+		text1 << "false";
+	}
 	screen.loadText(text1.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 30));
 
@@ -101,4 +125,32 @@ void debugText(Player player, Screen screen)
 	text3 << "Height Radius: " << player.radius.h << "\nWidth Radius: " << player.radius.w;
 	screen.loadText(text3.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 10));
+}
+
+void InputHandler::keyState(SDL_Event e)
+{
+    switch(e.type) {
+	case SDL_KEYDOWN:
+        keyDown = true;
+        switch(e.key.keysym.sym) {
+            case SDLK_UP:
+                key = UP;
+                break;
+            case SDLK_DOWN:
+                key = DOWN;
+                break;
+            case SDLK_LEFT:
+                key = LEFT;
+                break;
+            case SDLK_RIGHT:
+                key = RIGHT;
+                break;
+        }
+		break;
+
+    case SDL_KEYUP:
+        keyDown = false;
+        key = NONE;
+		break;
+	}
 }
