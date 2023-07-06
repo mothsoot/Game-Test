@@ -6,10 +6,10 @@
 #include "object.h"
 
 // POSITIONS & SPEED
-const float ACCEL_SPEED = 5; // 0.046875; // 12 subpixels
-const float DECEL_SPEED = 25; // 0.5; // 128 subpixels
-const float FRICTION_SPEED = 5; // 0.046875; // 12 subpixels
-const float TOP_SPEED = 300; // 6
+const float ACCEL_SPEED = 12; // 0.046875; // 12 subpixels
+const float DECEL_SPEED = 128; // 0.5; // 128 subpixels
+const float FRICTION_SPEED = 12; // 0.046875; // 12 subpixels
+const float TOP_SPEED = 200; // 6
 
 const float GRAVITY_FORCE = 0.21875; // 56 subpixels
 const float AIR_ACCEL_SPEED = 200; // 0.09375; // 24 subpixels
@@ -23,6 +23,9 @@ const float ROLL_DECEL_SPEED = 0.125;
 const float SLOPE_FACTOR = 0.125; // 32 subpixels
 const float SLOPE_FACTOR_ROLLUP = 0.078125; // 20 subpixels
 const float SLOPE_FACTOR_ROLLDOWN = 0.3125; // 80 subpixels
+
+const int PLAYER_SPRITE_HEIGHT = 39;
+const int PLAYER_SPRITE_WIDTH = 29;
 
 enum ACTION {
 	ACTION_NORMAL,
@@ -40,11 +43,6 @@ struct Collide {
 	bool rWall;
 	bool ceiling;
 };
-
-const int PLAYER_SPRITE_HEIGHT = 39;
-const int PLAYER_SPRITE_WIDTH = 29;
-
-class Screen;
 
 class InputHandler {
     public:

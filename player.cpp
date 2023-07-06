@@ -53,10 +53,15 @@ void Player::update()
         if(collide.lWall || collide.rWall) {
             xSpeed = 0;
         }
+
         // check for jump button release
+
         // isSuper();
+
         // update xSpeed based on input
+
         // apply air drag
+
         // move(time);
         if(!collide.floor) {
             getxSpeed();
@@ -81,15 +86,15 @@ void Player::update()
     else {
         setRadius(19, 9);
         // check for special actions (balancing, etc.)
-        if(action == ACTION_CROUCH) {
-            // isSpinDash();
-        }
+        // isSpinDash();
 
         if(mode != CEILING) {
             groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
         }
             // adjust groundSpeed based on groundAngle
+
         // isJump();
+
         getGroundSpeed();
             // adjust groundSpeed based on input + friction & accel/decel
 
@@ -117,8 +122,7 @@ void Player::update()
         getxSpeed();
         // getySpeed();
             // calculate xSpeed & ySpeed from groundSpeed & groundAngle
-
-
+            
         // }
 
         // move(time)
@@ -269,7 +273,7 @@ void Player::getGroundSpeed()
                 if(groundSpeed > 0) { // moving right
                     action = ACTION_SKID;
 
-                    //groundSpeed -= DECEL_SPEED;
+                    groundSpeed -= DECEL_SPEED;
 
                     // quick turnaround
                     if(groundSpeed <= 0) {
@@ -292,7 +296,7 @@ void Player::getGroundSpeed()
                 if(groundSpeed < 0) { // moving left
                     action = ACTION_SKID;
 
-                    //groundSpeed += DECEL_SPEED;
+                    groundSpeed += DECEL_SPEED;
                     
                     // quick turnaround
                     if(groundSpeed >= 0) {
@@ -318,16 +322,11 @@ void Player::getGroundSpeed()
         case DOWN:
             action = ACTION_CROUCH;
             break;
-
-        case NONE:
-            action = ACTION_NORMAL;
-            setFriction();
-            break;
     }
 
-    } else if(!input.keyDown || input.key == NONE) {
+    } else if((!input.keyDown) || (input.keyDown) && (input.key == NONE)) {
         action = ACTION_NORMAL;
-            setFriction();
+        setFriction();
     }
 }
 
