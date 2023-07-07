@@ -1,10 +1,13 @@
 #pragma once
 
+#include <iostream>
+using std::cerr;
+using std::endl;
+using std::string;
+
 #include <SDL.h>
 #include <SDL_image.h>
 #include <SDL_ttf.h>
-
-#include "main.h"
 
 const int SCREEN_WIDTH = 320;
 const int SCREEN_HEIGHT = 224;
@@ -30,24 +33,25 @@ const int CAMERA_TOP_SPEED = 16;
 // ring sprite
 #define SPRITE_RING {0, 0, 16, 16};
 
-// forward declaration
-class Player;
 
 class Screen {
     public:
+        
+        enum Mode {
+            TITLE,
+            GAME
+        };
+
         SDL_Window* window = nullptr;
         SDL_Renderer* renderer = nullptr;
         TTF_Font* font = nullptr;
 
-        SDL_Texture* sonicSprites = nullptr;
-        SDL_Texture* ringSprites = nullptr;
         SDL_Texture* textTexture = nullptr;
 
         SDL_Colour textColour = {0, 0, 0}; // black
 
         bool startUp();
-        void drawSprite(int x, int y, SDL_Rect sprite, bool flipSprite);
-        void drawSprite(int x, int y, SDL_Rect sprite);
+        void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, bool flips);
         void shutDown();
 
         void drawText(int x, int y);

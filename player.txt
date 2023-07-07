@@ -1,0 +1,15 @@
+PLAYER OVERVIEW / PLAN / YEAH
+
+- make less sonic based to start, get basic game stuff implemented
+
+void Player::update()
+{
+    // CHECK IF AIRBORNE (if jump/fall)
+    if(!grounded) {
+        // gravity
+        // air stuff
+        //
+    }
+    
+
+}

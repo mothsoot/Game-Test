@@ -16,7 +16,7 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 		cerr << "Could not initialize SDL_TTF!! TTF_Error: " << TTF_GetError() << endl;
 		return false;
 	}
-	
+
 	window = SDL_CreateWindow("Game moment", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if(window == NULL) {
 		cerr << "Window not created! SDL_Error: " << SDL_GetError() << endl;
@@ -33,8 +33,6 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
         return false;
     }
 
-	sonicSprites = loadSprites("resources/sonic-sprites.png");
-	ringSprites = loadSprites("resources/ring.png");
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
 
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
@@ -44,8 +42,7 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 
 void Screen::shutDown()
 {
-	SDL_DestroyTexture(sonicSprites);
-	SDL_DestroyTexture(ringSprites);
+	SDL_DestroyTexture(textTexture);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	window = nullptr;
@@ -69,10 +66,10 @@ void Screen::present()
 	SDL_RenderPresent(renderer);
 }
 
-void Screen::drawSprite(int x, int y, SDL_Rect sprite, bool flipSprite)
+void Screen::drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, bool flips)
 {
 	SDL_RendererFlip flip = SDL_FLIP_NONE;
-	if(flipSprite == true) {
+	if(flips == true) {
 		flip = SDL_FLIP_HORIZONTAL;
 	} else {
 		flip = SDL_FLIP_NONE;
@@ -82,17 +79,7 @@ void Screen::drawSprite(int x, int y, SDL_Rect sprite, bool flipSprite)
 	// destination rectangle
 	SDL_Rect dstrect = {x, y, sprite.w, sprite.h}; // x coord, y coord, image width, image height
 
-	SDL_RenderCopyEx(renderer, sonicSprites, &sprite, &dstrect, NULL, NULL, flip);
-}
-
-void Screen::drawSprite(int x, int y, SDL_Rect sprite)
-{
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
-
-	// destination rectangle
-	SDL_Rect dstrect = {x, y, sprite.w, sprite.h}; // x coord, y coord, image width, image height
-
-	SDL_RenderCopyEx(renderer, ringSprites, &sprite, &dstrect, NULL, NULL, flip);
+	SDL_RenderCopyEx(renderer, tex, &sprite, &dstrect, NULL, NULL, flip);
 }
 
 void Screen::drawText(int x, int y)

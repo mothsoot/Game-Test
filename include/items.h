@@ -1,23 +1,24 @@
 #pragma once
 
 #include "object.h"
-#include "screen.h"
 
-class Ring: public Object {
+class Item: public Object {
+    public:
+        
+};
+
+class Ring: public Item {
     public:
         const int GRAVITY = 0.09375; // 24 subpixels
 
-        Ring() {}
+        Ring(int x, int y);
 
-        void create();
-        void draw(Screen screen);
-        void destroy();
 
     private:
 };
 
-class Spring: public Object {
+class Spring: public Item {
     public:
-        Spring();
+        Spring(int x, int y);
 };
 

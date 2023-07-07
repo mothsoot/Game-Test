@@ -14,15 +14,13 @@ int main(int argc, char* args[])
 		return 0;
 	}
 
-	// initialize player
-	Player player;
-	// initialize ring
-	Ring ring;
-	ring.create();
+	// initialize player & load sprites
+	Player player(20, (SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT));
+	player.sprite.tex = screen.loadSprites("resources/sonic-sprites.png");
 
-	// initialize timer for frames
-	Timer stepTimer;
-	stepTimer.start();
+	// initialize ring & load sprites
+	Ring ring(40, 40);
+	ring.sprite.tex = screen.loadSprites("resources/ring.png");
 
 	// handle events
 	// loop getting player input
@@ -49,13 +47,8 @@ int main(int argc, char* args[])
 
 		player.update();
 
-		float time = stepTimer.getTicks() / 1000.f;
-
 		// move player
-		player.move(time);
-
-		// restart timer
-        stepTimer.start();
+		//player.move();
 
 		// render sprites
 		player.draw(screen);
@@ -71,6 +64,10 @@ int main(int argc, char* args[])
 		screen.present();
 	}
 
+	// shutdown objects
+	player.destroy();
+	ring.destroy();
+
 	// shutdown SDL
 	screen.shutDown();
 
@@ -84,73 +81,137 @@ void debugText(Player player, Screen screen)
 	stringstream text1;
 	stringstream text2;
 	stringstream text3;
+	stringstream text4;
 
 	action.str("");
 	keyPress.str("");
 	text1.str("");
 	text2.str("");
 	text3.str("");
+	text4.str("");
 
-	action << "Action: " << player.action;
-	screen.loadText(action.str().c_str());
-	screen.drawText(1, (SCREEN_HEIGHT - 50));
-
-	keyPress << "Key: ";
-	if(player.input.key == UP) {
-		keyPress << "UP";
-	} else if(player.input.key == DOWN) {
-		keyPress << "DOWN";
-	} else if(player.input.key == LEFT) {
-		keyPress << "LEFT";
-	} else if(player.input.key == RIGHT) {
-		keyPress << "RIGHT";
+	action << "Action: ";
+	switch(player.action) {
+		case ACTION_NORMAL:
+			action << "normal";
+			break;
+		case ACTION_JUMP:
+			action << "jump";
+			break;
+		case ACTION_CROUCH:
+			action << "crouch";
+			break;
+		case ACTION_LOOKUP:
+			action << "look up";
+			break;
+		case ACTION_SKID:
+			action << "skid";
+			break;
 	}
-	screen.loadText(keyPress.str().c_str());
+	screen.loadText(action.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 40));
 
-	text1 << "X Pos: " << player.pos.x << "\nY Pos: " << player.pos.y << "\nCollide? ";
-	if(player.collide.floor || player.collide.lWall || player.collide.rWall || player.collide.ceiling) {
-		text1 << "true";
-	} else if(!player.collide.floor || !player.collide.lWall || !player.collide.rWall || !player.collide.ceiling) {
-		text1 << "false";
+	keyPress << "Key: ";
+	switch(player.input.key) {
+		case UP:
+			keyPress << "UP";
+			break;
+		case DOWN:
+			keyPress << "DOWN";
+			break;
+		case LEFT:
+			keyPress << "LEFT";
+			break;
+		case RIGHT:
+			keyPress << "RIGHT";
+			break;
+		case SPACE:
+			keyPress << "SPACE";
+			break;
 	}
-	screen.loadText(text1.str().c_str());
+	if(player.input.keyDown) {
+		keyPress << " PRESS";
+	} else {
+		keyPress << " RELEASED";
+	}
+	screen.loadText(keyPress.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 30));
 
-	text2 << "X Speed: " << player.xSpeed << "\nY Speed: " << player.ySpeed;
-	text2 << "\nGround Speed: " << player.groundSpeed;
+	text1 << "X: " << player.pos.x << "\nY: " << player.pos.y;
+	screen.loadText(text1.str().c_str());
+	screen.drawText(1, 0);
+
+	text2 << "Collide? ";
+	if(player.collide.floor) {
+		text2 << "floor";
+	}
+	if(player.collide.lWall) {
+		text2 << "lWall";
+	}
+	if(player.collide.rWall) {
+		text2 << "rWall";
+	}
+	if(player.collide.ceiling) {
+		text2 << "ceiling";
+	}
+	if(!player.collide.floor && !player.collide.lWall && !player.collide.rWall && !player.collide.ceiling) {
+		text2 << "false";
+	}
+	text2 << "\nGrounded? ";
+	if(player.grounded) {
+		text2 << "true";
+	} else {
+		text2 << "false";
+	}
 	screen.loadText(text2.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 20));
 
-	text3 << "Height Radius: " << player.radius.h << "\nWidth Radius: " << player.radius.w;
+	text3 << "X Speed: " << player.xSpeed << "\nY Speed: " << player.ySpeed;
+	text3 << "\nGround Speed: " << player.groundSpeed;
 	screen.loadText(text3.str().c_str());
+	screen.drawText(1, 10);
+
+	text4 << "Height Radius: " << player.radius.h << "\nWidth Radius: " << player.radius.w;
+	screen.loadText(text4.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 10));
+}
+
+InputHandler::InputHandler()
+{
+	keyDown = false;
+	key = NONE;
 }
 
 void InputHandler::keyState(SDL_Event e)
 {
     switch(e.type) {
-	case SDL_KEYDOWN:
-        keyDown = true;
-        switch(e.key.keysym.sym) {
-            case SDLK_UP:
-                key = UP;
-                break;
-            case SDLK_DOWN:
-                key = DOWN;
-                break;
-            case SDLK_LEFT:
-                key = LEFT;
-                break;
-            case SDLK_RIGHT:
-                key = RIGHT;
-                break;
-        }
-		break;
+		case SDL_KEYDOWN:
+			keyDown = true;
+			switch(e.key.keysym.sym) {
+				case SDLK_UP:
+					key = UP;
+					break;
+				case SDLK_DOWN:
+					key = DOWN;
+					break;
+				case SDLK_LEFT:
+					key = LEFT;
+					break;
+				case SDLK_RIGHT:
+					key = RIGHT;
+					break;
+				case SDLK_SPACE:
+					key = SPACE;
+					break;
+				default:
+					key = NONE;
+					break;
+			}
+			break;
 
-    case SDL_KEYUP:
-        keyDown = false;
-        key = NONE;
-		break;
+		case SDL_KEYUP:
+			keyDown = false;
+			key = NONE;
+			break;
 	}
 }

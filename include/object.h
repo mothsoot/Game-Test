@@ -1,7 +1,17 @@
 #pragma once
 
-#include <SDL.h>
-//#include "screen.h"
+#include "screen.h"
+
+/* OBJECT HEIRARCHY
+
+-OBJECT
+    - PLAYER
+    - ITEM
+        - RING
+        - SPRING
+    - ENEMY
+
+*/
 
 enum OBJECT_TYPE {
     TYPE_UNKNOWN,
@@ -11,8 +21,8 @@ enum OBJECT_TYPE {
 };
 
 struct Position {
-	int x;
-	int y;
+        int x;
+        int y;
 };
 
 struct Radius {
@@ -27,14 +37,22 @@ struct Hitbox {
     Radius radius;
 };
 
+struct Sprite {
+    SDL_Rect s;
+    SDL_Texture* tex;
+
+    bool flip;
+};
+
 class Object {
     public:
         Object();
         ~Object() {}
 
-        // virtual void create();
-        // virtual void draw();
-        // virtual void update();
+        // void create();
+        void destroy();
+
+        void draw(Screen screen);
 
         int type;
 
@@ -43,17 +61,15 @@ class Object {
         Position pos;
         Position setPos(int x, int y);
 
-        SDL_Rect sprite;
-        bool flipSprite;
+        Sprite sprite;
 
-        // Collision collision;
         Radius radius;
         Radius setRadius(int h, int w);
         Radius setRadius(int h, int w, int push);
 
         Hitbox hitbox;
         // void setHitbox();
-        
+
     private:
 
 };

@@ -1,9 +1,6 @@
 #pragma once
 
 #include "object.h"
-#include "player.h"
-
-class Player;
 
 enum COLLISION_MODE {
 	FLOOR,
@@ -28,10 +25,17 @@ struct Sensor {
 
 class Collision {
     public:
-        Collision();
-        ~Collision();
+        Collision() {}
+        ~Collision() {}
 
-        bool wallCollision(Player player);
+        bool floor;
+		bool lWall;
+		bool rWall;
+		bool ceiling;
+
+        void screenCollision(int x);
+
+        /*bool wallCollision(Player player);
         bool groundCollision(Player player);
         bool ceilingCollision(Player player);
 
@@ -40,7 +44,7 @@ class Collision {
         Sensor sensorC(Player player);
         Sensor sensorD(Player player);
         Sensor sensorE(Player player);
-        Sensor sensorF(Player player);
+        Sensor sensorF(Player player);*/
 
     private:
 

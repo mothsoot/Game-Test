@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 int sign(float x); // get sign of x
 int absolute(int x); // get positive version of x
 

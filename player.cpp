@@ -1,7 +1,7 @@
 #include "player.h"
 
 // constructor
-Player::Player()
+Player::Player(int x, int y)
 {
     type = TYPE_PLAYER;
     action = ACTION_NORMAL;
@@ -15,87 +15,93 @@ Player::Player()
     collide.ceiling = false;
     grounded = true;
 
-    setPos(20, 20);
+    setPos(x, y);
     setRadius(19, 9, 10); // height, width, push. 14, 7, 10 when jump/roll
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
     groundAngle = 0;
 
-    sprite = SPRITE;
+    sprite.s = SPRITE;
+    sprite.flip = false;
 }
 
 void Player::update()
 {
-    // ROLLING
-    if(action == ACTION_ROLL) {
-        setRadius(14, 7);
+    if(!active) {
+        // player dead!!
+    } else {
 
-        if(sign(groundSpeed) == sign(sin(groundAngle))) {
-            groundSpeed -= SLOPE_FACTOR_ROLLUP * sin(groundAngle);
-        } else if(sign(groundSpeed) != sign(sin(groundAngle))) {
-            groundSpeed -= SLOPE_FACTOR_ROLLDOWN * sin(groundAngle);
-        }
-            // adjust groundSpeed based on groundAngle
-        // isJump();
-        getGroundSpeed();
-            // adjust groundSpeed based on input + friction & accel/decel
-        // wallCollision();
-        // setCamera();
-        // move(time);
-        // groundCollision();
-        // isSlipping()/isFalling();
+    if(collide.floor) {
+        grounded = true;
     }
 
     // AIRBORNE
-    else if(!grounded) {
+    if(!grounded) {
         setRadius(19, 9);
+
+        groundSpeed = 0; // not on ground!
+
         if(collide.lWall || collide.rWall) {
             xSpeed = 0;
         }
 
+        if(!input.keyDown) {
+            // jump button released
+        }
+
         // check for jump button release
 
-        // isSuper();
-
-        // update xSpeed based on input
+        xSpeed = getSpeed(xSpeed);
+            // update xSpeed based on input
 
         // apply air drag
 
-        // move(time);
-        if(!collide.floor) {
-            getxSpeed();
-            getySpeed();
-            ySpeed += GRAVITY_FORCE;
-                // apply gravity, update ySpeed by adding gravity
-            if(ySpeed >= 70) {
-                ySpeed = 70; // limit, 16 in CD
-            }
+        // move();
+        airDrag();
+        ySpeed += GRAVITY_FORCE;
+            // apply gravity, update ySpeed by adding gravity
 
-            airRotation();
-                // rotate groundAngle back to 0
-        } else if(collide.floor) {
-            ySpeed = 0;
-            grounded = true;
+        if(ySpeed >= 6) {
+            ySpeed = 6; // limit, 16 in CD
         }
+
+        if(ySpeed <= -6) {
+            ySpeed = -6;
+        }
+
+        airRotation();
+            // rotate groundAngle back to 0
+
+        if(collide.floor) {
+            ySpeed = 0;
+        }
+
         // airCollision();
+        
     }
 
     // NORMAL
-    // if(action == ACTION_NORMAL) {
-    else {
+    else if(grounded) {
         setRadius(19, 9);
+
         // check for special actions (balancing, etc.)
-        // isSpinDash();
 
         if(mode != CEILING) {
             groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
         }
             // adjust groundSpeed based on groundAngle
 
-        // isJump();
+        // ifJump();
+        if(input.key == SPACE) {
+            action = ACTION_JUMP;
+            grounded = false;
+            jumpVelocity();
+        } else {
 
-        getGroundSpeed();
+        if(action == ACTION_NORMAL || action == ACTION_SKID || action == ACTION_CROUCH || action == ACTION_LOOKUP) {
+
+        groundSpeed = getSpeed(groundSpeed);
             // adjust groundSpeed based on input + friction & accel/decel
 
         if(action == ACTION_CROUCH) {
@@ -103,7 +109,7 @@ void Player::update()
         }
         
         // wallCollision();
-        if(collide.lWall || collide.rWall) {
+        if((collide.lWall && (groundSpeed < 0)) || (collide.rWall && (groundSpeed > 0))) {
             groundSpeed = 0;
         }
 
@@ -116,7 +122,7 @@ void Player::update()
                 sensorE.pos.x += xSpeed;
             } */
                 // add xSpeed & ySpeed to sensor position
-        // isRoll();
+
         // setCamera();
 
         getxSpeed();
@@ -125,7 +131,7 @@ void Player::update()
             
         // }
 
-        // move(time)
+        // move()
             // update xPos & yPos based on xSpeed & ySpeed
 
         // groundCollision();
@@ -133,83 +139,75 @@ void Player::update()
             // update groundAngle
         // pos.y += groundSensor.distance;
             // align sprite to ground
-
-        // isSlipping()/isFalling();
-            // if groundSpeed too low on walls/ceilings
+        }
+    }
     }
 
     // check hitboxes
 
     setSprite();
+
+    move();
+    }
 }
 
-void Player::move(float time)
+void Player::move()
 {
     // move left or right
-    pos.x += xSpeed * time;
+    pos.x += xSpeed;
 
     // too far left or right
-	if(pos.x < 0) {
-        pos.x = 0;
-        collide.lWall = true;
-        //active = false;
-    } else if(pos.x > SCREEN_WIDTH - PLAYER_SPRITE_WIDTH) {
-        pos.x = SCREEN_WIDTH - PLAYER_SPRITE_WIDTH;
-        collide.rWall = true;
-    } else {
-        collide.lWall = false;
-        collide.rWall = false;
-    }
+    collide.screenCollision(pos.x);
 
     // move up or down
-    pos.y += ySpeed * time;
+    pos.y += ySpeed;
 
     // too far up or down
 	if(pos.y <= 0) {
         pos.y = 0;
         collide.ceiling = true;
-    } else if(pos.y >= SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT) {
-        pos.y = SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT;
-        collide.floor = true;
     } else {
         collide.ceiling = false;
+    }
+    
+    if(pos.y >= SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT) {
+        pos.y = SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT;
+
+        ySpeed = 0; // temp here so it works
+        collide.floor = true;
+    } else {
         collide.floor = false;
     }
-}
-
-void Player::draw(Screen screen)
-{
-    screen.drawSprite(pos.x, pos.y, sprite, flipSprite);
 }
 
 void Player::setSprite()
 {
     switch(action) {
         case ACTION_NORMAL:
-            sprite = SPRITE;
+            sprite.s = SPRITE;
             switch(input.key) {
                 case RIGHT:
-                    flipSprite = false;
+                    sprite.flip = false;
                     break;
                 case LEFT:
-                    flipSprite = true;
+                    sprite.flip = true;
                     break;
             }
             break;
         case ACTION_CROUCH:
-            sprite = SPRITE_DOWN;
+            sprite.s = SPRITE_DOWN;
             break;
         case ACTION_LOOKUP:
-            sprite = SPRITE_UP;
+            sprite.s = SPRITE_UP;
             break;
         case ACTION_SKID:
-            sprite = SPRITE_SKID;
+            sprite.s = SPRITE_SKID;
             switch(input.key) {
                 case RIGHT: // pressing right, moving left
-                    flipSprite = true;
+                    sprite.flip = true;
                     break;
                 case LEFT: // pressing left, moving right
-                    flipSprite = false;
+                    sprite.flip = false;
                     break;
             }
             break;
@@ -233,12 +231,6 @@ void Player::setMode()
 void Player::getxSpeed()
 {
     xSpeed = groundSpeed * cos(groundAngle);
-
-    if(xSpeed >= TOP_SPEED) {
-        xSpeed = TOP_SPEED;
-    } else if(xSpeed <= -TOP_SPEED) {
-        xSpeed = -TOP_SPEED;
-    }
 }
 
 void Player::getySpeed()
@@ -246,88 +238,115 @@ void Player::getySpeed()
     ySpeed = groundSpeed * -sin(groundAngle);
 }
 
-void Player::setFriction()
+float Player::setFriction(float speed)
 {
-	if(groundSpeed < 0) { // moving left
-        groundSpeed += FRICTION_SPEED;
+	if(speed < 0) { // moving left
+        speed += FRICTION_SPEED;
 
-        if(groundSpeed >= 0) {
-            groundSpeed = 0;
+        if(speed >= 0) {
+            speed = 0;
         }
-    } else if(groundSpeed > 0) { // moving right
-        groundSpeed -= FRICTION_SPEED;
+    } else if(speed > 0) { // moving right
+        speed -= FRICTION_SPEED;
 
-        if(groundSpeed <= 0) {
-            groundSpeed = 0;
+        if(speed <= 0) {
+            speed = 0;
         }
     }
+    
+    return speed;
 }
 
-// speed for slopes
-void Player::getGroundSpeed()
+float Player::getSpeed(float speed)
 {
+    // float speed is temp to return to either groundSpeed or xSpeed
+
     if(input.keyDown) {
         switch(input.key) {
         case LEFT: // pressing left
-            //while (groundSpeed >= -TOP_SPEED) {
-                if(groundSpeed > 0) { // moving right
-                    action = ACTION_SKID;
-
-                    groundSpeed -= DECEL_SPEED;
+            //while (speed >= -TOP_SPEED) {
+                if(speed > 0) { // moving right
+                    if(grounded) {
+                        action = ACTION_SKID;
+                        speed -= DECEL_SPEED;
+                    } else {
+                        speed -= AIR_ACCEL_SPEED;
+                    }
 
                     // quick turnaround
-                    if(groundSpeed <= 0) {
-                        groundSpeed = -0.5;
+                    if(speed <= 0) {
+                        speed = -0.5;
                     }
-                } else if(groundSpeed >= -TOP_SPEED) { // moving left
+                } else if(speed >= -TOP_SPEED) { // moving left
                     action = ACTION_NORMAL;
 
-                    groundSpeed -= ACCEL_SPEED;
+                    if(grounded) {
+                        speed -= ACCEL_SPEED;
+                    } else {
+                        speed -= AIR_ACCEL_SPEED;
+                    }
 
-                    if(groundSpeed <= -TOP_SPEED) {
-                        groundSpeed = -TOP_SPEED; // limit
+                    if(speed <= -TOP_SPEED) {
+                        speed = -TOP_SPEED; // limit
                     }
                 }
             //}
             break;
 
         case RIGHT: // pressing right
-            //while (groundSpeed <= TOP_SPEED) {
-                if(groundSpeed < 0) { // moving left
-                    action = ACTION_SKID;
+            //while (speed <= TOP_SPEED) {
+                if(speed < 0) { // moving left
+                    if(grounded) {
+                        action = ACTION_SKID;
 
-                    groundSpeed += DECEL_SPEED;
+                        speed += DECEL_SPEED;
+                    } else {
+                        speed += AIR_ACCEL_SPEED;
+                    }
                     
                     // quick turnaround
-                    if(groundSpeed >= 0) {
-                        groundSpeed = 0.5;
+                    if(speed >= 0) {
+                        speed = 0.5;
                     }
 
-                } else if(groundSpeed <= TOP_SPEED) { // moving right
+                } else if(speed <= TOP_SPEED) { // moving right
                     action = ACTION_NORMAL;
+                    if(grounded) {
+                        speed += ACCEL_SPEED;
+                    } else {
+                        speed += AIR_ACCEL_SPEED;
+                    }
 
-                    groundSpeed += ACCEL_SPEED;
-
-                    if(groundSpeed >= TOP_SPEED) {
-                        groundSpeed = TOP_SPEED; // limit
+                    if(speed >= TOP_SPEED) {
+                        speed = TOP_SPEED; // limit
                     }
                 }
             //}
-            break;
+            break; //
 
         case UP:
-            action = ACTION_LOOKUP;
+            if(grounded) {
+                action = ACTION_LOOKUP;
+            }
             break;
 
         case DOWN:
-            action = ACTION_CROUCH;
+            if(grounded) {
+                action = ACTION_CROUCH;
+            }
             break;
     }
 
-    } else if((!input.keyDown) || (input.keyDown) && (input.key == NONE)) {
-        action = ACTION_NORMAL;
-        setFriction();
     }
+
+    else if((!input.keyDown) || (input.keyDown) && (input.key == NONE)) {
+        action = ACTION_NORMAL;
+        if(grounded) {
+            speed = setFriction(speed);
+        }
+    }
+
+    return speed;
 }
 
 // STUFF TO IMPLEMENT LATER !!
@@ -353,24 +372,6 @@ void Player::variableJumpHeight()
 }
 
 // AIRBORNE
-void Player::airAcceleration()
-{
-    if(input.keyDown) {
-        switch (input.key) {
-            case RIGHT:
-                xSpeed -= AIR_ACCEL_SPEED;
-                break;
-            case LEFT:
-                xSpeed += AIR_ACCEL_SPEED;
-                break;
-        }
-
-        if(xSpeed >= TOP_SPEED) {
-            xSpeed = TOP_SPEED;
-        }
-    }
-}
-
 void Player::gravity()
 {
     // for every step player is airborne

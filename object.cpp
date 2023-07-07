@@ -6,6 +6,11 @@ Object::Object()
     active = true;
 }
 
+void Object::destroy()
+{
+    SDL_DestroyTexture(sprite.tex);
+}
+
 Position Object::setPos(int x, int y)
 {
     // SDL draws from top-left corner
@@ -33,6 +38,11 @@ Radius Object::setRadius(int h, int w, int push)
     radius.push = push;
 
     return radius;
+}
+
+void Object::draw(Screen screen)
+{
+    screen.drawSprite(pos.x, pos.y, sprite.s, sprite.tex, sprite.flip);
 }
 
 /*void Object::setHitbox(Player player, Hitbox &hitbox)

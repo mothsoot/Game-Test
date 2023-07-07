@@ -1,18 +1,19 @@
 #pragma once
 
-#include "main.h"
+//#include "main.h"
 #include "collision.h"
 #include "screen.h"
 #include "object.h"
+#include "math.h"
 
 // POSITIONS & SPEED
-const float ACCEL_SPEED = 12; // 0.046875; // 12 subpixels
-const float DECEL_SPEED = 128; // 0.5; // 128 subpixels
-const float FRICTION_SPEED = 12; // 0.046875; // 12 subpixels
-const float TOP_SPEED = 200; // 6
+const float ACCEL_SPEED = 0.05; //0.046875; // 12 subpixels
+const float DECEL_SPEED = 0.5; // 128 subpixels
+const float FRICTION_SPEED = 0.05; //0.046875; // 12 subpixels
+const float TOP_SPEED = 3;
 
-const float GRAVITY_FORCE = 0.21875; // 56 subpixels
-const float AIR_ACCEL_SPEED = 200; // 0.09375; // 24 subpixels
+const float GRAVITY_FORCE = 0.2; // 0.21875; // 56 subpixels
+const float AIR_ACCEL_SPEED = 0.1; // 0.09375; // 24 subpixels
 
 const float JUMP_FORCE = 6.5;
 const float JUMP_RELEASE = -4;
@@ -27,52 +28,56 @@ const float SLOPE_FACTOR_ROLLDOWN = 0.3125; // 80 subpixels
 const int PLAYER_SPRITE_HEIGHT = 39;
 const int PLAYER_SPRITE_WIDTH = 29;
 
+class Screen;
+
+enum Key {
+    UP,
+    DOWN,
+    LEFT,
+    RIGHT,
+	SPACE,
+	NONE
+};
+
 enum ACTION {
 	ACTION_NORMAL,
     ACTION_JUMP,
 	ACTION_CROUCH,
 	ACTION_LOOKUP,
-    ACTION_ROLL,
     ACTION_SKID,
-    ACTION_SPINDASH
-};
-
-struct Collide {
-	bool floor;
-	bool lWall;
-	bool rWall;
-	bool ceiling;
 };
 
 class InputHandler {
     public:
-        InputHandler() {}
+        InputHandler();
         ~InputHandler() {}
 
         void keyState(SDL_Event e);
         bool keyDown;
         int key;
+
+		bool hold;
+		bool press;
 };
 
-class Player : public Object {
+class Player: public Object {
 	public:
-		Player(); // : Object() {}
-		//~Player() {}
+		Player(int x, int y);
+		// ~Player(); // use Object class deconstructor
 
 		// void create();
 		void update();
-		void move(float time);
-		void draw(Screen screen);
-		// void delete();
+		void move();
 
 		float xSpeed;
         float ySpeed;
-		float groundSpeed;
+		float groundSpeed; // for slopes
 
-		void getxSpeed();
-		void getySpeed();
-		void setFriction();
-		void getGroundSpeed();
+		float getSpeed(float speed); // pass either groundSpeed or xSpeed
+
+		void getxSpeed(); // get from groundSpeed
+		void getySpeed(); // get from groundSpeed
+		float setFriction(float speed);
 
 		int mode;
 		void setMode();
@@ -80,20 +85,22 @@ class Player : public Object {
 		// SPRITE
 		void setSprite();
 
-        float groundAngle;
-
 		int action;
 
 		bool grounded;
 
-		Collide collide;
-
 		InputHandler input;
     
-		// STUFF TO WORK ON LATER
+		// STUFF TO WORK ON/WITH LATER
+		Collision collide;
+
+		float groundAngle;
+
+		bool jump;
+		bool push;
+
 		void jumpVelocity();
 		void variableJumpHeight();
-		void airAcceleration();
 		void gravity();
 		void airDrag();
 		void airRotation();

@@ -1,10 +1,25 @@
 #include "collision.h"
 
+void Collision::screenCollision(int x)
+{
+    
+	if(x <= 0) {
+        x = 0;
+        lWall = true;
+    } else if(x >= SCREEN_WIDTH - 29) {
+        x = SCREEN_WIDTH - 39;
+        rWall = true;
+    } else {
+        lWall = false;
+        rWall = false;
+    }
+}
+
 // GROUND SENSORS
 
 // whichever finds nearest ground tile has its distance & tile angle returned
 // 
-
+/*
 bool Collision::groundCollision(Player player)
 {
     Sensor ground;
@@ -45,7 +60,7 @@ bool Collision::groundCollision(Player player)
             return false;
         }
 
-        if() { // check if player moving mostly down, player falling
+        if((player.ySpeed < 0) && (player.xSpeed < absolute(player.ySpeed))) { // check if player moving mostly down, player falling
             if(A.distance >= -(player.ySpeed + 8) || B.distance >= -(player.ySpeed + 8)) {
                 // collision
                 return true;
@@ -54,7 +69,7 @@ bool Collision::groundCollision(Player player)
             }
         }
     
-        if() { // check if player moving mostly left/right
+        if(player.xSpeed > absolute(player.ySpeed)) { // check if player moving mostly left/right
             if(player.ySpeed >= 0) {
                 // collision
                 return true;
@@ -63,31 +78,26 @@ bool Collision::groundCollision(Player player)
             }
         }
 
-        if() { // check if player moving mostly up, player flying up
-            if() { // something something detect if collided
-                // no collision
-                return false;
-            } else {
-                // collision
-                return true;
+        if((player.ySpeed > 0) && (player.xSpeed < player.ySpeed)) { // check if player moving mostly up, player flying up
+            // collision
+            return true;
                 
-                // slope
-                if(91 <= player.groundAngle <= 135 || 226 <= player.groundAngle <= 270) { // 191-160 & 95-64 in hex
-                    // player reattaches to ceiling
-                    player.groundSpeed = player.ySpeed * -sign(sin(player.groundAngle));
-                }
-                // ceiling
-                else if(136 <= player.groundAngle <= 225) { // 159-96 in hex
-                    // player hits ceiling & doesn't reattach
-                    player.ySpeed = 0;
-                    // xSpeed is unaffected
-                }
+            // slope
+            if(91 <= player.groundAngle <= 135 || 226 <= player.groundAngle <= 270) { // 191-160 & 95-64 in hex
+                // player reattaches to ceiling
+                player.groundSpeed = player.ySpeed * -sign(sin(player.groundAngle));
+            }
+            // ceiling
+            else if(136 <= player.groundAngle <= 225) { // 159-96 in hex
+                // player hits ceiling & doesn't reattach
+                player.ySpeed = 0;
+                // xSpeed is unaffected
             }
         }
     }
-}
+}*/
 
-void landingGround(Sensor ground, Player &player)
+/* void landingGround(Sensor ground, Player &player)
 {
     player.grounded = true;
     // get tile angle landed on
@@ -99,7 +109,7 @@ void landingGround(Sensor ground, Player &player)
     }
     // slope
     else if(24 <= player.groundAngle <= 45 || 316 <= player.groundAngle <= 338) { // 239-224 & 31-16 in hex
-        if() { // check if player moving mostly left/right
+        if(player.xSpeed > absolute(player.ySpeed)) { // check if player moving mostly left/right
             player.groundSpeed = player.xSpeed;
         } else {
             player.groundSpeed = player.ySpeed * 0.5 * -sign(sin(player.groundAngle));
@@ -107,15 +117,15 @@ void landingGround(Sensor ground, Player &player)
     }
     // steep slope
     else if(46 <= player.groundAngle <= 90 || 271 <= player.groundAngle <= 315) { // 223-192 & 63-32 in hex
-        if() { // check if player moving mostly left/right
+        if(player.xSpeed > absolute(player.ySpeed)) { // check if player moving mostly left/right
             player.groundSpeed = player.xSpeed;
         } else {
             player.groundSpeed = player.ySpeed * -sign(sin(player.groundAngle));
         }
     }
-}
+} */
 
-bool Collision::ceilingCollision(Player player)
+/* bool Collision::ceilingCollision(Player player)
 {
     Sensor ceiling;
     Sensor C = sensorC(player);
@@ -136,9 +146,9 @@ bool Collision::ceilingCollision(Player player)
         player.pos.y -= ceiling.distance;
         return true;
     }
-}
+} */
 
-bool Collision::wallCollision(Player player)
+/* bool Collision::wallCollision(Player player)
 {
     // if collide with wall
     // if moving towards wall
@@ -169,9 +179,9 @@ bool Collision::wallCollision(Player player)
             // hitWall(wall, player);
         }
     }
-}
+} */
 
-void hitWall(Sensor wall, Player &player)
+/* void hitWall(Sensor wall, Player &player)
 {
     if(player.mode == FLOOR) {
         if(wall.distance > 0) {
@@ -218,8 +228,9 @@ void hitWall(Sensor wall, Player &player)
             }
         }
     }
-}
+} */
 
+/*
 // right ground
 Sensor Collision::sensorA(Player player)
 {
@@ -314,3 +325,4 @@ Sensor sensorF(Player player)
     }
     return F;
 }
+*/

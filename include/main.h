@@ -7,7 +7,6 @@ using std::endl;
 using std::string;
 #include <sstream>
 using std::stringstream;
-#include <cmath>
 
 #include "screen.h"
 #include "player.h"
@@ -15,12 +14,6 @@ using std::stringstream;
 #include "timer.h"
 #include "math.h"
 
-enum Key {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-    NONE
-};
+class Screen;
 
 void debugText(Player player, Screen screen);
