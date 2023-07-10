@@ -2,21 +2,25 @@
 
 bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture)
 {
+	// initialize SDL
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
 		cerr << "Could not initialize SDL!! SDL_Error: " << SDL_GetError() << endl;
 		return false;
-	} 
+	}
 	
+	// initialize SDL_Image for image files
 	if(IMG_Init(IMG_INIT_PNG) < 0) {
 		cerr << "Could not initialize SDL_Image!! IMG_Error: " << IMG_GetError() << endl;
 		return false;
 	}
 
+	// initialize SDL_TTF for fonts
 	if(TTF_Init() < 0) {
 		cerr << "Could not initialize SDL_TTF!! TTF_Error: " << TTF_GetError() << endl;
 		return false;
 	}
 
+	// create window to render in
 	window = SDL_CreateWindow("Game moment", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if(window == NULL) {
 		cerr << "Window not created! SDL_Error: " << SDL_GetError() << endl;
@@ -25,23 +29,24 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 
 	// create renderer for window
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-        // First  = window drawing in
-	    // Second = rendering driver (-1 sets to default)
-    	// Third  = sets SDL_RendererFlags (0 sets to default hardware rendering)
+		// window drawing in, rendering driver (-1 sets to default), sets SDL_RendererFlags
 	if(renderer == nullptr) {
         cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << endl;
         return false;
     }
 
+	// load font
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
 
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
+	// set window colour to white
+	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     return true;
 }
 
 void Screen::shutDown()
 {
+	// deallocate resources
 	SDL_DestroyTexture(textTexture);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -63,6 +68,7 @@ void Screen::prep()
 
 void Screen::present()
 {
+	// render screen :)!
 	SDL_RenderPresent(renderer);
 }
 
@@ -84,8 +90,8 @@ void Screen::drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, bool fl
 
 void Screen::drawText(int x, int y)
 {
-	int texW = 0;
-	int texH = 0;
+	// get text width & height
+	int texW, texH;
 	SDL_QueryTexture(textTexture, NULL, NULL, &texW, &texH);
 
 	// destination rectangle

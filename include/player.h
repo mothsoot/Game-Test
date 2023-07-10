@@ -2,15 +2,16 @@
 
 //#include "main.h"
 #include "collision.h"
+#include "input.h"
 #include "screen.h"
 #include "object.h"
 #include "math.h"
 
 // POSITIONS & SPEED
-const float ACCEL_SPEED = 0.05; //0.046875; // 12 subpixels
-const float DECEL_SPEED = 0.5; // 128 subpixels
-const float FRICTION_SPEED = 0.05; //0.046875; // 12 subpixels
-const float TOP_SPEED = 3;
+const float ACCEL_SPEED = 0.5; //0.046875; // 12 subpixels
+const float DECEL_SPEED = 1; // 128 subpixels
+const float FRICTION_SPEED = 0.5; //0.046875; // 12 subpixels
+const float TOP_SPEED = 5;
 
 const float GRAVITY_FORCE = 0.2; // 0.21875; // 56 subpixels
 const float AIR_ACCEL_SPEED = 0.1; // 0.09375; // 24 subpixels
@@ -25,39 +26,18 @@ const float SLOPE_FACTOR = 0.125; // 32 subpixels
 const float SLOPE_FACTOR_ROLLUP = 0.078125; // 20 subpixels
 const float SLOPE_FACTOR_ROLLDOWN = 0.3125; // 80 subpixels
 
+// PLAYER SPRITE
 const int PLAYER_SPRITE_HEIGHT = 39;
 const int PLAYER_SPRITE_WIDTH = 29;
 
 class Screen;
 
-enum Key {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-	SPACE,
-	NONE
-};
-
 enum ACTION {
 	ACTION_NORMAL,
-    ACTION_JUMP,
+	ACTION_JUMP,
 	ACTION_CROUCH,
 	ACTION_LOOKUP,
-    ACTION_SKID,
-};
-
-class InputHandler {
-    public:
-        InputHandler();
-        ~InputHandler() {}
-
-        void keyState(SDL_Event e);
-        bool keyDown;
-        int key;
-
-		bool hold;
-		bool press;
+	ACTION_SKID,
 };
 
 class Player: public Object {
@@ -70,7 +50,7 @@ class Player: public Object {
 		void move();
 
 		float xSpeed;
-        float ySpeed;
+		float ySpeed;
 		float groundSpeed; // for slopes
 
 		float getSpeed(float speed); // pass either groundSpeed or xSpeed
@@ -90,14 +70,11 @@ class Player: public Object {
 		bool grounded;
 
 		InputHandler input;
-    
+
 		// STUFF TO WORK ON/WITH LATER
 		Collision collide;
 
 		float groundAngle;
-
-		bool jump;
-		bool push;
 
 		void jumpVelocity();
 		void variableJumpHeight();

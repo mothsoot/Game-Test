@@ -9,6 +9,7 @@ using std::string;
 using std::stringstream;
 
 #include "screen.h"
+#include "input.h"
 #include "player.h"
 #include "items.h"
 #include "timer.h"

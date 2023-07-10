@@ -78,17 +78,24 @@ void debugText(Player player, Screen screen)
 {
 	stringstream action;
 	stringstream keyPress;
-	stringstream text1;
-	stringstream text2;
-	stringstream text3;
-	stringstream text4;
+	stringstream coords;
+	stringstream collision;
+	stringstream speed;
 
 	action.str("");
 	keyPress.str("");
-	text1.str("");
-	text2.str("");
-	text3.str("");
-	text4.str("");
+	coords.str("");
+	collision.str("");
+	speed.str("");
+
+	coords << "X: " << player.pos.x << "\nY: " << player.pos.y;
+	screen.loadText(coords.str().c_str());
+	screen.drawText(1, 0);
+
+	speed << "X Speed: " << player.xSpeed << "\nY Speed: " << player.ySpeed;
+	speed << "\nGround Speed: " << player.groundSpeed;
+	screen.loadText(speed.str().c_str());
+	screen.drawText(1, 10);
 
 	action << "Action: ";
 	switch(player.action) {
@@ -109,109 +116,49 @@ void debugText(Player player, Screen screen)
 			break;
 	}
 	screen.loadText(action.str().c_str());
-	screen.drawText(1, (SCREEN_HEIGHT - 40));
-
-	keyPress << "Key: ";
-	switch(player.input.key) {
-		case UP:
-			keyPress << "UP";
-			break;
-		case DOWN:
-			keyPress << "DOWN";
-			break;
-		case LEFT:
-			keyPress << "LEFT";
-			break;
-		case RIGHT:
-			keyPress << "RIGHT";
-			break;
-		case SPACE:
-			keyPress << "SPACE";
-			break;
-	}
-	if(player.input.keyDown) {
-		keyPress << " PRESS";
-	} else {
-		keyPress << " RELEASED";
-	}
-	screen.loadText(keyPress.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 30));
 
-	text1 << "X: " << player.pos.x << "\nY: " << player.pos.y;
-	screen.loadText(text1.str().c_str());
-	screen.drawText(1, 0);
-
-	text2 << "Collide? ";
-	if(player.collide.floor) {
-		text2 << "floor";
+	keyPress << "Key: ";
+	if(player.input.isUp()) {
+		keyPress << "UP";
 	}
-	if(player.collide.lWall) {
-		text2 << "lWall";
+	if(player.input.isDown()) {
+		keyPress << "DOWN";
 	}
-	if(player.collide.rWall) {
-		text2 << "rWall";
+	if(player.input.isLeft()) {
+		keyPress << "LEFT";
 	}
-	if(player.collide.ceiling) {
-		text2 << "ceiling";
+	if(player.input.isRight()) {
+		keyPress << "RIGHT";
 	}
-	if(!player.collide.floor && !player.collide.lWall && !player.collide.rWall && !player.collide.ceiling) {
-		text2 << "false";
+	if(player.input.isSpace()) {
+		keyPress << "SPACE";
 	}
-	text2 << "\nGrounded? ";
-	if(player.grounded) {
-		text2 << "true";
-	} else {
-		text2 << "false";
-	}
-	screen.loadText(text2.str().c_str());
+	screen.loadText(keyPress.str().c_str());
 	screen.drawText(1, (SCREEN_HEIGHT - 20));
 
-	text3 << "X Speed: " << player.xSpeed << "\nY Speed: " << player.ySpeed;
-	text3 << "\nGround Speed: " << player.groundSpeed;
-	screen.loadText(text3.str().c_str());
-	screen.drawText(1, 10);
-
-	text4 << "Height Radius: " << player.radius.h << "\nWidth Radius: " << player.radius.w;
-	screen.loadText(text4.str().c_str());
-	screen.drawText(1, (SCREEN_HEIGHT - 10));
-}
-
-InputHandler::InputHandler()
-{
-	keyDown = false;
-	key = NONE;
-}
-
-void InputHandler::keyState(SDL_Event e)
-{
-    switch(e.type) {
-		case SDL_KEYDOWN:
-			keyDown = true;
-			switch(e.key.keysym.sym) {
-				case SDLK_UP:
-					key = UP;
-					break;
-				case SDLK_DOWN:
-					key = DOWN;
-					break;
-				case SDLK_LEFT:
-					key = LEFT;
-					break;
-				case SDLK_RIGHT:
-					key = RIGHT;
-					break;
-				case SDLK_SPACE:
-					key = SPACE;
-					break;
-				default:
-					key = NONE;
-					break;
-			}
-			break;
-
-		case SDL_KEYUP:
-			keyDown = false;
-			key = NONE;
-			break;
+	collision << "Collide? ";
+	if(player.collide.isFloor()) {
+		collision << "floor";
 	}
+	if(player.collide.islWall()) {
+		collision << "lWall";
+	}
+	if(player.collide.isrWall()) {
+		collision << "rWall";
+	}
+	if(player.collide.isCeiling()) {
+		collision << "ceiling";
+	}
+	if(player.collide.isNone()) {
+		collision << "false";
+	}
+	collision << "\nGrounded? ";
+	if(player.grounded) {
+		collision << "true";
+	} else {
+		collision << "false";
+	}
+	screen.loadText(collision.str().c_str());
+	screen.drawText(1, (SCREEN_HEIGHT - 10));
 }

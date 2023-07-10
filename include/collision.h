@@ -2,6 +2,7 @@
 
 #include "object.h"
 
+
 enum COLLISION_MODE {
 	FLOOR,
 	RWALL,
@@ -25,15 +26,25 @@ struct Sensor {
 
 class Collision {
     public:
-        Collision() {}
+        Collision();
         ~Collision() {}
 
+        bool isFloor() { return floor; }
+        bool islWall() { return lWall; }
+        bool isrWall() { return rWall; }
+        bool isCeiling() { return ceiling; }
+        bool isNone();
+
+        void reset();
+
+        void screenCollision_hor(int x);
+        void screenCollision_ver(int y);
+
+    private:
         bool floor;
 		bool lWall;
 		bool rWall;
 		bool ceiling;
-
-        void screenCollision(int x);
 
         /*bool wallCollision(Player player);
         bool groundCollision(Player player);
@@ -45,9 +56,6 @@ class Collision {
         Sensor sensorD(Player player);
         Sensor sensorE(Player player);
         Sensor sensorF(Player player);*/
-
-    private:
-
 };
 
 

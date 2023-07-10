@@ -1,5 +1,5 @@
 # files to compile
-OBJS = main.o math.o screen.o collision.o object.o player.o items.o timer.o
+OBJS = main.o math.o screen.o input.o collision.o object.o player.o items.o timer.o
 
 # compiler
 CC = g++
@@ -22,6 +22,8 @@ math.o: math.cpp #include/math.h
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c math.cpp -o math.o
 screen.o: screen.cpp #include/screen.h include/main.h
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c screen.cpp -o screen.o
+input.o: input.cpp
+	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c input.cpp -o input.o
 collision.o: collision.cpp #include/collision.h include/player.h
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c collision.cpp -o collision.o
 object.o: object.cpp #include/object.h include/screen.h

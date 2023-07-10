@@ -1,17 +1,51 @@
 #include "collision.h"
 
-void Collision::screenCollision(int x)
+Collision::Collision()
 {
-    
+    reset();
+}
+
+bool Collision::isNone()
+{
+    if(!floor && !lWall && !rWall && !ceiling) {
+        return true;
+    }
+    return false;
+}
+
+void Collision::reset()
+{
+    floor = false;
+    lWall = false;
+    rWall = false;
+    ceiling = false;
+}
+
+void Collision::screenCollision_hor(int x)
+{
 	if(x <= 0) {
         x = 0;
         lWall = true;
     } else if(x >= SCREEN_WIDTH - 29) {
-        x = SCREEN_WIDTH - 39;
+        x = SCREEN_WIDTH - 29;
         rWall = true;
     } else {
         lWall = false;
         rWall = false;
+    }
+}
+
+void Collision::screenCollision_ver(int y)
+{
+    if(y <= 0) {
+        y = 0;
+        ceiling = true;
+    } else if(y >= SCREEN_HEIGHT - 39) {
+        y = SCREEN_HEIGHT - 39;
+        floor = true;
+    } else {
+        ceiling = false;
+        floor = false;
     }
 }
 

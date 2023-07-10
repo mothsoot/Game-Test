@@ -12,7 +12,6 @@ Ring::Ring(int x, int y)
     sprite.flip = false;
 }
 
-
 // SPRING
 Spring::Spring(int x, int y)
 {
