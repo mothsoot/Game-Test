@@ -21,32 +21,31 @@ void Collision::reset()
     ceiling = false;
 }
 
-void Collision::screenCollision_hor(int x)
+Position Collision::screenCollision(Position pos)
 {
-	if(x <= 0) {
-        x = 0;
+	if(pos.x <= 0) {
         lWall = true;
-    } else if(x >= SCREEN_WIDTH - 29) {
-        x = SCREEN_WIDTH - 29;
+        pos.x = 0;
+    } else if(pos.x >= SCREEN_WIDTH - 29) {
         rWall = true;
+        pos.x = SCREEN_WIDTH - 29;
     } else {
         lWall = false;
         rWall = false;
     }
-}
 
-void Collision::screenCollision_ver(int y)
-{
-    if(y <= 0) {
-        y = 0;
+    if(pos.y <= 0) {
         ceiling = true;
-    } else if(y >= SCREEN_HEIGHT - 39) {
-        y = SCREEN_HEIGHT - 39;
+        pos.y = 0;
+    } else if(pos.y >= 224 - 39) {
         floor = true;
+        pos.y = 224 - 39;
     } else {
         ceiling = false;
         floor = false;
     }
+
+    return pos;
 }
 
 // GROUND SENSORS

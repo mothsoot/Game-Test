@@ -23,6 +23,16 @@ Position Object::setPos(int x, int y)
     return pos;
 }
 
+int Object::getPos(string s)
+{
+    if(s == "x") {
+        return pos.x;
+    }
+    if(s == "y") {
+        return pos.y;
+    }
+}
+
 Radius Object::setRadius(int h, int w)
 {
     radius.h = h;
@@ -50,7 +60,7 @@ void Object::draw(Screen screen)
     hitbox.pos.x = player.pos.x;
     hitbox.pos.y = player.pos.y;
 
-    if(player.type == TYPE_PLAYER) {
+    if(type == TYPE_PLAYER) {
         switch(player.action) {
             case ACTION_NORMAL:
                 hitbox.hRadius = player.hRadius - 3;

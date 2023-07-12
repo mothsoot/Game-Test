@@ -2,7 +2,6 @@
 
 #include "object.h"
 
-
 enum COLLISION_MODE {
 	FLOOR,
 	RWALL,
@@ -35,12 +34,11 @@ class Collision {
         bool isCeiling() { return ceiling; }
         bool isNone();
 
-        void reset();
-
-        void screenCollision_hor(int x);
-        void screenCollision_ver(int y);
+        Position screenCollision(Position pos);
 
     private:
+        void reset();
+
         bool floor;
 		bool lWall;
 		bool rWall;

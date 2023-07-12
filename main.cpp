@@ -22,12 +22,9 @@ int main(int argc, char* args[])
 	Ring ring(40, 40);
 	ring.sprite.tex = screen.loadSprites("resources/ring.png");
 
+	SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+
 	// handle events
-	// loop getting player input
-	// getting sprite to draw
-	// do movement
-	// drawing sprite on screen
-	// update
 	while (!quit)
 	{
 		screen.prep();
@@ -46,9 +43,6 @@ int main(int argc, char* args[])
 		}
 
 		player.update();
-
-		// move player
-		//player.move();
 
 		// render sprites
 		player.draw(screen);
@@ -76,11 +70,7 @@ int main(int argc, char* args[])
 
 void debugText(Player player, Screen screen)
 {
-	stringstream action;
-	stringstream keyPress;
-	stringstream coords;
-	stringstream collision;
-	stringstream speed;
+	stringstream action, keyPress, coords, collision, speed;
 
 	action.str("");
 	keyPress.str("");
@@ -88,7 +78,7 @@ void debugText(Player player, Screen screen)
 	collision.str("");
 	speed.str("");
 
-	coords << "X: " << player.pos.x << "\nY: " << player.pos.y;
+	coords << "X: " << player.getPos("x") << "\nY: " << player.getPos("y");
 	screen.loadText(coords.str().c_str());
 	screen.drawText(1, 0);
 

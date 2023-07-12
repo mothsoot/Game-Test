@@ -58,17 +58,23 @@ class Object {
 
         bool active;
 
-        Position pos;
-        Position setPos(int x, int y);
+        int getPos(string s);
+        int getxPos() { return pos.x; }
+        int getyPos() { return pos.y; }
 
         Sprite sprite;
 
-        Radius radius;
         Radius setRadius(int h, int w);
         Radius setRadius(int h, int w, int push);
 
-        Hitbox hitbox;
         // void setHitbox();
+
+    protected:
+        Radius radius;
+        Hitbox hitbox;
+
+        Position pos;
+        Position setPos(int x, int y);
 
     private:
 

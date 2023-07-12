@@ -13,6 +13,8 @@ class Ring: public Item {
 
         Ring(int x, int y);
 
+        
+
 
     private:
 };

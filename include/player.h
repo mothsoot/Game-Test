@@ -1,6 +1,5 @@
 #pragma once
 
-//#include "main.h"
 #include "collision.h"
 #include "input.h"
 #include "screen.h"
@@ -42,11 +41,13 @@ enum ACTION {
 
 class Player: public Object {
 	public:
+		// default constructor in Object class
 		Player(int x, int y);
-		// ~Player(); // use Object class deconstructor
+		// default destructor in Object class
 
 		// void create();
 		void update();
+		void setSprite();
 		void move();
 
 		float xSpeed;
@@ -59,25 +60,19 @@ class Player: public Object {
 		void getySpeed(); // get from groundSpeed
 		float setFriction(float speed);
 
-		int mode;
-		void setMode();
-
-		// SPRITE
-		void setSprite();
+		float groundAngle;
 
 		int action;
 
 		bool grounded;
 
 		InputHandler input;
-
-		// STUFF TO WORK ON/WITH LATER
 		Collision collide;
-
-		float groundAngle;
+		int mode; // collision mode
+		void setMode();
 
 		void jumpVelocity();
-		void variableJumpHeight();
+		void jumpHeight();
 		void gravity();
 		void airDrag();
 		void airRotation();

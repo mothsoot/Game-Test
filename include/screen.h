@@ -12,7 +12,10 @@ using std::string;
 const int SCREEN_WIDTH = 320;
 const int SCREEN_HEIGHT = 224;
 
-// VIEW BORDERS
+const int LEVEL_WIDTH = 640;
+const int LEVEL_HEIGHT = 448;
+
+// VIEW BORDERS FOR PLAYER TO STAY IN, AREA INSIDE CAMERA
 const int H_BORDER_LEFT = 144;
 const int H_BORDER_RIGHT = 160;
 
@@ -32,7 +35,6 @@ const int CAMERA_TOP_SPEED = 16;
 
 // ring sprite
 #define SPRITE_RING {0, 0, 16, 16};
-
 
 class Screen {
     public:
@@ -65,5 +67,31 @@ class Screen {
 
 };
 
+// camera stuff :P
+class Camera {
+    public:
+        Camera() {}
+        ~Camera() {}
 
+        int x, y, w, h;
 
+        void move(int px, int py);
+};
+
+/*
+	camera.x = (player.getxPos() + 29 / 2) - SCREEN_WIDTH / 2;
+	camera.y = (player.getyPos() + 39 / 2) - SCREEN_HEIGHT / 2;
+
+    if(camera.x <= 0) { 
+        camera.x = 0;
+    }
+    if(camera.y <= 0) {
+        camera.y = 0;
+    }
+    if(camera.x >= LEVEL_WIDTH - camera.w) {
+        camera.x = LEVEL_WIDTH - camera.w;
+    }
+    if(camera.y > LEVEL_HEIGHT - camera.h) {
+        camera.y = LEVEL_HEIGHT - camera.h;
+    }
+*/

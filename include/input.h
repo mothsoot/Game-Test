@@ -16,9 +16,9 @@ class InputHandler {
 		bool isSpace() { return space; }
 		bool isNone();
 
+	private:
 		void reset();
 
-	private:
 		bool up;
 		bool down;
 		bool left;

@@ -9,7 +9,6 @@ Player::Player(int x, int y)
 
     active = true;
 
-    collide.reset();
     grounded = true;
 
     setPos(x, y);
@@ -39,22 +38,22 @@ void Player::update()
 
         groundSpeed = 0; // not on ground!
 
-            if((collide.islWall() && (xSpeed < 0)) || (collide.isrWall() && (xSpeed > 0))) {
+        if((collide.islWall() && (xSpeed < 0)) || (collide.isrWall() && (xSpeed > 0))) {
                 xSpeed = 0;
-            }
+        }
 
         if(action == ACTION_JUMP && !input.isSpace()) {
             // jump button released
+            jumpHeight();
         }
 
+        // update xSpeed based on input
         xSpeed = getSpeed(xSpeed);
-            // update xSpeed based on input
 
-        // move();
-
+        // apply air resistance to xSpeed
         airDrag();
+        // apply gravity to ySpeed
         ySpeed += GRAVITY_FORCE;
-            // apply gravity, update ySpeed by adding gravity
 
         if(ySpeed >= 6) {
             ySpeed = 6; // limit, 16 in CD
@@ -67,7 +66,7 @@ void Player::update()
             ySpeed = 0;
             groundSpeed = xSpeed; // to keep momentum
             grounded = true;
-            action = ACTION_NORMAL;
+            action = ACTION_NORMAL; // reset from jump
         }
 
         // airCollision();
@@ -80,9 +79,9 @@ void Player::update()
         // check for special actions (balancing, etc.)
 
         if(mode != CEILING) {
+            // adjust groundSpeed based on groundAngle
             groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
         }
-            // adjust groundSpeed based on groundAngle
 
         if(input.isUp()) {
             action = ACTION_LOOKUP;
@@ -93,7 +92,6 @@ void Player::update()
             setRadius(14, 7);
         }
 
-        // ifJump();
         if(input.isSpace()) {
             action = ACTION_JUMP;
             grounded = false;
@@ -101,9 +99,8 @@ void Player::update()
         }
 
         if(action == ACTION_NORMAL || action == ACTION_SKID || action == ACTION_CROUCH || action == ACTION_LOOKUP) {
-
+            // adjust groundSpeed based on input + friction & accel/decel
             groundSpeed = getSpeed(groundSpeed);
-                // adjust groundSpeed based on input + friction & accel/decel
         
             // wallCollision();
             if((collide.islWall() && (groundSpeed < 0)) || (collide.isrWall() && (groundSpeed > 0))) {
@@ -121,10 +118,10 @@ void Player::update()
                     // add xSpeed & ySpeed to sensor position
 
             // setCamera();
-
+            
+            // calculate xSpeed & ySpeed from groundSpeed & groundAngle
             getxSpeed();
             // getySpeed();
-                // calculate xSpeed & ySpeed from groundSpeed & groundAngle
 
             // }
 
@@ -153,14 +150,11 @@ void Player::move()
     // move left or right
     pos.x += xSpeed;
 
-    // too far left or right
-    collide.screenCollision_hor(pos.x);
-
     // move up or down
     pos.y += ySpeed;
 
-    // too far up or down
-    collide.screenCollision_ver(pos.y);
+    // if out of screen
+    pos = collide.screenCollision(pos); // returns pos so it works :/
 }
 
 void Player::setSprite()
@@ -214,7 +208,7 @@ void Player::setMode()
 
 float Player::getSpeed(float speed)
 {
-    // float speed is temp to return to either groundSpeed or xSpeed
+    // float speed is temp, returned to either groundSpeed or xSpeed
 
     if(input.isLeft()) { // pressing left
         if(speed > 0) { // moving right
@@ -271,7 +265,7 @@ float Player::getSpeed(float speed)
         }
     }
 
-    if(input.isNone()) { //!input.isLeft() && !input.isRight()) {
+    if(input.isNone()) { // (!input.isLeft() && !input.isRight() && (input.isUp() || input.isDown()))) {
         if(grounded) {
             action = ACTION_NORMAL;
             speed = setFriction(speed);
@@ -312,18 +306,15 @@ float Player::setFriction(float speed)
 
 void Player::jumpVelocity()
 {
-    // if player hits jump button, do this
     xSpeed -= JUMP_FORCE * sin(groundAngle);
     ySpeed -= JUMP_FORCE * cos(groundAngle);
 }
 
-void Player::variableJumpHeight()
+void Player::jumpHeight()
 {
     // checked before updating player position & gravity is calculated
-    if(input.isNone()) {
-        if(ySpeed < -4) {
-            ySpeed = -4;
-        }
+    if(ySpeed < -4) {
+        ySpeed = -4;
     }
 }
 
@@ -336,7 +327,7 @@ void Player::gravity()
 void Player::airDrag()
 {
     // calculated before gravity
-    if(ySpeed < 0 && ySpeed > -4) {
+    if(-4 < ySpeed < 0) {
         xSpeed -= ((xSpeed / 0.125) / 256);
     }
 }
