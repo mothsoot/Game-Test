@@ -55,6 +55,11 @@ void Object::draw(Screen screen)
     screen.drawSprite(pos.x, pos.y, sprite.s, sprite.tex, sprite.flip);
 }
 
+void Object::draw2(Screen screen, SDL_Rect camera)
+{
+    screen.drawSprite((pos.x - camera.x), (pos.y - camera.y), sprite.s, sprite.tex, sprite.flip);
+}
+
 /*void Object::setHitbox(Player player, Hitbox &hitbox)
 {
     hitbox.pos.x = player.pos.x;

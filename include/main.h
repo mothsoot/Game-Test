@@ -15,4 +15,4 @@ using std::stringstream;
 #include "timer.h"
 #include "math.h"
 
-void debugText(Player player, Screen screen);
+void debugText(Player player, Camera cam, Screen screen);

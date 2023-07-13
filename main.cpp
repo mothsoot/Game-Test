@@ -14,15 +14,16 @@ int main(int argc, char* args[])
 		return 0;
 	}
 
+	// initialize camera
+	Camera cam;
+
 	// initialize player & load sprites
-	Player player(20, (SCREEN_HEIGHT - PLAYER_SPRITE_HEIGHT));
+	Player player(20, 200);
 	player.sprite.tex = screen.loadSprites("resources/sonic-sprites.png");
 
 	// initialize ring & load sprites
 	Ring ring(40, 40);
 	ring.sprite.tex = screen.loadSprites("resources/ring.png");
-
-	SDL_Rect camera = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
 
 	// handle events
 	while (!quit)
@@ -44,12 +45,18 @@ int main(int argc, char* args[])
 
 		player.update();
 
+		cam.c.x = (player.getxPos() + 29 / 2) - SCREEN_WIDTH / 2;
+		cam.c.y = (player.getyPos() + 39 / 2) - SCREEN_HEIGHT / 2;
+		cam.update();
+
+		screen.drawBG(cam.c);
+
 		// render sprites
-		player.draw(screen);
+		player.draw2(screen, cam.c);
 		ring.draw(screen);
 
 		if(debug) {
-			debugText(player, screen);
+			debugText(player, cam, screen);
 		}
 
 		// delay for frame rate
@@ -68,7 +75,7 @@ int main(int argc, char* args[])
 	return 0;
 }
 
-void debugText(Player player, Screen screen)
+void debugText(Player player, Camera cam, Screen screen)
 {
 	stringstream action, keyPress, coords, collision, speed;
 
@@ -78,12 +85,13 @@ void debugText(Player player, Screen screen)
 	collision.str("");
 	speed.str("");
 
-	coords << "X: " << player.getPos("x") << "\nY: " << player.getPos("y");
+	coords << "X: " << player.getxPos() << "\nY: " << player.getyPos();
+	coords << "\n\n\nCam X: " << cam.c.x << "\nCam Y: " << cam.c.y;
 	screen.loadText(coords.str().c_str());
 	screen.drawText(1, 0);
 
-	speed << "X Speed: " << player.xSpeed << "\nY Speed: " << player.ySpeed;
-	speed << "\nGround Speed: " << player.groundSpeed;
+	speed << "X SPD: " << player.xSpeed << "\nY SPD: " << player.ySpeed;
+	speed << "\nGround SPD: " << player.groundSpeed;
 	screen.loadText(speed.str().c_str());
 	screen.drawText(1, 10);
 

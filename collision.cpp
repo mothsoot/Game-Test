@@ -26,9 +26,9 @@ Position Collision::screenCollision(Position pos)
 	if(pos.x <= 0) {
         lWall = true;
         pos.x = 0;
-    } else if(pos.x >= SCREEN_WIDTH - 29) {
+    } else if(pos.x >= LEVEL_WIDTH - 29) {
         rWall = true;
-        pos.x = SCREEN_WIDTH - 29;
+        pos.x = LEVEL_WIDTH - 29;
     } else {
         lWall = false;
         rWall = false;
@@ -37,9 +37,9 @@ Position Collision::screenCollision(Position pos)
     if(pos.y <= 0) {
         ceiling = true;
         pos.y = 0;
-    } else if(pos.y >= 224 - 39) {
+    } else if(pos.y >= 200) { // LEVEL_HEIGHT - 39) {
         floor = true;
-        pos.y = 224 - 39;
+        pos.y = 200; //LEVEL_HEIGHT - 39;
     } else {
         ceiling = false;
         floor = false;
@@ -47,6 +47,8 @@ Position Collision::screenCollision(Position pos)
 
     return pos;
 }
+
+// SENSORS!!
 
 // GROUND SENSORS
 

@@ -28,22 +28,21 @@ void Player::update()
         // player dead!!
     } else {
 
-    //if(collide.floor) {
-    //    grounded = true;
-    //}
-
     // AIRBORNE
     if(!grounded) {
-        setRadius(19, 9);
+        //setRadius(19, 9);
 
         groundSpeed = 0; // not on ground!
 
         if((collide.islWall() && (xSpeed < 0)) || (collide.isrWall() && (xSpeed > 0))) {
-                xSpeed = 0;
+            // hit left wall while moving left
+            // hit right wall while moving right
+            xSpeed = 0;
         }
 
         if(action == ACTION_JUMP && !input.isSpace()) {
             // jump button released
+            // adjust jump height
             jumpHeight();
         }
 
@@ -57,8 +56,7 @@ void Player::update()
 
         if(ySpeed >= 6) {
             ySpeed = 6; // limit, 16 in CD
-        }
-        if(ySpeed <= -6) {
+        } else if(ySpeed <= -6) {
             ySpeed = -6;
         }
 
@@ -74,9 +72,7 @@ void Player::update()
 
     // NORMAL
     if(grounded) {
-        setRadius(19, 9);
-
-        // check for special actions (balancing, etc.)
+        //setRadius(19, 9);
 
         if(mode != CEILING) {
             // adjust groundSpeed based on groundAngle
@@ -85,11 +81,11 @@ void Player::update()
 
         if(input.isUp()) {
             action = ACTION_LOOKUP;
-        }
-
-        if(input.isDown()) {
+        } else if(input.isDown()) {
             action = ACTION_CROUCH;
-            setRadius(14, 7);
+            //setRadius(14, 7);
+        } else {
+            action = ACTION_NORMAL;
         }
 
         if(input.isSpace()) {
@@ -104,6 +100,8 @@ void Player::update()
         
             // wallCollision();
             if((collide.islWall() && (groundSpeed < 0)) || (collide.isrWall() && (groundSpeed > 0))) {
+                // hit left wall while moving left
+                // hit right wall while moving right
                 groundSpeed = 0;
             }
 
@@ -124,9 +122,6 @@ void Player::update()
             // getySpeed();
 
             // }
-
-            // move()
-                // update xPos & yPos based on xSpeed & ySpeed
 
             // groundCollision();
             // groundAngle = groundSensor.tileAngle;
@@ -154,7 +149,7 @@ void Player::move()
     pos.y += ySpeed;
 
     // if out of screen
-    pos = collide.screenCollision(pos); // returns pos so it works :/
+    pos = collide.screenCollision(pos); // returns to pos so it works :/
 }
 
 void Player::setSprite()
@@ -265,13 +260,12 @@ float Player::getSpeed(float speed)
         }
     }
 
-    if(input.isNone()) { // (!input.isLeft() && !input.isRight() && (input.isUp() || input.isDown()))) {
+    if(input.isNone() || (!input.isLeft() && !input.isRight() && (input.isDown() || input.isUp()))) {
         if(grounded) {
-            action = ACTION_NORMAL;
+            //action = ACTION_NORMAL;
             speed = setFriction(speed);
         }
     }
-
     return speed;
 }
 

@@ -37,6 +37,8 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 
 	// load font
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
+	// load background
+	bgTexture = loadSprites("resources/bg.png");
 
 	// set window colour to white
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -100,6 +102,11 @@ void Screen::drawText(int x, int y)
 	SDL_RenderCopy(renderer, textTexture, NULL, &dstrect);
 }
 
+void Screen::drawBG(SDL_Rect camera)
+{
+	SDL_RenderCopy(renderer, bgTexture, &camera, NULL);
+}
+
 SDL_Texture* Screen::loadSprites(string file)
 {
 	SDL_Surface* image = nullptr;
@@ -124,4 +131,28 @@ SDL_Texture* Screen::loadText(string text)
     SDL_FreeSurface(textSurface);
 
     return textTexture;
+}
+
+// CAMERA
+Camera::Camera()
+{
+	c.x = 0;
+	c.y = 0;
+	c.w = SCREEN_WIDTH;
+	c.h = SCREEN_HEIGHT;
+}
+
+void Camera::update()
+{
+	if(c.x <= 0) {
+		c.x = 0;
+	} else if(c.x >= LEVEL_WIDTH - c.w) {
+		c.x = LEVEL_WIDTH - c.w;
+	}
+
+	if(c.y <= 0) {
+		c.y = 0;
+	} //else if(c.y >= LEVEL_HEIGHT - c.h) {
+	//	c.y = LEVEL_HEIGHT - c.h;
+	//}
 }

@@ -53,6 +53,7 @@ class Object {
         void destroy();
 
         void draw(Screen screen);
+        void draw2(Screen screen, SDL_Rect camera);
 
         int type;
 
