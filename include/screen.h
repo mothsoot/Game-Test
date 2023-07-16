@@ -9,6 +9,8 @@ using std::string;
 #include <SDL_image.h>
 #include <SDL_ttf.h>
 
+#include "math.h"
+
 const int SCREEN_WIDTH = 320;
 const int SCREEN_HEIGHT = 224;
 
@@ -38,7 +40,6 @@ const int CAMERA_TOP_SPEED = 16;
 
 class Screen {
     public:
-        
         enum Mode {
             TITLE,
             GAME
@@ -58,7 +59,8 @@ class Screen {
 
         void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, bool flips);
         void drawText(int x, int y);
-        void drawBG(SDL_Rect camera);
+        void drawTile();
+        void drawBG(SDL_Rect cam);
 
         void prep();
         void present();
@@ -76,8 +78,7 @@ class Camera {
         ~Camera() {}
 
         SDL_Rect c;
-        // c.x/x.y = top left
-        // c.y + c.h = bottom left
+        // int x, y, w, h
 
-        void update();
+        void update(Position pos);
 };

@@ -1,6 +1,8 @@
 #pragma once
 
+#include "math.h"
 #include "screen.h"
+#include "collision.h"
 
 /* OBJECT HEIRARCHY
 
@@ -18,11 +20,6 @@ enum OBJECT_TYPE {
     TYPE_PLAYER,
     TYPE_RING,
     TYPE_SPRING
-};
-
-struct Position {
-        int x;
-        int y;
 };
 
 struct Radius {
@@ -46,33 +43,37 @@ struct Sprite {
 
 class Object {
     public:
-        Object();
+        Object() {}
         ~Object() {}
 
         // void create();
         void destroy();
 
-        void draw(Screen screen);
-        void draw2(Screen screen, SDL_Rect camera);
+        virtual void update();
+        void draw(Screen scr, SDL_Rect cam);
 
         int type;
 
         bool active;
 
-        int getPos(string s);
+        Position getPos() { return pos; }
         int getxPos() { return pos.x; }
         int getyPos() { return pos.y; }
 
         Sprite sprite;
 
-        Radius setRadius(int h, int w);
-        Radius setRadius(int h, int w, int push);
+        int getwRadius() { return radius.w; }
+        int gethRadius() { return radius.h; }
+        void setRadius(int h, int w);
+        void setRadius(int h, int w, int push);
 
-        // void setHitbox();
+        int getwHitbox() { return hitbox.w; }
+        int gethHitbox() { return hitbox.h; }
+        void setHitbox(int h, int w);
 
     protected:
         Radius radius;
-        Hitbox hitbox;
+        Radius hitbox;
 
         Position pos;
         Position setPos(int x, int y);

@@ -1,5 +1,43 @@
 #include "math.h"
 
+Position& Position::operator+(const Position& p2)
+{
+	Position p3;
+	
+	p3.x = x + p2.x;
+	p3.y = y + p2.y;
+
+	return p3;
+}
+
+Position& Position::operator-(const Position& p2)
+{
+	Position p3;
+
+	p3.x = x - p2.x;
+	p3.y = y - p2.y;
+
+	return p3;
+}
+
+Position& Position::operator*(const Position& p2)
+{
+	Position p3;
+
+	p3.x = x * p2.x;
+	p3.y = y * p2.y;
+
+	return p3;
+}
+
+Position& Position::operator=(const Position& p)
+{
+	x = p.x;
+	y = p.y;
+
+	return *this;
+}
+
 int sign(float x)
 {
 	if(x < 0) {

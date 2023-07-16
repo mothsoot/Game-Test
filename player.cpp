@@ -11,8 +11,9 @@ Player::Player(int x, int y)
 
     grounded = true;
 
-    setPos(x, y);
+    setPos(x, y); // 
     setRadius(19, 9, 10); // height, width, push. 14, 7, 10 when jump/roll
+    setHitbox(33, 17);
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
@@ -54,8 +55,9 @@ void Player::update()
         // apply gravity to ySpeed
         ySpeed += GRAVITY_FORCE;
 
+        // limit ySpeed, 16 in CD
         if(ySpeed >= 6) {
-            ySpeed = 6; // limit, 16 in CD
+            ySpeed = 6;
         } else if(ySpeed <= -6) {
             ySpeed = -6;
         }
@@ -130,14 +132,14 @@ void Player::update()
                 // align sprite to ground
         }
     }
-    } // if active
 
     // check hitboxes
 
     setSprite();
 
     move();
-
+    
+    } // if active
 }
 
 void Player::move()
@@ -149,7 +151,7 @@ void Player::move()
     pos.y += ySpeed;
 
     // if out of screen
-    pos = collide.screenCollision(pos); // returns to pos so it works :/
+    collide.screenCollision(pos);
 }
 
 void Player::setSprite()

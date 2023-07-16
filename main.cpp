@@ -18,11 +18,11 @@ int main(int argc, char* args[])
 	Camera cam;
 
 	// initialize player & load sprites
-	Player player(20, 200);
+	Player player(200, 200);
 	player.sprite.tex = screen.loadSprites("resources/sonic-sprites.png");
 
 	// initialize ring & load sprites
-	Ring ring(40, 40);
+	Ring ring(200, 200);
 	ring.sprite.tex = screen.loadSprites("resources/ring.png");
 
 	// handle events
@@ -43,17 +43,17 @@ int main(int argc, char* args[])
 			player.input.keyState(e);
 		}
 
-		player.update();
-
-		cam.c.x = (player.getxPos() + 29 / 2) - SCREEN_WIDTH / 2;
-		cam.c.y = (player.getyPos() + 39 / 2) - SCREEN_HEIGHT / 2;
-		cam.update();
+		update(&player);
+		cam.update(player.getPos());
 
 		screen.drawBG(cam.c);
 
 		// render sprites
-		player.draw2(screen, cam.c);
-		ring.draw(screen);
+		draw(&player, screen, cam);
+
+		if(!checkCollision(player, ring)) {
+			draw(&ring, screen, cam);
+		}
 
 		if(debug) {
 			debugText(player, cam, screen);
@@ -66,8 +66,8 @@ int main(int argc, char* args[])
 	}
 
 	// shutdown objects
-	player.destroy();
-	ring.destroy();
+	destroy(&player);
+	destroy(&ring);
 
 	// shutdown SDL
 	screen.shutDown();
@@ -75,7 +75,23 @@ int main(int argc, char* args[])
 	return 0;
 }
 
-void debugText(Player player, Camera cam, Screen screen)
+void update(Object* obj)
+{
+    obj->update();
+}
+
+void draw(Object* obj, Screen scr, Camera cam)
+{
+	obj->draw(scr, cam.c);
+}
+
+void destroy(Object* obj)
+{
+	obj->destroy();
+}
+
+// DEBUG STUFF
+void debugText(Player player, Camera cam, Screen scr)
 {
 	stringstream action, keyPress, coords, collision, speed;
 
@@ -87,13 +103,13 @@ void debugText(Player player, Camera cam, Screen screen)
 
 	coords << "X: " << player.getxPos() << "\nY: " << player.getyPos();
 	coords << "\n\n\nCam X: " << cam.c.x << "\nCam Y: " << cam.c.y;
-	screen.loadText(coords.str().c_str());
-	screen.drawText(1, 0);
+	scr.loadText(coords.str().c_str());
+	scr.drawText(1, 0);
 
 	speed << "X SPD: " << player.xSpeed << "\nY SPD: " << player.ySpeed;
 	speed << "\nGround SPD: " << player.groundSpeed;
-	screen.loadText(speed.str().c_str());
-	screen.drawText(1, 10);
+	scr.loadText(speed.str().c_str());
+	scr.drawText(1, 10);
 
 	action << "Action: ";
 	switch(player.action) {
@@ -113,8 +129,8 @@ void debugText(Player player, Camera cam, Screen screen)
 			action << "skid";
 			break;
 	}
-	screen.loadText(action.str().c_str());
-	screen.drawText(1, (SCREEN_HEIGHT - 30));
+	scr.loadText(action.str().c_str());
+	scr.drawText(1, (SCREEN_HEIGHT - 30));
 
 	keyPress << "Key: ";
 	if(player.input.isUp()) {
@@ -132,8 +148,8 @@ void debugText(Player player, Camera cam, Screen screen)
 	if(player.input.isSpace()) {
 		keyPress << "SPACE";
 	}
-	screen.loadText(keyPress.str().c_str());
-	screen.drawText(1, (SCREEN_HEIGHT - 20));
+	scr.loadText(keyPress.str().c_str());
+	scr.drawText(1, (SCREEN_HEIGHT - 20));
 
 	collision << "Collide? ";
 	if(player.collide.isFloor()) {
@@ -157,6 +173,6 @@ void debugText(Player player, Camera cam, Screen screen)
 	} else {
 		collision << "false";
 	}
-	screen.loadText(collision.str().c_str());
-	screen.drawText(1, (SCREEN_HEIGHT - 10));
+	scr.loadText(collision.str().c_str());
+	scr.drawText(1, (SCREEN_HEIGHT - 10));
 }

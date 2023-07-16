@@ -2,6 +2,16 @@
 
 #include <cmath>
 
+class Position {
+    public:
+        int x, y;
+
+        Position& operator+(const Position& p2);
+        Position& operator-(const Position& p2);
+        Position& operator*(const Position& p2);
+        Position& operator=(const Position& p);
+};
+
 int sign(float x); // get sign of x
 int absolute(int x); // get positive version of x
 

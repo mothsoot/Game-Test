@@ -10,7 +10,7 @@
 const float ACCEL_SPEED = 0.5; //0.046875; // 12 subpixels
 const float DECEL_SPEED = 1; // 128 subpixels
 const float FRICTION_SPEED = 0.5; //0.046875; // 12 subpixels
-const float TOP_SPEED = 5;
+const float TOP_SPEED = 6;
 
 const float GRAVITY_FORCE = 0.2; // 0.21875; // 56 subpixels
 const float AIR_ACCEL_SPEED = 0.1; // 0.09375; // 24 subpixels
@@ -18,18 +18,13 @@ const float AIR_ACCEL_SPEED = 0.1; // 0.09375; // 24 subpixels
 const float JUMP_FORCE = 6.5;
 const float JUMP_RELEASE = -4;
 
-const float ROLL_FRICTION_SPEED = 0.0234375;
-const float ROLL_DECEL_SPEED = 0.125;
-
 const float SLOPE_FACTOR = 0.125; // 32 subpixels
-const float SLOPE_FACTOR_ROLLUP = 0.078125; // 20 subpixels
-const float SLOPE_FACTOR_ROLLDOWN = 0.3125; // 80 subpixels
 
 // PLAYER SPRITE
 const int PLAYER_SPRITE_HEIGHT = 39;
 const int PLAYER_SPRITE_WIDTH = 29;
 
-class Screen;
+//class Screen;
 
 enum ACTION {
 	ACTION_NORMAL,
@@ -46,7 +41,7 @@ class Player: public Object {
 		// default destructor in Object class
 
 		// void create();
-		void update();
+		virtual void update();
 		void setSprite();
 		void move();
 
@@ -67,6 +62,7 @@ class Player: public Object {
 		bool grounded;
 
 		InputHandler input;
+
 		Collision collide;
 		int mode; // collision mode
 		void setMode();

@@ -31,9 +31,9 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 		// window drawing in, rendering driver (-1 sets to default), sets SDL_RendererFlags
 	if(renderer == nullptr) {
-        cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << endl;
-        return false;
-    }
+		cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << endl;
+		return false;
+	}
 
 	// load font
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
@@ -43,7 +43,7 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 	// set window colour to white
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
-    return true;
+	return true;
 }
 
 void Screen::shutDown()
@@ -102,9 +102,9 @@ void Screen::drawText(int x, int y)
 	SDL_RenderCopy(renderer, textTexture, NULL, &dstrect);
 }
 
-void Screen::drawBG(SDL_Rect camera)
+void Screen::drawBG(SDL_Rect cam)
 {
-	SDL_RenderCopy(renderer, bgTexture, &camera, NULL);
+	SDL_RenderCopy(renderer, bgTexture, &cam, NULL);
 }
 
 SDL_Texture* Screen::loadSprites(string file)
@@ -122,15 +122,15 @@ SDL_Texture* Screen::loadSprites(string file)
 
 SDL_Texture* Screen::loadText(string text)
 {
-    // render text surface
-    SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColour);
+	// render text surface
+	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColour);
 
-    // create texture
-    textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+	// create texture
+	textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
 
-    SDL_FreeSurface(textSurface);
+	SDL_FreeSurface(textSurface);
 
-    return textTexture;
+	return textTexture;
 }
 
 // CAMERA
@@ -142,8 +142,11 @@ Camera::Camera()
 	c.h = SCREEN_HEIGHT;
 }
 
-void Camera::update()
+void Camera::update(Position pos)
 {
+	c.x = (pos.x + 29 / 2) - SCREEN_WIDTH / 2;
+	c.y = (pos.y + 39 / 2) - SCREEN_HEIGHT / 2;
+
 	if(c.x <= 0) {
 		c.x = 0;
 	} else if(c.x >= LEVEL_WIDTH - c.w) {
@@ -152,7 +155,7 @@ void Camera::update()
 
 	if(c.y <= 0) {
 		c.y = 0;
-	} //else if(c.y >= LEVEL_HEIGHT - c.h) {
-	//	c.y = LEVEL_HEIGHT - c.h;
-	//}
+	} else if(c.y >= LEVEL_HEIGHT - c.h) {
+		c.y = LEVEL_HEIGHT - c.h;
+	}
 }

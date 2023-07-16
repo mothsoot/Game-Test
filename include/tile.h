@@ -1,5 +1,6 @@
 #pragma once;
 
+#include "math.h"
 #include "screen.h"
 
 enum TILE_TYPE {
@@ -34,6 +35,8 @@ class Tile {
         SDL_Rect sprite;
         SDL_RendererFlip flip;
 
+        void draw(Screen screen, Camera cam);
+
     private:
     
 };
@@ -61,6 +64,11 @@ Tile::Tile()
 {
     tileID = 0;
     typeID = TILE_NONE;
+}
+
+void Tile::draw(Screen screen, Camera cam)
+{
+    screen.drawTile();
 }
 
 void Tile::setID()

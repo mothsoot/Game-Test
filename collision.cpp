@@ -21,7 +21,7 @@ void Collision::reset()
     ceiling = false;
 }
 
-Position Collision::screenCollision(Position pos)
+void Collision::screenCollision(Position &pos)
 {
 	if(pos.x <= 0) {
         lWall = true;
@@ -44,8 +44,39 @@ Position Collision::screenCollision(Position pos)
         ceiling = false;
         floor = false;
     }
+}
 
-    return pos;
+bool checkCollision(Object objA, Object objB)
+{
+    int leftA, rightA, topA, bottomA;
+    int leftB, rightB, topB, bottomB;
+
+    leftA = objA.getxPos();
+    rightA = objA.getxPos() + objA.getwHitbox();
+    topA = objA.getyPos();
+    bottomB = objA.getyPos() + objA.gethHitbox();
+
+    leftB = objB.getxPos();
+    rightB = objB.getxPos() + objB.getwHitbox();
+    topB = objB.getyPos();
+    bottomB = objB.getyPos() + objB.getwHitbox();
+
+    // if the side of A is outside B
+    if(topA >= bottomB) { // top of A is lower than bottom of B
+        return false;
+    }
+    if(bottomA <= topB) { // bottom of A is higher than top of B
+        return false;
+    }
+    if(leftA >= rightB) { // left of A is further right than right of B
+        return false;
+    }
+    if(rightA <= leftB) { // right of A is further left than left of B
+        return false;
+    }
+
+    // is colliding!
+    return true;
 }
 
 // SENSORS!!

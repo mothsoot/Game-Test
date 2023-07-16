@@ -1,14 +1,26 @@
 #include "object.h"
 
-Object::Object()
-{
-    type = TYPE_UNKNOWN;
-    active = true;
-}
-
 void Object::destroy()
 {
     SDL_DestroyTexture(sprite.tex);
+}
+
+void Object::update()
+{
+    pos.x++;
+}
+
+void Object::draw(Screen scr, SDL_Rect cam)
+{
+    SDL_Rect box;
+    box.x = pos.x;
+    box.y = pos.y;
+    box.w = radius.w;
+    box.h = radius.h;
+
+    //if(checkCollision(box, cam)) {
+        scr.drawSprite((pos.x - cam.x), (pos.y - cam.y), sprite.s, sprite.tex, sprite.flip);
+    //}
 }
 
 Position Object::setPos(int x, int y)
@@ -23,41 +35,23 @@ Position Object::setPos(int x, int y)
     return pos;
 }
 
-int Object::getPos(string s)
-{
-    if(s == "x") {
-        return pos.x;
-    }
-    if(s == "y") {
-        return pos.y;
-    }
-}
-
-Radius Object::setRadius(int h, int w)
+void Object::setRadius(int h, int w)
 {
     radius.h = h;
     radius.w = w;
-
-    return radius;
 }
 
-Radius Object::setRadius(int h, int w, int push)
+void Object::setRadius(int h, int w, int push)
 {
     radius.h = h;
     radius.w = w;
     radius.push = push;
-
-    return radius;
 }
 
-void Object::draw(Screen screen)
+void Object::setHitbox(int h, int w)
 {
-    screen.drawSprite(pos.x, pos.y, sprite.s, sprite.tex, sprite.flip);
-}
-
-void Object::draw2(Screen screen, SDL_Rect camera)
-{
-    screen.drawSprite((pos.x - camera.x), (pos.y - camera.y), sprite.s, sprite.tex, sprite.flip);
+    hitbox.h = h;
+    hitbox.w = w;
 }
 
 /*void Object::setHitbox(Player player, Hitbox &hitbox)

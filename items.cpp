@@ -7,6 +7,7 @@ Ring::Ring(int x, int y)
 
     setPos(x, y);
     setRadius(6, 6); // 8, 8 when scattered 
+    setHitbox(13, 13);
 
     sprite.s = SPRITE_RING;
     sprite.flip = false;

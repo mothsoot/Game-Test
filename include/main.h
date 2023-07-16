@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+using std::cin;
 using std::cout;
 using std::cerr;
 using std::endl;
@@ -13,6 +14,9 @@ using std::stringstream;
 #include "player.h"
 #include "items.h"
 #include "timer.h"
-#include "math.h"
 
-void debugText(Player player, Camera cam, Screen screen);
+void update(Object* obj);
+void draw(Object* obj, Screen scr, Camera cam);
+void destroy(Object* obj);
+
+void debugText(Player player, Camera cam, Screen scr);

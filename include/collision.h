@@ -23,6 +23,10 @@ struct Sensor {
     bool flagged;
 };
 
+class Object;
+
+bool checkCollision(Object objA, Object objB);
+
 class Collision {
     public:
         Collision();
@@ -34,7 +38,7 @@ class Collision {
         bool isCeiling() { return ceiling; }
         bool isNone();
 
-        Position screenCollision(Position pos);
+        void screenCollision(Position &pos);
 
     private:
         void reset();
