@@ -1,8 +1,6 @@
 #pragma once
 
 #include <iostream>
-using std::cin;
-using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
@@ -14,6 +12,8 @@ using std::stringstream;
 #include "player.h"
 #include "items.h"
 #include "timer.h"
+
+int MAX_RINGS = 10;
 
 void update(Object* obj);
 void draw(Object* obj, Screen scr, Camera cam);

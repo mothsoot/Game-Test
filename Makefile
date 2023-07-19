@@ -13,10 +13,10 @@ COMPILER = -Wall -Wextra -w -Wl,-subsystem,windows
 LINKER = -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lSDL2_ttf
 
 # actual commands
-all: program
+all: game
 
-program: ${OBJS}
-	$(CC) $(OBJS) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -o program
+game: ${OBJS}
+	$(CC) $(OBJS) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -o game
 
 main.o: main.cpp
 	$(CC) $(INCLUDE) $(LIBRARIES) $(COMPILER) $(LINKER) -c main.cpp -o main.o

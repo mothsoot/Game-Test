@@ -24,8 +24,6 @@ const float SLOPE_FACTOR = 0.125; // 32 subpixels
 const int PLAYER_SPRITE_HEIGHT = 39;
 const int PLAYER_SPRITE_WIDTH = 29;
 
-//class Screen;
-
 enum ACTION {
 	ACTION_NORMAL,
 	ACTION_JUMP,
@@ -37,13 +35,15 @@ enum ACTION {
 class Player: public Object {
 	public:
 		// default constructor in Object class
-		Player(int x, int y);
+		Player(int x = 0, int y = 0, SDL_Texture* spriteTex = nullptr);
 		// default destructor in Object class
 
 		// void create();
 		virtual void update();
 		void setSprite();
 		void move();
+
+		int rings;
 
 		float xSpeed;
 		float ySpeed;
@@ -74,4 +74,5 @@ class Player: public Object {
 		void airRotation();
 
 	private:
+		void setHitbox();
 };

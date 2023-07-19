@@ -10,6 +10,7 @@ using std::string;
 #include <SDL_ttf.h>
 
 #include "math.h"
+#include "collision.h"
 
 const int SCREEN_WIDTH = 320;
 const int SCREEN_HEIGHT = 224;
@@ -30,16 +31,22 @@ const int V_BORDER_BOTTOM = V_FOCAL_POINT + 32;
 const int CAMERA_TOP_SPEED = 16;
 
 // player sprite
-#define SPRITE {0, 0, 29, 39}; // x coord, y coord, image width, image height
-#define SPRITE_UP {29, 0, 29, 39};
-#define SPRITE_DOWN {29 * 2, 0, 29, 39};
-#define SPRITE_SKID {29 * 3, 0, 29, 39};
+const SDL_Rect SPRITE = {0, 0, 29, 39}; // x coord, y coord, image width, image height
+const SDL_Rect SPRITE_UP = {29, 0, 29, 39};
+const SDL_Rect SPRITE_DOWN = {29 * 2, 0, 29, 39};
+const SDL_Rect SPRITE_SKID = {29 * 3, 0, 29, 39};
 
-// ring sprite
-#define SPRITE_RING {0, 0, 16, 16};
+// ring sprites
+const SDL_Rect SPRITE_RING_1 = {0, 0, 16, 16};
+const SDL_Rect SPRITE_RING_2 = {24, 0, 16, 16};
+const SDL_Rect SPRITE_RING_3 = {48, 0, 8, 16};
+const SDL_Rect SPRITE_RING_4 = {64, 0, 16, 16};
 
 class Screen {
     public:
+        Screen() {}
+        ~Screen() {}
+
         enum Mode {
             TITLE,
             GAME
@@ -65,7 +72,7 @@ class Screen {
         void prep();
         void present();
 
-        SDL_Texture* loadSprites(string file);
+        SDL_Texture* loadPNG(string file);
         SDL_Texture* loadText(string text);
     private:
 
@@ -80,5 +87,7 @@ class Camera {
         SDL_Rect c;
         // int x, y, w, h
 
-        void update(Position pos);
+        Hitbox hitbox;
+
+        void update(Position playerPos);
 };

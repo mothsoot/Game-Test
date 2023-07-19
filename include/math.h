@@ -10,6 +10,7 @@ class Position {
         Position& operator-(const Position& p2);
         Position& operator*(const Position& p2);
         Position& operator=(const Position& p);
+        bool operator==(const Position p);
 };
 
 int sign(float x); // get sign of x

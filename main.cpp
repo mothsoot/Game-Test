@@ -8,22 +8,32 @@ int main(int argc, char* args[])
 
 	// initialize screen
 	Screen screen;
-
 	if(!screen.startUp()) {
 		cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
 		return 0;
 	}
 
+	// load resources
+	SDL_Texture* playerSprite = screen.loadPNG("resources/sonic-sprites.png");
+	SDL_Texture* ringSprite = screen.loadPNG("resources/ring-sprites.png");
+
 	// initialize camera
 	Camera cam;
 
-	// initialize player & load sprites
-	Player player(200, 200);
-	player.sprite.tex = screen.loadSprites("resources/sonic-sprites.png");
+	// initialize player
+	Player player(200, 200, playerSprite);
 
-	// initialize ring & load sprites
-	Ring ring(200, 200);
-	ring.sprite.tex = screen.loadSprites("resources/ring.png");
+	// initialize rings
+	Ring* ringList = new (std::nothrow) Ring[MAX_RINGS];
+	if(ringList == nullptr) {
+		cerr << "Memory allocation failed!\n";
+		quit = true;
+	} else {
+		for (int p = 0; p < MAX_RINGS; p++) {
+			ringList[p].setPos(50 + (p * 10), 150);
+			ringList[p].sprite.tex = ringSprite;
+		}
+	}
 
 	// handle events
 	while (!quit)
@@ -35,7 +45,7 @@ int main(int argc, char* args[])
 		// PollEvent returns 1 if there is an event in queue
 		// returns 0 if none
 		// while events in queue
-        while (SDL_PollEvent(&e) != 0) {
+		while (SDL_PollEvent(&e) != 0) {
 			if(e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
 				quit = true;
 			}
@@ -44,15 +54,23 @@ int main(int argc, char* args[])
 		}
 
 		update(&player);
+		for (int p = 0; p < MAX_RINGS; p++) {
+			update(&ringList[p]);
+		}
 		cam.update(player.getPos());
 
+		// draw background
 		screen.drawBG(cam.c);
 
 		// render sprites
 		draw(&player, screen, cam);
-
-		if(!checkCollision(player, ring)) {
-			draw(&ring, screen, cam);
+		for (int p = 0; p < MAX_RINGS; p++) {
+			if(objectCollision(player, ringList[p])) {
+				player.rings++;
+				ringList[p].active = false;
+			} else {
+				draw(&ringList[p], screen, cam);
+			}
 		}
 
 		if(debug) {
@@ -67,7 +85,9 @@ int main(int argc, char* args[])
 
 	// shutdown objects
 	destroy(&player);
-	destroy(&ring);
+	for (int p = 0; p < MAX_RINGS; p++) {
+		destroy(&ringList[p]);
+	}
 
 	// shutdown SDL
 	screen.shutDown();
@@ -82,7 +102,7 @@ void update(Object* obj)
 
 void draw(Object* obj, Screen scr, Camera cam)
 {
-	obj->draw(scr, cam.c);
+	obj->draw(scr, cam);
 }
 
 void destroy(Object* obj)
@@ -93,13 +113,14 @@ void destroy(Object* obj)
 // DEBUG STUFF
 void debugText(Player player, Camera cam, Screen scr)
 {
-	stringstream action, keyPress, coords, collision, speed;
+	stringstream coords, speed, rings, action, keyPress, collision;
 
+	coords.str("");
+	speed.str("");
+	rings.str("");
 	action.str("");
 	keyPress.str("");
-	coords.str("");
 	collision.str("");
-	speed.str("");
 
 	coords << "X: " << player.getxPos() << "\nY: " << player.getyPos();
 	coords << "\n\n\nCam X: " << cam.c.x << "\nCam Y: " << cam.c.y;
@@ -110,6 +131,10 @@ void debugText(Player player, Camera cam, Screen scr)
 	speed << "\nGround SPD: " << player.groundSpeed;
 	scr.loadText(speed.str().c_str());
 	scr.drawText(1, 10);
+
+	rings << "Rings: " << player.rings;
+	scr.loadText(rings.str().c_str());
+	scr.drawText(1, (SCREEN_HEIGHT - 40));
 
 	action << "Action: ";
 	switch(player.action) {

@@ -38,7 +38,7 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 	// load font
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
 	// load background
-	bgTexture = loadSprites("resources/bg.png");
+	bgTexture = loadPNG("resources/bg.png");
 
 	// set window colour to white
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -107,7 +107,7 @@ void Screen::drawBG(SDL_Rect cam)
 	SDL_RenderCopy(renderer, bgTexture, &cam, NULL);
 }
 
-SDL_Texture* Screen::loadSprites(string file)
+SDL_Texture* Screen::loadPNG(string file)
 {
 	SDL_Surface* image = nullptr;
 
@@ -142,10 +142,10 @@ Camera::Camera()
 	c.h = SCREEN_HEIGHT;
 }
 
-void Camera::update(Position pos)
+void Camera::update(Position playerPos)
 {
-	c.x = (pos.x + 29 / 2) - SCREEN_WIDTH / 2;
-	c.y = (pos.y + 39 / 2) - SCREEN_HEIGHT / 2;
+	c.x = (playerPos.x + 29 / 2) - SCREEN_WIDTH / 2;
+	c.y = (playerPos.y + 39 / 2) - SCREEN_HEIGHT / 2;
 
 	if(c.x <= 0) {
 		c.x = 0;
@@ -158,4 +158,9 @@ void Camera::update(Position pos)
 	} else if(c.y >= LEVEL_HEIGHT - c.h) {
 		c.y = LEVEL_HEIGHT - c.h;
 	}
+
+	hitbox.left = c.x;
+	hitbox.right = c.x + c.w;
+	hitbox.top = c.y;
+	hitbox.bottom = c.y + c.h;
 }

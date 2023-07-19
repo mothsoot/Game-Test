@@ -38,6 +38,14 @@ Position& Position::operator=(const Position& p)
 	return *this;
 }
 
+bool Position::operator==(const Position p)
+{
+	if((p.x == x) && (p.y == y)) {
+		return true;
+	}
+	return false;
+}
+
 int sign(float x)
 {
 	if(x < 0) {

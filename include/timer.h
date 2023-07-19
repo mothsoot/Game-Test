@@ -1,6 +1,6 @@
 #pragma once
 
-#include "main.h"
+#include "screen.h"
 
 // application time based timer
 class Timer

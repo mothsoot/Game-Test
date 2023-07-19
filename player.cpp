@@ -1,7 +1,7 @@
 #include "player.h"
 
 // constructor
-Player::Player(int x, int y)
+Player::Player(int x, int y, SDL_Texture* spriteTex)
 {
     type = TYPE_PLAYER;
     action = ACTION_NORMAL;
@@ -9,18 +9,20 @@ Player::Player(int x, int y)
 
     active = true;
 
+    rings = 0;
+
     grounded = true;
 
-    setPos(x, y); // 
+    setPos(x, y); // x + 14, y + 19 set as origin instead of top corner
     setRadius(19, 9, 10); // height, width, push. 14, 7, 10 when jump/roll
-    setHitbox(33, 17);
+    setHitbox();
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
     groundAngle = 0;
 
     sprite.s = SPRITE;
-    sprite.flip = false;
+    sprite.tex = spriteTex;
 }
 
 void Player::update()
@@ -134,6 +136,7 @@ void Player::update()
     }
 
     // check hitboxes
+    setHitbox();
 
     setSprite();
 
@@ -187,6 +190,17 @@ void Player::setSprite()
             }
             break;
     }
+}
+
+void Player::setHitbox()
+{
+    hitbox.pos.x = pos.x + radius.w;
+    hitbox.pos.y = pos.y + radius.h;
+
+    hitbox.left = pos.x;
+    hitbox.right = pos.x + 29;
+    hitbox.top = pos.y;
+    hitbox.bottom = pos.y + 39;
 }
 
 // mode for collisions

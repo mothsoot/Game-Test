@@ -1,12 +1,19 @@
 #pragma once
 
-#include "object.h"
+#include "screen.h"
+#include "math.h"
 
 enum COLLISION_MODE {
 	FLOOR,
 	RWALL,
 	CEILING,
 	LWALL
+};
+
+struct Hitbox {
+	Position pos;
+
+    int left, right, top, bottom;
 };
 
 struct Sensor {
@@ -23,9 +30,7 @@ struct Sensor {
     bool flagged;
 };
 
-class Object;
-
-bool checkCollision(Object objA, Object objB);
+bool checkCollision(Hitbox boxA, Hitbox boxB);
 
 class Collision {
     public:

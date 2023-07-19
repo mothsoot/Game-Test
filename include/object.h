@@ -28,17 +28,11 @@ struct Radius {
     int push;
 };
 
-struct Hitbox {
-	Position pos;
-
-    Radius radius;
-};
-
 struct Sprite {
     SDL_Rect s;
     SDL_Texture* tex;
 
-    bool flip;
+    bool flip = false;
 };
 
 class Object {
@@ -46,39 +40,39 @@ class Object {
         Object() {}
         ~Object() {}
 
-        // void create();
         void destroy();
 
         virtual void update();
-        void draw(Screen scr, SDL_Rect cam);
+        void draw(Screen scr, Camera cam);
 
         int type;
 
         bool active;
 
+        Position setPos(int x, int y);
         Position getPos() { return pos; }
         int getxPos() { return pos.x; }
         int getyPos() { return pos.y; }
 
         Sprite sprite;
+        int animFrame = 0;
 
         int getwRadius() { return radius.w; }
         int gethRadius() { return radius.h; }
+
+        Hitbox hitbox;
+
+    protected:
+        Position pos;
+
+        Radius radius;
         void setRadius(int h, int w);
         void setRadius(int h, int w, int push);
 
-        int getwHitbox() { return hitbox.w; }
-        int gethHitbox() { return hitbox.h; }
-        void setHitbox(int h, int w);
-
-    protected:
-        Radius radius;
-        Radius hitbox;
-
-        Position pos;
-        Position setPos(int x, int y);
+        void setHitbox();
 
     private:
 
 };
 
+bool objectCollision(Object objA, Object objB);

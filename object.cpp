@@ -1,5 +1,13 @@
 #include "object.h"
 
+bool objectCollision(Object objA, Object objB)
+{
+    if(objA.active && objB.active) {
+        return checkCollision(objA.hitbox, objB.hitbox);
+    }
+    return false;
+}
+
 void Object::destroy()
 {
     SDL_DestroyTexture(sprite.tex);
@@ -7,20 +15,16 @@ void Object::destroy()
 
 void Object::update()
 {
-    pos.x++;
+
 }
 
-void Object::draw(Screen scr, SDL_Rect cam)
+void Object::draw(Screen scr, Camera cam)
 {
-    SDL_Rect box;
-    box.x = pos.x;
-    box.y = pos.y;
-    box.w = radius.w;
-    box.h = radius.h;
-
-    //if(checkCollision(box, cam)) {
-        scr.drawSprite((pos.x - cam.x), (pos.y - cam.y), sprite.s, sprite.tex, sprite.flip);
-    //}
+    if(active) {
+        if(checkCollision(hitbox, cam.hitbox)) {
+            scr.drawSprite((pos.x - cam.c.x), (pos.y - cam.c.y), sprite.s, sprite.tex, sprite.flip);
+        }
+    }
 }
 
 Position Object::setPos(int x, int y)
@@ -48,10 +52,15 @@ void Object::setRadius(int h, int w, int push)
     radius.push = push;
 }
 
-void Object::setHitbox(int h, int w)
+void Object::setHitbox()
 {
-    hitbox.h = h;
-    hitbox.w = w;
+    hitbox.pos.x = pos.x + radius.w;
+    hitbox.pos.y = pos.y + radius.h;
+
+    hitbox.left = pos.x;
+    hitbox.right = pos.x + 16;
+    hitbox.top = pos.y;
+    hitbox.bottom = pos.y + 16;
 }
 
 /*void Object::setHitbox(Player player, Hitbox &hitbox)
