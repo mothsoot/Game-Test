@@ -6,12 +6,32 @@ class Position {
     public:
         int x, y;
 
+        Position set(int xx, int yy);
+
         Position& operator+(const Position& p2);
         Position& operator-(const Position& p2);
         Position& operator*(const Position& p2);
         Position& operator=(const Position& p);
         bool operator==(const Position p);
 };
+
+class Radius {
+    public:
+    int h, w;
+
+    Radius set(int ww, int hh);
+};
+
+class Hitbox {
+	public:
+    Position pos;
+    Radius rad;
+
+    int left, right, top, bottom;
+
+    Hitbox set(int x, int y, int w, int h);
+};
+
 
 int sign(float x); // get sign of x
 int absolute(int x); // get positive version of x

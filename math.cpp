@@ -46,6 +46,38 @@ bool Position::operator==(const Position p)
 	return false;
 }
 
+Position Position::set(int xx, int yy)
+{
+	x = xx;
+	y = yy;
+
+	return *this;
+}
+
+Radius Radius::set(int ww, int hh)
+{
+	w = ww;
+	h = hh;
+
+	return *this;
+}
+
+Hitbox Hitbox::set(int x, int y, int w, int h)
+{
+	pos.x = x;
+	pos.y = y;
+
+	rad.w = w;
+	rad.h = h;
+
+	left = x;
+	right = x + (rad.w * 2);
+	top = y;
+	bottom = y + (rad.h * 2);
+
+	return *this;
+}
+
 int sign(float x)
 {
 	if(x < 0) {

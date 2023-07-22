@@ -20,10 +20,6 @@ const float JUMP_RELEASE = -4;
 
 const float SLOPE_FACTOR = 0.125; // 32 subpixels
 
-// PLAYER SPRITE
-const int PLAYER_SPRITE_HEIGHT = 39;
-const int PLAYER_SPRITE_WIDTH = 29;
-
 enum ACTION {
 	ACTION_NORMAL,
 	ACTION_JUMP,
@@ -38,11 +34,15 @@ class Player: public Object {
 		Player(int x = 0, int y = 0, SDL_Texture* spriteTex = nullptr);
 		// default destructor in Object class
 
-		// void create();
+		// virtual void create();
 		virtual void update();
+
 		void setSprite();
 		void move();
 
+		bool grounded;
+
+		int action;
 		int rings;
 
 		float xSpeed;
@@ -50,29 +50,23 @@ class Player: public Object {
 		float groundSpeed; // for slopes
 
 		float getSpeed(float speed); // pass either groundSpeed or xSpeed
-
 		void getxSpeed(); // get from groundSpeed
 		void getySpeed(); // get from groundSpeed
 		float setFriction(float speed);
 
 		float groundAngle;
 
-		int action;
-
-		bool grounded;
-
 		InputHandler input;
 
 		Collision collide;
-		int mode; // collision mode
-		void setMode();
+		virtual bool objectCollision(Object* objB);
 
-		void jumpVelocity();
+		void jump();
 		void jumpHeight();
 		void gravity();
 		void airDrag();
 		void airRotation();
 
 	private:
-		void setHitbox();
+		void setMode();
 };

@@ -4,6 +4,7 @@
 using std::cerr;
 using std::endl;
 using std::string;
+using std::nothrow;
 #include <sstream>
 using std::stringstream;
 
@@ -15,6 +16,7 @@ using std::stringstream;
 
 int MAX_RINGS = 10;
 
+void create(Object* obj, int x, int y, SDL_Texture* spriteTex);
 void update(Object* obj);
 void draw(Object* obj, Screen scr, Camera cam);
 void destroy(Object* obj);

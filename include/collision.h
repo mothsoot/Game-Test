@@ -10,24 +10,27 @@ enum COLLISION_MODE {
 	LWALL
 };
 
-struct Hitbox {
-	Position pos;
+class Sensor {
+    public:
+        Position pos;
+        bool active;
 
-    int left, right, top, bottom;
-};
+        bool collided;
 
-struct Sensor {
-    Position pos;
+        int detected_height;
 
-    bool collided;
+        int distance;
+        float tileAngle;
+        float tileID;
+        
+        bool flagged;
 
-    int detected_height;
-
-    int distance;
-    float tileAngle;
-    float tileID;
-    
-    bool flagged;
+        void sensorA(bool grounded);
+        void sensorB(bool grounded);
+        void sensorC();
+        void sensorD();
+        void sensorE(float speed);
+        void sensorF(float speed);
 };
 
 bool checkCollision(Hitbox boxA, Hitbox boxB);
@@ -43,7 +46,7 @@ class Collision {
         bool isCeiling() { return ceiling; }
         bool isNone();
 
-        void screenCollision(Position &pos);
+        void screenCollision(Position &pos, SDL_Rect sprite);
 
     private:
         void reset();

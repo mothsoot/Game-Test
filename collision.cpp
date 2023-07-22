@@ -1,5 +1,25 @@
 #include "collision.h"
 
+bool checkCollision(Hitbox boxA, Hitbox boxB)
+{
+        // if the side of A is outside B
+        if(boxA.top >= boxB.bottom) { // top of A is lower than bottom of B
+            return false;
+        }
+        if(boxA.bottom <= boxB.top) { // bottom of A is higher than top of B
+            return false;
+        }
+        if(boxA.left >= boxB.right) { // left of A is further right than right of B
+            return false;
+        }
+        if(boxA.right <= boxB.left) { // right of A is further left than left of B
+            return false;
+        }
+
+        // is colliding!
+        return true;
+}
+
 Collision::Collision()
 {
     reset();
@@ -21,14 +41,14 @@ void Collision::reset()
     ceiling = false;
 }
 
-void Collision::screenCollision(Position &pos)
+void Collision::screenCollision(Position &pos, SDL_Rect sprite)
 {
 	if(pos.x <= 0) {
         lWall = true;
         pos.x = 0;
-    } else if(pos.x >= LEVEL_WIDTH - 29) {
+    } else if(pos.x >= LEVEL_WIDTH - sprite.w) {
         rWall = true;
-        pos.x = LEVEL_WIDTH - 29;
+        pos.x = LEVEL_WIDTH - sprite.w;
     } else {
         lWall = false;
         rWall = false;
@@ -46,27 +66,61 @@ void Collision::screenCollision(Position &pos)
     }
 }
 
-bool checkCollision(Hitbox boxA, Hitbox boxB)
-{
-        // if the side of A is outside B
-        if(boxA.top >= boxB.bottom) { // top of A is lower than bottom of B
-            return false;
-        }
-        if(boxA.bottom <= boxB.top) { // bottom of A is higher than top of B
-            return false;
-        }
-        if(boxA.left >= boxB.right) { // left of A is further right than right of B
-            return false;
-        }
-        if(boxA.right <= boxB.left) { // right of A is further left than left of B
-            return false;
-        }
+// SENSORS!!
 
-        // is colliding!
-        return true;
+// right ground
+void Sensor::sensorA(bool grounded)
+{
+    if(!grounded) {
+        active = false;
+    } else {
+        active = true;
+
+        pos.x; // = player.getxPos()
+        pos.y; // = player.getyPos() + player.gethRad();
+    }
 }
 
-// SENSORS!!
+// left ground
+void Sensor::sensorB(bool grounded)
+{
+    if(!grounded) {
+        active = false;
+    } else {
+        active = true;
+
+        pos.x; // = player.getxPos() + player.getwRad();
+        pos.y; // = player.getyPos() + player.gethRad();
+    }
+}
+
+void Sensor::sensorC()
+{
+    active = false;
+}
+
+
+void Sensor::sensorD()
+{
+    active = false;
+
+}
+
+// left wall
+void Sensor::sensorE(float speed)
+{
+    if(speed < 0) {
+        active = true;
+    }
+}
+
+// right wall
+void Sensor::sensorF(float speed)
+{
+    if(speed > 0) {
+        active = true;
+    }
+}
 
 // GROUND SENSORS
 

@@ -22,17 +22,11 @@ enum OBJECT_TYPE {
     TYPE_SPRING
 };
 
-struct Radius {
-    int h;
-    int w;
-    int push;
-};
-
 struct Sprite {
     SDL_Rect s;
     SDL_Texture* tex;
 
-    bool flip = false;
+    SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 
 class Object {
@@ -40,16 +34,17 @@ class Object {
         Object() {}
         ~Object() {}
 
+        void create(int x, int y, SDL_Texture* spriteTex);
         void destroy();
-
-        virtual void update();
         void draw(Screen scr, Camera cam);
 
-        int type;
+        virtual void update() {}
+        virtual void animate() {}
 
+        int type;
         bool active;
 
-        Position setPos(int x, int y);
+
         Position getPos() { return pos; }
         int getxPos() { return pos.x; }
         int getyPos() { return pos.y; }
@@ -57,22 +52,19 @@ class Object {
         Sprite sprite;
         int animFrame = 0;
 
-        int getwRadius() { return radius.w; }
-        int gethRadius() { return radius.h; }
+        int getwRad() { return rad.w; }
+        int gethRad() { return rad.h; }
 
         Hitbox hitbox;
 
+        virtual bool objectCollision(Object* objB);
+
     protected:
         Position pos;
-
-        Radius radius;
-        void setRadius(int h, int w);
-        void setRadius(int h, int w, int push);
+        Radius rad;
 
         void setHitbox();
 
     private:
 
 };
-
-bool objectCollision(Object objA, Object objB);

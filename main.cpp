@@ -14,7 +14,7 @@ int main(int argc, char* args[])
 	}
 
 	// load resources
-	SDL_Texture* playerSprite = screen.loadPNG("resources/sonic-sprites.png");
+	SDL_Texture* playerSprite = screen.loadPNG("resources/sonic-sprites-v2.png");
 	SDL_Texture* ringSprite = screen.loadPNG("resources/ring-sprites.png");
 
 	// initialize camera
@@ -24,14 +24,13 @@ int main(int argc, char* args[])
 	Player player(200, 200, playerSprite);
 
 	// initialize rings
-	Ring* ringList = new (std::nothrow) Ring[MAX_RINGS];
+	Ring* ringList = new (nothrow) Ring[MAX_RINGS];
 	if(ringList == nullptr) {
 		cerr << "Memory allocation failed!\n";
 		quit = true;
 	} else {
 		for (int p = 0; p < MAX_RINGS; p++) {
-			ringList[p].setPos(50 + (p * 10), 150);
-			ringList[p].sprite.tex = ringSprite;
+			create(&ringList[p], 50 + (p * 10), 150, ringSprite);
 		}
 	}
 
@@ -65,10 +64,7 @@ int main(int argc, char* args[])
 		// render sprites
 		draw(&player, screen, cam);
 		for (int p = 0; p < MAX_RINGS; p++) {
-			if(objectCollision(player, ringList[p])) {
-				player.rings++;
-				ringList[p].active = false;
-			} else {
+			if(!player.objectCollision(&ringList[p])) {
 				draw(&ringList[p], screen, cam);
 			}
 		}
@@ -88,11 +84,17 @@ int main(int argc, char* args[])
 	for (int p = 0; p < MAX_RINGS; p++) {
 		destroy(&ringList[p]);
 	}
+	delete [] ringList;
 
 	// shutdown SDL
 	screen.shutDown();
 
 	return 0;
+}
+
+void create(Object* obj, int x, int y, SDL_Texture* spriteTex)
+{
+	obj->create(x, y, spriteTex);
 }
 
 void update(Object* obj)

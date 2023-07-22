@@ -10,7 +10,6 @@ using std::string;
 #include <SDL_ttf.h>
 
 #include "math.h"
-#include "collision.h"
 
 const int SCREEN_WIDTH = 320;
 const int SCREEN_HEIGHT = 224;
@@ -31,10 +30,10 @@ const int V_BORDER_BOTTOM = V_FOCAL_POINT + 32;
 const int CAMERA_TOP_SPEED = 16;
 
 // player sprite
-const SDL_Rect SPRITE = {0, 0, 29, 39}; // x coord, y coord, image width, image height
-const SDL_Rect SPRITE_UP = {29, 0, 29, 39};
-const SDL_Rect SPRITE_DOWN = {29 * 2, 0, 29, 39};
-const SDL_Rect SPRITE_SKID = {29 * 3, 0, 29, 39};
+const SDL_Rect SPRITE = {0, 3, 22, 33}; // {0, 0, 29, 39}; // x coord, y coord, image width, image height
+const SDL_Rect SPRITE_UP = {22 , 0, 24, 36}; // {29, 0, 29, 39};
+const SDL_Rect SPRITE_DOWN = {46, 10, 28, 26}; // {29 * 2, 0, 29, 39};
+const SDL_Rect SPRITE_SKID = {46 + 28, 0, 31, 36}; // {29 * 3, 0, 29, 39};
 
 // ring sprites
 const SDL_Rect SPRITE_RING_1 = {0, 0, 16, 16};
@@ -64,7 +63,7 @@ class Screen {
         bool startUp();
         void shutDown();
 
-        void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, bool flips);
+        void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flips = SDL_FLIP_NONE);
         void drawText(int x, int y);
         void drawTile();
         void drawBG(SDL_Rect cam);

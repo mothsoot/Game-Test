@@ -50,6 +50,7 @@ void Screen::shutDown()
 {
 	// deallocate resources
 	SDL_DestroyTexture(textTexture);
+	SDL_DestroyTexture(bgTexture);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	window = nullptr;
@@ -74,18 +75,10 @@ void Screen::present()
 	SDL_RenderPresent(renderer);
 }
 
-void Screen::drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, bool flips)
+void Screen::drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
 {
-	SDL_RendererFlip flip = SDL_FLIP_NONE;
-	if(flips == true) {
-		flip = SDL_FLIP_HORIZONTAL;
-	} else {
-		flip = SDL_FLIP_NONE;
-	}
-	// SDL_FLIP_NONE, SDL_FLIP_HORIZONTAL, SDL_FLIP_VERTICAL
-
 	// destination rectangle
-	SDL_Rect dstrect = {x, y, sprite.w, sprite.h}; // x coord, y coord, image width, image height
+	SDL_Rect dstrect = {x, (y + sprite.y), sprite.w, sprite.h}; // x coord, y coord, image width, image height
 
 	SDL_RenderCopyEx(renderer, tex, &sprite, &dstrect, NULL, NULL, flip);
 }
@@ -144,8 +137,8 @@ Camera::Camera()
 
 void Camera::update(Position playerPos)
 {
-	c.x = (playerPos.x + 29 / 2) - SCREEN_WIDTH / 2;
-	c.y = (playerPos.y + 39 / 2) - SCREEN_HEIGHT / 2;
+	c.x = playerPos.x - SCREEN_WIDTH / 2; //  + sprite.w / 2
+	c.y = playerPos.y - SCREEN_HEIGHT / 2; // + sprite.h / 2
 
 	if(c.x <= 0) {
 		c.x = 0;
@@ -159,8 +152,5 @@ void Camera::update(Position playerPos)
 		c.y = LEVEL_HEIGHT - c.h;
 	}
 
-	hitbox.left = c.x;
-	hitbox.right = c.x + c.w;
-	hitbox.top = c.y;
-	hitbox.bottom = c.y + c.h;
+	hitbox.set(c.x, c.y, c.w, c.h);
 }

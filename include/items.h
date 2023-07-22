@@ -9,10 +9,11 @@ class Item: public Object {
 class Ring: public Item {
     public:
         const int GRAVITY = 0.09375; // 24 subpixels
-        //Ring();
+
         Ring(int x = 0, int y = 0);
 
         virtual void update();
+        virtual void animate();
 
         SDL_Rect ringSprites[4] = {
             SPRITE_RING_1,
@@ -22,9 +23,3 @@ class Ring: public Item {
         };
     private:
 };
-
-class Spring: public Item {
-    public:
-        Spring(int x, int y);
-};
-

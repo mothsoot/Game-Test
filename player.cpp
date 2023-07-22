@@ -4,18 +4,16 @@
 Player::Player(int x, int y, SDL_Texture* spriteTex)
 {
     type = TYPE_PLAYER;
-    action = ACTION_NORMAL;
-    mode = FLOOR;
-
     active = true;
+    action = ACTION_NORMAL;
 
     rings = 0;
 
     grounded = true;
 
-    setPos(x, y); // x + 14, y + 19 set as origin instead of top corner
-    setRadius(19, 9, 10); // height, width, push. 14, 7, 10 when jump/roll
-    setHitbox();
+    pos.set(x, y);
+    rad.set(10, 14); // 22, 33 idle sprite
+    hitbox.set(pos.x, pos.y, rad.h, rad.w);
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
@@ -29,7 +27,8 @@ void Player::update()
 {
     if(!active) {
         // player dead!!
-    } else {
+        return;
+    }
 
     // AIRBORNE
     if(!grounded) {
@@ -44,8 +43,7 @@ void Player::update()
         }
 
         if(action == ACTION_JUMP && !input.isSpace()) {
-            // jump button released
-            // adjust jump height
+            // jump button released, adjust jump height
             jumpHeight();
         }
 
@@ -78,10 +76,8 @@ void Player::update()
     if(grounded) {
         //setRadius(19, 9);
 
-        if(mode != CEILING) {
-            // adjust groundSpeed based on groundAngle
-            groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
-        }
+        // adjust groundSpeed based on groundAngle
+        groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
 
         if(input.isUp()) {
             action = ACTION_LOOKUP;
@@ -95,14 +91,13 @@ void Player::update()
         if(input.isSpace()) {
             action = ACTION_JUMP;
             grounded = false;
-            jumpVelocity();
+            jump();
         }
 
         if(action == ACTION_NORMAL || action == ACTION_SKID || action == ACTION_CROUCH || action == ACTION_LOOKUP) {
             // adjust groundSpeed based on input + friction & accel/decel
             groundSpeed = getSpeed(groundSpeed);
-        
-            // wallCollision();
+
             if((collide.islWall() && (groundSpeed < 0)) || (collide.isrWall() && (groundSpeed > 0))) {
                 // hit left wall while moving left
                 // hit right wall while moving right
@@ -118,12 +113,10 @@ void Player::update()
                     sensorE.pos.x += xSpeed;
                 } */
                     // add xSpeed & ySpeed to sensor position
-
-            // setCamera();
             
             // calculate xSpeed & ySpeed from groundSpeed & groundAngle
             getxSpeed();
-            // getySpeed();
+            getySpeed();
 
             // }
 
@@ -135,26 +128,22 @@ void Player::update()
         }
     }
 
-    // check hitboxes
-    setHitbox();
-
     setSprite();
+    hitbox.set(pos.x, pos.y, rad.h, rad.w);
 
     move();
-    
-    } // if active
 }
 
 void Player::move()
 {
-    // move left or right
+    // move left/right
     pos.x += xSpeed;
 
-    // move up or down
+    // move up/down
     pos.y += ySpeed;
 
     // if out of screen
-    collide.screenCollision(pos);
+    collide.screenCollision(pos, sprite.s);
 }
 
 void Player::setSprite()
@@ -165,10 +154,10 @@ void Player::setSprite()
             sprite.s = SPRITE;
 
             if(input.isRight()) {
-                sprite.flip = false;
+                sprite.flip = SDL_FLIP_NONE;
             }
             if(input.isLeft()) {
-                sprite.flip = true;
+                sprite.flip = SDL_FLIP_HORIZONTAL;
             }
             break;
 
@@ -183,38 +172,29 @@ void Player::setSprite()
         case ACTION_SKID:
             sprite.s = SPRITE_SKID;
             if(input.isRight()) { // pressing right, moving left
-                sprite.flip = true;
+                sprite.flip = SDL_FLIP_HORIZONTAL;
             }
             if(input.isLeft()) { // pressing left, moving right
-                sprite.flip = false;
+                sprite.flip = SDL_FLIP_NONE;
             }
             break;
     }
 }
 
-void Player::setHitbox()
+bool Player::objectCollision(Object* objB)
 {
-    hitbox.pos.x = pos.x + radius.w;
-    hitbox.pos.y = pos.y + radius.h;
-
-    hitbox.left = pos.x;
-    hitbox.right = pos.x + 29;
-    hitbox.top = pos.y;
-    hitbox.bottom = pos.y + 39;
-}
-
-// mode for collisions
-void Player::setMode()
-{
-    if((0 <= groundAngle <= 45) || (315 <= groundAngle <= 360)) {
-        mode = FLOOR;
-    } else if(46 <= groundAngle <= 134) {
-        mode = LWALL;
-    } else if(135 <= groundAngle <= 225) {
-        mode = CEILING;
-    } else if(226 <= groundAngle <= 314) {
-        mode = RWALL;
+    if(active && objB->active) {
+        if(checkCollision(hitbox, objB->hitbox)) {
+            switch(objB->type) {
+                case TYPE_RING:
+                        rings++;
+                        objB->active = false;
+                    break;
+            }
+            return true;
+        }
     }
+    return false;
 }
 
 float Player::getSpeed(float speed)
@@ -278,7 +258,6 @@ float Player::getSpeed(float speed)
 
     if(input.isNone() || (!input.isLeft() && !input.isRight() && (input.isDown() || input.isUp()))) {
         if(grounded) {
-            //action = ACTION_NORMAL;
             speed = setFriction(speed);
         }
     }
@@ -293,6 +272,11 @@ void Player::getxSpeed()
 void Player::getySpeed()
 {
     ySpeed = groundSpeed * -sin(groundAngle);
+
+    // stupid little bug when groundAngle = 0
+    if(ySpeed == -0) {
+        ySpeed = 0;
+    }
 }
 
 float Player::setFriction(float speed)
@@ -314,7 +298,7 @@ float Player::setFriction(float speed)
     return speed;
 }
 
-void Player::jumpVelocity()
+void Player::jump()
 {
     xSpeed -= JUMP_FORCE * sin(groundAngle);
     ySpeed -= JUMP_FORCE * cos(groundAngle);
