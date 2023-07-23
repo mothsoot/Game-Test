@@ -5,11 +5,9 @@
 // application time based timer
 class Timer
 {
-    public:
-		// constructor
+	public:
 		Timer();
-        // destructor
-        ~Timer();
+		~Timer() {}
 
 		void start();
 		void stop();
@@ -23,7 +21,7 @@ class Timer
 		bool isStarted();
 		bool isPaused();
 
-    private:
+	private:
 		// clock time when timer started
 		int startTicks;
 

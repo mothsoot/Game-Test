@@ -11,17 +11,10 @@ Timer::Timer()
     paused = false;
 }
 
-// destructor
-Timer::~Timer()
-{
-    // no action needed
-}
-
 void Timer::start()
 {
     // start timer
     started = true;
-
     paused = false;
 
     // get current clock time
@@ -33,7 +26,6 @@ void Timer::stop()
 {
     // stop timer
     started = false;
-
     paused = false;
 
 	// clear tick variables

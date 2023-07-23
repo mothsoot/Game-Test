@@ -2,22 +2,22 @@
 
 bool checkCollision(Hitbox boxA, Hitbox boxB)
 {
-        // if the side of A is outside B
-        if(boxA.top >= boxB.bottom) { // top of A is lower than bottom of B
-            return false;
-        }
-        if(boxA.bottom <= boxB.top) { // bottom of A is higher than top of B
-            return false;
-        }
-        if(boxA.left >= boxB.right) { // left of A is further right than right of B
-            return false;
-        }
-        if(boxA.right <= boxB.left) { // right of A is further left than left of B
-            return false;
-        }
+    // if the side of A is outside B
+    if(boxA.top >= boxB.bottom) { // top of A is lower than bottom of B
+        return false;
+    }
+    if(boxA.bottom <= boxB.top) { // bottom of A is higher than top of B
+        return false;
+    }
+    if(boxA.left >= boxB.right) { // left of A is further right than right of B
+        return false;
+    }
+    if(boxA.right <= boxB.left) { // right of A is further left than left of B
+        return false;
+    }
 
-        // is colliding!
-        return true;
+    // is colliding!
+    return true;
 }
 
 Collision::Collision()

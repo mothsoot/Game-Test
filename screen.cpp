@@ -1,5 +1,30 @@
 #include "screen.h"
 
+bool openFile()
+{
+	SDL_RWops* file = SDL_RWFromFile("mapping/ring-mapping.txt", "r");
+		// r = for reading
+		// w = create empty file for writing
+		// a = append to a file
+		// r+ = for reading & writing to a file that exists
+		// w+ = for reading & writing, overwrites file if one with that name exists
+		// a+ = for reading & appending
+		// *b = open as a binary file (ex. rb, wb, r+b)
+	if(file == nullptr) {
+		cerr << "Error!! Could not open file! SDL_Error: " << SDL_GetError() << endl;
+		return false;
+	}
+	cout << "File opened successfully!\n";
+
+	int data[10];
+
+	for (int p = 0; p < 10; p++) {
+		SDL_RWread(file, &data[p], sizeof(int), 10);
+			// file, objects to write to, size of each object, max objects
+	}
+	return true;
+}
+
 bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Texture* &texture)
 {
 	// initialize SDL
@@ -22,7 +47,7 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 
 	// create window to render in
 	window = SDL_CreateWindow("Game moment", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
-	if(window == NULL) {
+	if(window == nullptr) {
 		cerr << "Window not created! SDL_Error: " << SDL_GetError() << endl;
 		return false;
 	}
@@ -31,14 +56,37 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 		// window drawing in, rendering driver (-1 sets to default), sets SDL_RendererFlags
 	if(renderer == nullptr) {
-		cerr << "Renderer could not be created! SDL Error: " << SDL_GetError() << endl;
+		cerr << "Renderer not created! SDL_Error: " << SDL_GetError() << endl;
 		return false;
 	}
 
 	// load font
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
+	if(font == nullptr) {
+		cerr << "Font not loaded! TTF_Error: " << TTF_GetError() << endl;
+		return false;
+	}
+
 	// load background
 	bgTexture = loadPNG("resources/bg.png");
+	if(bgTexture == nullptr) {
+		cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		return false;
+	}
+
+	// load player sprites
+	playerTexture = loadPNG("resources/sonic-sprites-v2.png");
+	if(playerTexture == nullptr) {
+		cerr << "Player sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		return false;
+	}
+
+	// load ring sprites
+	ringTexture = loadPNG("resources/ring-sprites.png");
+	if(ringTexture == nullptr) {
+		cerr << "Ring sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		return false;
+	}
 
 	// set window colour to white
 	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -51,9 +99,11 @@ void Screen::shutDown()
 	// deallocate resources
 	SDL_DestroyTexture(textTexture);
 	SDL_DestroyTexture(bgTexture);
+	SDL_DestroyTexture(playerTexture);
+	SDL_DestroyTexture(ringTexture);
+
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
-	window = nullptr;
 
 	TTF_CloseFont(font);
 
@@ -95,17 +145,20 @@ void Screen::drawText(int x, int y)
 	SDL_RenderCopy(renderer, textTexture, NULL, &dstrect);
 }
 
-void Screen::drawBG(SDL_Rect cam)
+void Screen::drawBG(int x, int y, SDL_Rect cam)
 {
-	SDL_RenderCopy(renderer, bgTexture, &cam, NULL);
+	SDL_Rect dstrect = {x, y, LEVEL_WIDTH, LEVEL_HEIGHT};
+
+	SDL_RenderCopy(renderer, bgTexture, &cam, &dstrect);
 }
 
 SDL_Texture* Screen::loadPNG(string file)
 {
-	SDL_Surface* image = nullptr;
-
-	image = IMG_Load(file.c_str());
+	SDL_Surface* image = IMG_Load(file.c_str());
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
+	if(texture == nullptr) {
+		cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
+	}
 
 	// delete image
 	SDL_FreeSurface(image);
@@ -117,6 +170,10 @@ SDL_Texture* Screen::loadText(string text)
 {
 	// render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColour);
+	if(textSurface == nullptr) {
+		cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
+		return nullptr;
+	}
 
 	// create texture
 	textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
@@ -129,28 +186,31 @@ SDL_Texture* Screen::loadText(string text)
 // CAMERA
 Camera::Camera()
 {
-	c.x = 0;
-	c.y = 0;
+	pos.set();
+	c.x = pos.x;
+	c.y = pos.y;
 	c.w = SCREEN_WIDTH;
 	c.h = SCREEN_HEIGHT;
 }
 
 void Camera::update(Position playerPos)
 {
-	c.x = playerPos.x - SCREEN_WIDTH / 2; //  + sprite.w / 2
-	c.y = playerPos.y - SCREEN_HEIGHT / 2; // + sprite.h / 2
+	pos.set((playerPos.x - SCREEN_WIDTH / 2), (playerPos.y - SCREEN_HEIGHT / 2));
 
-	if(c.x <= 0) {
-		c.x = 0;
-	} else if(c.x >= LEVEL_WIDTH - c.w) {
-		c.x = LEVEL_WIDTH - c.w;
+	if(pos.x <= 0) {
+		pos.x = 0;
+	} else if(pos.x >= LEVEL_WIDTH - c.w) {
+		pos.x = LEVEL_WIDTH - c.w;
 	}
 
-	if(c.y <= 0) {
-		c.y = 0;
-	} else if(c.y >= LEVEL_HEIGHT - c.h) {
-		c.y = LEVEL_HEIGHT - c.h;
+	if(pos.y <= 0) {
+		pos.y = 0;
+	} else if(pos.y >= LEVEL_HEIGHT - c.h) {
+		pos.y = LEVEL_HEIGHT - c.h;
 	}
 
-	hitbox.set(c.x, c.y, c.w, c.h);
+	c.x = pos.x;
+	c.y = pos.y;
+
+	hitbox.set(pos, c.w, c.h);
 }

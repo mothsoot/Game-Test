@@ -31,42 +31,46 @@ enum ACTION {
 class Player: public Object {
 	public:
 		// default constructor in Object class
-		Player(int x = 0, int y = 0, SDL_Texture* spriteTex = nullptr);
+		Player(Position pos = {0, 0}, SDL_Texture* tex = nullptr): Object(pos, tex) {}
 		// default destructor in Object class
 
-		// virtual void create();
+		void create();
 		virtual void update();
-
-		void setSprite();
-		void move();
+		virtual void animate();
 
 		bool grounded;
+		float groundAngle;
 
-		int action;
+		int getAction() { return action; }
 		int rings;
 
-		float xSpeed;
-		float ySpeed;
-		float groundSpeed; // for slopes
-
-		float getSpeed(float speed); // pass either groundSpeed or xSpeed
-		void getxSpeed(); // get from groundSpeed
-		void getySpeed(); // get from groundSpeed
-		float setFriction(float speed);
-
-		float groundAngle;
+		float getxSpeed() { return xSpeed; }
+		float getySpeed() { return ySpeed; }
+		float getGroundSpeed() { return groundSpeed; }
 
 		InputHandler input;
 
 		Collision collide;
 		virtual bool objectCollision(Object* objB);
 
+	private:
+		void setSprite();
+		void move();
+
+		int action;
+
+		float xSpeed;
+		float ySpeed;
+		float groundSpeed; // for slopes
+
+		float setSpeed(float speed); // pass either groundSpeed or xSpeed
+		void setxSpeed(); // get from groundSpeed
+		void setySpeed(); // get from groundSpeed
+		float setFriction(float speed);
+
 		void jump();
 		void jumpHeight();
 		void gravity();
 		void airDrag();
 		void airRotation();
-
-	private:
-		void setMode();
 };

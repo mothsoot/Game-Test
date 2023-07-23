@@ -1,9 +1,13 @@
 #pragma once
 
 #include <iostream>
+using std::cout;
 using std::cerr;
 using std::endl;
 using std::string;
+using std::nothrow;
+#include <fstream>
+using std::ifstream;
 
 #include <SDL.h>
 #include <SDL_image.h>
@@ -17,29 +21,43 @@ const int SCREEN_HEIGHT = 224;
 const int LEVEL_WIDTH = 500;
 const int LEVEL_HEIGHT = 300;
 
-// VIEW BORDERS FOR PLAYER TO STAY IN, AREA INSIDE CAMERA
-const int H_BORDER_LEFT = 144;
-const int H_BORDER_RIGHT = 160;
-
-const int V_FOCAL_POINT = 96;
-const int V_BORDER_TOP = V_FOCAL_POINT - 32;
-const int V_BORDER_BOTTOM = V_FOCAL_POINT + 32;
-// CHANGES FROM LOOKING UP/DOWN!! MESS WITH IT 
-
-// if player on ground
-const int CAMERA_TOP_SPEED = 16;
-
-// player sprite
-const SDL_Rect SPRITE = {0, 3, 22, 33}; // {0, 0, 29, 39}; // x coord, y coord, image width, image height
-const SDL_Rect SPRITE_UP = {22 , 0, 24, 36}; // {29, 0, 29, 39};
-const SDL_Rect SPRITE_DOWN = {46, 10, 28, 26}; // {29 * 2, 0, 29, 39};
-const SDL_Rect SPRITE_SKID = {46 + 28, 0, 31, 36}; // {29 * 3, 0, 29, 39};
+// player sprites
+const SDL_Rect PLAYER_SPRITES_IDLE[1] = {
+    {0, 3, 22, 33}
+};
+const SDL_Rect PLAYER_SPRITES_WALK[8] = {
+    {105, 1, 23, 34},
+    {128, 2, 25, 33},
+    {153, 2, 23, 33},
+    {176, 0, 21, 36},
+    {197, 2, 23, 33},
+    {220, 2, 25, 33},
+    {245, 2, 23, 24},
+    {268, 0, 21, 36}
+};
+const SDL_Rect PLAYER_SPRITES_LOOKUP[1] = {
+    {22, 0, 24, 36}
+};
+const SDL_Rect PLAYER_SPRITES_CROUCH[1] = {
+    {46, 10, 28, 26}
+};
+const SDL_Rect PLAYER_SPRITES_SKID[1] = {
+    {74, 0, 31, 36}
+};
+const SDL_Rect PLAYER_SPRITES_JUMP[2] = {
+    {289, 0, 27, 42},
+    {316, 0, 27, 39},
+};
 
 // ring sprites
-const SDL_Rect SPRITE_RING_1 = {0, 0, 16, 16};
-const SDL_Rect SPRITE_RING_2 = {24, 0, 16, 16};
-const SDL_Rect SPRITE_RING_3 = {48, 0, 8, 16};
-const SDL_Rect SPRITE_RING_4 = {64, 0, 16, 16};
+const SDL_Rect RING_SPRITES[4] = {
+    {0, 0, 16, 16},
+    {16, 0, 12, 16},
+    {28, 0, 8, 16},
+    {36, 0, 12, 16}
+};
+
+bool openFile();
 
 class Screen {
     public:
@@ -51,12 +69,14 @@ class Screen {
             GAME
         };
 
-        SDL_Window* window = nullptr;
-        SDL_Renderer* renderer = nullptr;
-        TTF_Font* font = nullptr;
+        SDL_Window* window;
+        SDL_Renderer* renderer;
+        TTF_Font* font;
 
-        SDL_Texture* textTexture = nullptr;
-        SDL_Texture* bgTexture = nullptr;
+        SDL_Texture* textTexture;
+        SDL_Texture* bgTexture;
+        SDL_Texture* playerTexture;
+        SDL_Texture* ringTexture;
 
         SDL_Colour textColour = {0, 0, 0}; // black
 
@@ -66,13 +86,14 @@ class Screen {
         void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flips = SDL_FLIP_NONE);
         void drawText(int x, int y);
         void drawTile();
-        void drawBG(SDL_Rect cam);
+        void drawBG(int x, int y, SDL_Rect cam);
 
         void prep();
         void present();
 
         SDL_Texture* loadPNG(string file);
         SDL_Texture* loadText(string text);
+
     private:
 
 };
@@ -82,6 +103,8 @@ class Camera {
     public:
         Camera();
         ~Camera() {}
+
+        Position pos;
 
         SDL_Rect c;
         // int x, y, w, h

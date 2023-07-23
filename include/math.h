@@ -4,9 +4,11 @@
 
 class Position {
     public:
+        Position(int xx = 0, int yy = 0): x(xx), y(yy) {}
+
         int x, y;
 
-        Position set(int xx, int yy);
+        Position set(int xx = 0, int yy = 0);
 
         Position& operator+(const Position& p2);
         Position& operator-(const Position& p2);
@@ -15,23 +17,15 @@ class Position {
         bool operator==(const Position p);
 };
 
-class Radius {
-    public:
-    int h, w;
-
-    Radius set(int ww, int hh);
-};
-
 class Hitbox {
-	public:
-    Position pos;
-    Radius rad;
+    public:
+        Hitbox(Position ppos = {0, 0}): pos(ppos) {}
 
-    int left, right, top, bottom;
+        Position pos;
+        int left, right, top, bottom;
 
-    Hitbox set(int x, int y, int w, int h);
+        Hitbox set(Position p, int w, int h);
 };
-
 
 int sign(float x); // get sign of x
 int absolute(int x); // get positive version of x

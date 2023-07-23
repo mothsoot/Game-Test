@@ -5,6 +5,7 @@ int main(int argc, char* args[])
 	// game flags
     bool quit = false;
 	bool debug = true;
+	int scrollOffset = 0;
 
 	// initialize screen
 	Screen screen;
@@ -13,30 +14,26 @@ int main(int argc, char* args[])
 		return 0;
 	}
 
-	// load resources
-	SDL_Texture* playerSprite = screen.loadPNG("resources/sonic-sprites-v2.png");
-	SDL_Texture* ringSprite = screen.loadPNG("resources/ring-sprites.png");
-
 	// initialize camera
 	Camera cam;
 
 	// initialize player
-	Player player(200, 200, playerSprite);
+	Player player(startPos, screen.playerTexture);
+	player.create();
 
 	// initialize rings
 	Ring* ringList = new (nothrow) Ring[MAX_RINGS];
 	if(ringList == nullptr) {
-		cerr << "Memory allocation failed!\n";
+		cerr << "Error!! Memory allocation failed!\n";
 		quit = true;
 	} else {
 		for (int p = 0; p < MAX_RINGS; p++) {
-			create(&ringList[p], 50 + (p * 10), 150, ringSprite);
+			ringList[p].create(ringsMapping[p], screen.ringTexture);
 		}
 	}
 
 	// handle events
-	while (!quit)
-	{
+	while (!quit) {
 		screen.prep();
 
 		SDL_Event e;
@@ -52,20 +49,28 @@ int main(int argc, char* args[])
 			player.input.keyState(e);
 		}
 
-		update(&player);
+		// UPDATE
+		player.update();
 		for (int p = 0; p < MAX_RINGS; p++) {
-			update(&ringList[p]);
+			ringList[p].update();
 		}
 		cam.update(player.getPos());
 
-		// draw background
-		screen.drawBG(cam.c);
+		// scroll background
+		--scrollOffset;
+		if(scrollOffset < -LEVEL_WIDTH) {
+			scrollOffset = 0;
+		}
+
+		// DRAW
+		screen.drawBG(scrollOffset, 0, cam.c);
+		screen.drawBG((scrollOffset + LEVEL_WIDTH), 0, cam.c);
 
 		// render sprites
-		draw(&player, screen, cam);
+		player.draw(screen, cam);
 		for (int p = 0; p < MAX_RINGS; p++) {
 			if(!player.objectCollision(&ringList[p])) {
-				draw(&ringList[p], screen, cam);
+				ringList[p].draw(screen, cam);
 			}
 		}
 
@@ -80,36 +85,15 @@ int main(int argc, char* args[])
 	}
 
 	// shutdown objects
-	destroy(&player);
+	player.destroy();
 	for (int p = 0; p < MAX_RINGS; p++) {
-		destroy(&ringList[p]);
+		ringList[p].destroy();
 	}
-	delete [] ringList;
 
 	// shutdown SDL
 	screen.shutDown();
 
 	return 0;
-}
-
-void create(Object* obj, int x, int y, SDL_Texture* spriteTex)
-{
-	obj->create(x, y, spriteTex);
-}
-
-void update(Object* obj)
-{
-    obj->update();
-}
-
-void draw(Object* obj, Screen scr, Camera cam)
-{
-	obj->draw(scr, cam);
-}
-
-void destroy(Object* obj)
-{
-	obj->destroy();
 }
 
 // DEBUG STUFF
@@ -129,8 +113,8 @@ void debugText(Player player, Camera cam, Screen scr)
 	scr.loadText(coords.str().c_str());
 	scr.drawText(1, 0);
 
-	speed << "X SPD: " << player.xSpeed << "\nY SPD: " << player.ySpeed;
-	speed << "\nGround SPD: " << player.groundSpeed;
+	speed << "X SPD: " << player.getxSpeed() << "\nY SPD: " << player.getySpeed();
+	speed << "\nGround SPD: " << player.getGroundSpeed();
 	scr.loadText(speed.str().c_str());
 	scr.drawText(1, 10);
 
@@ -139,7 +123,7 @@ void debugText(Player player, Camera cam, Screen scr)
 	scr.drawText(1, (SCREEN_HEIGHT - 40));
 
 	action << "Action: ";
-	switch(player.action) {
+	switch(player.getAction()) {
 		case ACTION_NORMAL:
 			action << "normal";
 			break;

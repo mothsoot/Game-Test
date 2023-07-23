@@ -22,48 +22,55 @@ enum OBJECT_TYPE {
     TYPE_SPRING
 };
 
-struct Sprite {
-    SDL_Rect s;
-    SDL_Texture* tex;
+class Sprite {
+    public:
+        Sprite(SDL_Texture* t = nullptr): tex(t) {}
+        ~Sprite() {}
 
-    SDL_RendererFlip flip = SDL_FLIP_NONE;
+        SDL_Rect s;
+        SDL_Texture* tex;
+
+        Position offset; // pos offset from centre of sprite
+
+        SDL_RendererFlip flip = SDL_FLIP_NONE;
 };
 
 class Object {
     public:
-        Object() {}
+        Object(Position p = {0, 0}, SDL_Texture* t = nullptr): pos(p), sprite(t) {}
         ~Object() {}
 
-        void create(int x, int y, SDL_Texture* spriteTex);
         void destroy();
         void draw(Screen scr, Camera cam);
 
+        //virtual void create() {}
         virtual void update() {}
         virtual void animate() {}
 
-        int type;
         bool active;
 
+        int getType() { return type; }
 
         Position getPos() { return pos; }
         int getxPos() { return pos.x; }
         int getyPos() { return pos.y; }
 
-        Sprite sprite;
-        int animFrame = 0;
 
-        int getwRad() { return rad.w; }
-        int gethRad() { return rad.h; }
-
-        Hitbox hitbox;
+        int HITBOX_HEIGHT;
+        int HITBOX_WIDTH;
+        Hitbox getHitbox() { return hitbox; }
 
         virtual bool objectCollision(Object* objB);
 
     protected:
         Position pos;
-        Radius rad;
+        Hitbox hitbox;
 
-        void setHitbox();
+        int type;
+
+        Sprite sprite;
+        int animFrame = 0;
+        const int animSpeed = 10;
 
     private:
 

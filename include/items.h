@@ -2,24 +2,16 @@
 
 #include "object.h"
 
-class Item: public Object {
-    public:
-};
-
-class Ring: public Item {
+class Ring: public Object {
     public:
         const int GRAVITY = 0.09375; // 24 subpixels
 
-        Ring(int x = 0, int y = 0);
+        Ring(Position pos = {0, 0}, SDL_Texture* tex = nullptr): Object(pos, tex) {}
 
+        void create(Position p, SDL_Texture* tex);
         virtual void update();
         virtual void animate();
 
-        SDL_Rect ringSprites[4] = {
-            SPRITE_RING_1,
-            SPRITE_RING_2,
-            SPRITE_RING_3,
-            SPRITE_RING_4
-        };
     private:
+
 };

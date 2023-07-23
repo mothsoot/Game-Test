@@ -54,26 +54,14 @@ Position Position::set(int xx, int yy)
 	return *this;
 }
 
-Radius Radius::set(int ww, int hh)
+Hitbox Hitbox::set(Position p, int w, int h)
 {
-	w = ww;
-	h = hh;
+	pos.set(p.x, p.y);
 
-	return *this;
-}
-
-Hitbox Hitbox::set(int x, int y, int w, int h)
-{
-	pos.x = x;
-	pos.y = y;
-
-	rad.w = w;
-	rad.h = h;
-
-	left = x;
-	right = x + (rad.w * 2);
-	top = y;
-	bottom = y + (rad.h * 2);
+	left = p.x;
+	right = p.x + (w * 2);
+	top = p.y;
+	bottom = p.y + (h * 2);
 
 	return *this;
 }

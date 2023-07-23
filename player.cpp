@@ -1,26 +1,25 @@
 #include "player.h"
 
-// constructor
-Player::Player(int x, int y, SDL_Texture* spriteTex)
+void Player::create()
 {
     type = TYPE_PLAYER;
     active = true;
     action = ACTION_NORMAL;
 
+	HITBOX_WIDTH = 10;
+	HITBOX_HEIGHT = 14;
+
     rings = 0;
 
     grounded = true;
 
-    pos.set(x, y);
-    rad.set(10, 14); // 22, 33 idle sprite
-    hitbox.set(pos.x, pos.y, rad.h, rad.w);
+    hitbox.set(pos, HITBOX_WIDTH, HITBOX_HEIGHT);
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
     groundAngle = 0;
 
-    sprite.s = SPRITE;
-    sprite.tex = spriteTex;
+    sprite.s = PLAYER_SPRITES_IDLE[0];
 }
 
 void Player::update()
@@ -48,7 +47,7 @@ void Player::update()
         }
 
         // update xSpeed based on input
-        xSpeed = getSpeed(xSpeed);
+        xSpeed = setSpeed(xSpeed);
 
         // apply air resistance to xSpeed
         airDrag();
@@ -96,7 +95,7 @@ void Player::update()
 
         if(action == ACTION_NORMAL || action == ACTION_SKID || action == ACTION_CROUCH || action == ACTION_LOOKUP) {
             // adjust groundSpeed based on input + friction & accel/decel
-            groundSpeed = getSpeed(groundSpeed);
+            groundSpeed = setSpeed(groundSpeed);
 
             if((collide.islWall() && (groundSpeed < 0)) || (collide.isrWall() && (groundSpeed > 0))) {
                 // hit left wall while moving left
@@ -115,8 +114,8 @@ void Player::update()
                     // add xSpeed & ySpeed to sensor position
             
             // calculate xSpeed & ySpeed from groundSpeed & groundAngle
-            getxSpeed();
-            getySpeed();
+            setxSpeed();
+            setySpeed();
 
             // }
 
@@ -129,7 +128,7 @@ void Player::update()
     }
 
     setSprite();
-    hitbox.set(pos.x, pos.y, rad.h, rad.w);
+    hitbox.set(pos, HITBOX_WIDTH, HITBOX_HEIGHT);
 
     move();
 }
@@ -150,8 +149,10 @@ void Player::setSprite()
 {
     switch(action) {
         case ACTION_NORMAL:
-        case ACTION_JUMP:
-            sprite.s = SPRITE;
+            sprite.s = PLAYER_SPRITES_IDLE[0];
+
+            // if groundSpeed != 0
+            animate();
 
             if(input.isRight()) {
                 sprite.flip = SDL_FLIP_NONE;
@@ -161,16 +162,32 @@ void Player::setSprite()
             }
             break;
 
+        case ACTION_JUMP:
+            sprite.s = PLAYER_SPRITES_JUMP[0];
+
+            if(ySpeed >= 0) {
+                sprite.s = PLAYER_SPRITES_JUMP[1]; // falling sprite
+            }
+
+            if(input.isRight()) {
+                sprite.flip = SDL_FLIP_NONE;
+            }
+            if(input.isLeft()) {
+                sprite.flip = SDL_FLIP_HORIZONTAL;
+            }
+
+            break;
+
         case ACTION_CROUCH:
-            sprite.s = SPRITE_DOWN;
+            sprite.s = PLAYER_SPRITES_CROUCH[0];
             break;
 
         case ACTION_LOOKUP:
-            sprite.s = SPRITE_UP;
+            sprite.s = PLAYER_SPRITES_LOOKUP[0];
             break;
 
         case ACTION_SKID:
-            sprite.s = SPRITE_SKID;
+            sprite.s = PLAYER_SPRITES_SKID[0];
             if(input.isRight()) { // pressing right, moving left
                 sprite.flip = SDL_FLIP_HORIZONTAL;
             }
@@ -181,11 +198,26 @@ void Player::setSprite()
     }
 }
 
+void Player::animate()
+{
+    if(groundSpeed != 0) {
+        sprite.s = PLAYER_SPRITES_WALK[animFrame / animSpeed]; // slow
+        animFrame++;
+
+        if(animFrame / animSpeed > 7) {
+            animFrame = 0;
+        }
+    } else {
+        // since its only walk sprites for now
+        animFrame = 0;
+    }
+}
+
 bool Player::objectCollision(Object* objB)
 {
     if(active && objB->active) {
-        if(checkCollision(hitbox, objB->hitbox)) {
-            switch(objB->type) {
+        if(checkCollision(hitbox, objB->getHitbox())) {
+            switch(objB->getType()) {
                 case TYPE_RING:
                         rings++;
                         objB->active = false;
@@ -197,7 +229,7 @@ bool Player::objectCollision(Object* objB)
     return false;
 }
 
-float Player::getSpeed(float speed)
+float Player::setSpeed(float speed)
 {
     // float speed is temp, returned to either groundSpeed or xSpeed
 
@@ -264,12 +296,12 @@ float Player::getSpeed(float speed)
     return speed;
 }
 
-void Player::getxSpeed()
+void Player::setxSpeed()
 {
     xSpeed = groundSpeed * cos(groundAngle);
 }
 
-void Player::getySpeed()
+void Player::setySpeed()
 {
     ySpeed = groundSpeed * -sin(groundAngle);
 
