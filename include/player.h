@@ -30,9 +30,7 @@ enum ACTION {
 
 class Player: public Object {
 	public:
-		// default constructor in Object class
 		Player(Position pos = {0, 0}, SDL_Texture* tex = nullptr): Object(pos, tex) {}
-		// default destructor in Object class
 
 		void create();
 		virtual void update();

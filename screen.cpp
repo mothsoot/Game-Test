@@ -11,10 +11,10 @@ bool openFile()
 		// a+ = for reading & appending
 		// *b = open as a binary file (ex. rb, wb, r+b)
 	if(file == nullptr) {
-		cerr << "Error!! Could not open file! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Error!! Could not open file! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not open file!\n");
 		return false;
 	}
-	cout << "File opened successfully!\n";
 
 	int data[10];
 
@@ -29,26 +29,30 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 {
 	// initialize SDL
 	if(SDL_Init(SDL_INIT_VIDEO) < 0) {
-		cerr << "Could not initialize SDL!! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Could not initialize SDL!! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL!\n");
 		return false;
 	}
 	
 	// initialize SDL_Image for image files
 	if(IMG_Init(IMG_INIT_PNG) < 0) {
-		cerr << "Could not initialize SDL_Image!! IMG_Error: " << IMG_GetError() << endl;
+		// cerr << "Could not initialize SDL_Image!! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL_Image!\n");
 		return false;
 	}
 
 	// initialize SDL_TTF for fonts
 	if(TTF_Init() < 0) {
-		cerr << "Could not initialize SDL_TTF!! TTF_Error: " << TTF_GetError() << endl;
+		// cerr << "Could not initialize SDL_TTF!! TTF_Error: " << TTF_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not initialize SDL_TTF!\n");
 		return false;
 	}
 
 	// create window to render in
 	window = SDL_CreateWindow("Game moment", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WIDTH, SCREEN_HEIGHT, 0);
 	if(window == nullptr) {
-		cerr << "Window not created! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Window not created! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Window not created!\n");
 		return false;
 	}
 
@@ -56,35 +60,46 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 		// window drawing in, rendering driver (-1 sets to default), sets SDL_RendererFlags
 	if(renderer == nullptr) {
-		cerr << "Renderer not created! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Renderer not created! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Renderer not created!\n");
 		return false;
 	}
 
 	// load font
 	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
 	if(font == nullptr) {
-		cerr << "Font not loaded! TTF_Error: " << TTF_GetError() << endl;
+		// cerr << "Font not loaded! TTF_Error: " << TTF_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Font not loaded!\n");
 		return false;
 	}
 
 	// load background
 	bgTexture = loadPNG("resources/bg.png");
 	if(bgTexture == nullptr) {
-		cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		// cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Background texture not loaded!\n");
+		return false;
+	}
+	// load tiles
+	tileTexture = loadPNG("resources/tile.png");
+	if(tileTexture == nullptr) {
+		// cerr << "Tile texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Tile texture not loaded!\n");
 		return false;
 	}
 
 	// load player sprites
 	playerTexture = loadPNG("resources/sonic-sprites-v2.png");
 	if(playerTexture == nullptr) {
-		cerr << "Player sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		// cerr << "Player sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Player sprites not loaded!\n");
 		return false;
 	}
-
 	// load ring sprites
 	ringTexture = loadPNG("resources/ring-sprites.png");
 	if(ringTexture == nullptr) {
-		cerr << "Ring sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		// cerr << "Ring sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ring sprites not loaded!\n");
 		return false;
 	}
 
@@ -99,6 +114,7 @@ void Screen::shutDown()
 	// deallocate resources
 	SDL_DestroyTexture(textTexture);
 	SDL_DestroyTexture(bgTexture);
+	SDL_DestroyTexture(tileTexture);
 	SDL_DestroyTexture(playerTexture);
 	SDL_DestroyTexture(ringTexture);
 
@@ -128,7 +144,7 @@ void Screen::present()
 void Screen::drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
 {
 	// destination rectangle
-	SDL_Rect dstrect = {x, (y + sprite.y), sprite.w, sprite.h}; // x coord, y coord, image width, image height
+	SDL_Rect dstrect = {x, (y + sprite.y), sprite.w, sprite.h};
 
 	SDL_RenderCopyEx(renderer, tex, &sprite, &dstrect, NULL, NULL, flip);
 }
@@ -145,11 +161,9 @@ void Screen::drawText(int x, int y)
 	SDL_RenderCopy(renderer, textTexture, NULL, &dstrect);
 }
 
-void Screen::drawBG(int x, int y, SDL_Rect cam)
+void Screen::drawBG(SDL_Rect cam)
 {
-	SDL_Rect dstrect = {x, y, LEVEL_WIDTH, LEVEL_HEIGHT};
-
-	SDL_RenderCopy(renderer, bgTexture, &cam, &dstrect);
+	SDL_RenderCopy(renderer, bgTexture, &cam, NULL);
 }
 
 SDL_Texture* Screen::loadPNG(string file)
@@ -157,10 +171,11 @@ SDL_Texture* Screen::loadPNG(string file)
 	SDL_Surface* image = IMG_Load(file.c_str());
 	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
 	if(texture == nullptr) {
-		cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Texture not loaded!\n");
 	}
 
-	// delete image
+	// delete surface
 	SDL_FreeSurface(image);
 
 	return texture;
@@ -171,7 +186,8 @@ SDL_Texture* Screen::loadText(string text)
 	// render text surface
 	SDL_Surface* textSurface = TTF_RenderText_Solid(font, text.c_str(), textColour);
 	if(textSurface == nullptr) {
-		cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Text not loaded!\n");
 		return nullptr;
 	}
 

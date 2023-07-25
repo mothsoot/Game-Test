@@ -19,7 +19,7 @@ class Position {
 
 class Hitbox {
     public:
-        Hitbox(Position ppos = {0, 0}): pos(ppos) {}
+        Hitbox(Position p = {0, 0}): pos(p) {}
 
         Position pos;
         int left, right, top, bottom;

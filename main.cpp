@@ -3,15 +3,32 @@
 int main(int argc, char* args[])
 {
 	// game flags
-    bool quit = false;
+	bool quit = false;
 	bool debug = true;
-	int scrollOffset = 0;
 
 	// initialize screen
 	Screen screen;
 	if(!screen.startUp()) {
-		cerr << "Failed to initialize! SDL_Error: " << SDL_GetError() << endl;
+		// cerr << "Failed to initialize screen! SDL_Error: " << SDL_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Failed to initialize screen!\n");
 		return 0;
+	}
+
+	Position tileMappings[MAX_TILES];
+	for (int p = 0; p < MAX_TILES; p++) {
+		tileMappings[p].x = 10 * p;
+		tileMappings[p].y = 235;
+	}
+
+	Tile* tileList = new (nothrow) Tile[MAX_TILES];
+	if(tileList == nullptr) {
+		// cerr << "Error!! tileList not created!\n";
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "tileList not created!\n");
+		quit = true;
+	} else {
+		for (int p = 0; p < MAX_TILES; p++) {
+			tileList[p].create(tileMappings[p], screen.tileTexture);
+		}
 	}
 
 	// initialize camera
@@ -24,7 +41,8 @@ int main(int argc, char* args[])
 	// initialize rings
 	Ring* ringList = new (nothrow) Ring[MAX_RINGS];
 	if(ringList == nullptr) {
-		cerr << "Error!! Memory allocation failed!\n";
+		// cerr << "Error!! ringList not created!\n";
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "ringList not created!\n");
 		quit = true;
 	} else {
 		for (int p = 0; p < MAX_RINGS; p++) {
@@ -56,23 +74,20 @@ int main(int argc, char* args[])
 		}
 		cam.update(player.getPos());
 
-		// scroll background
-		--scrollOffset;
-		if(scrollOffset < -LEVEL_WIDTH) {
-			scrollOffset = 0;
+		// DRAW
+		screen.drawBG(cam.c);
+
+		for (int p = 0; p < MAX_TILES; p++) {
+			tileList[p].draw(screen, cam);
 		}
 
-		// DRAW
-		screen.drawBG(scrollOffset, 0, cam.c);
-		screen.drawBG((scrollOffset + LEVEL_WIDTH), 0, cam.c);
-
 		// render sprites
-		player.draw(screen, cam);
 		for (int p = 0; p < MAX_RINGS; p++) {
 			if(!player.objectCollision(&ringList[p])) {
 				ringList[p].draw(screen, cam);
 			}
 		}
+		player.draw(screen, cam);
 
 		if(debug) {
 			debugText(player, cam, screen);
@@ -82,6 +97,11 @@ int main(int argc, char* args[])
 		SDL_Delay(16);
 
 		screen.present();
+	}
+
+	// shutdown tiles
+	for (int p = 0; p < MAX_TILES; p++) {
+		tileList[p].destroy();
 	}
 
 	// shutdown objects
@@ -100,13 +120,6 @@ int main(int argc, char* args[])
 void debugText(Player player, Camera cam, Screen scr)
 {
 	stringstream coords, speed, rings, action, keyPress, collision;
-
-	coords.str("");
-	speed.str("");
-	rings.str("");
-	action.str("");
-	keyPress.str("");
-	collision.str("");
 
 	coords << "X: " << player.getxPos() << "\nY: " << player.getyPos();
 	coords << "\n\n\nCam X: " << cam.c.x << "\nCam Y: " << cam.c.y;

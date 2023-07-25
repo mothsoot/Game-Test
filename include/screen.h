@@ -75,6 +75,7 @@ class Screen {
 
         SDL_Texture* textTexture;
         SDL_Texture* bgTexture;
+        SDL_Texture* tileTexture;
         SDL_Texture* playerTexture;
         SDL_Texture* ringTexture;
 
@@ -85,8 +86,7 @@ class Screen {
 
         void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flips = SDL_FLIP_NONE);
         void drawText(int x, int y);
-        void drawTile();
-        void drawBG(int x, int y, SDL_Rect cam);
+        void drawBG(SDL_Rect cam);
 
         void prep();
         void present();
