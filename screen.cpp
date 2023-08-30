@@ -65,41 +65,7 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 		return false;
 	}
 
-	// load font
-	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
-	if(font == nullptr) {
-		// cerr << "Font not loaded! TTF_Error: " << TTF_GetError() << endl;
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Font not loaded!\n");
-		return false;
-	}
-
-	// load background
-	bgTexture = loadPNG("resources/bg.png");
-	if(bgTexture == nullptr) {
-		// cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Background texture not loaded!\n");
-		return false;
-	}
-	// load tiles
-	tileTexture = loadPNG("resources/tile.png");
-	if(tileTexture == nullptr) {
-		// cerr << "Tile texture not loaded! IMG_Error: " << IMG_GetError() << endl;
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Tile texture not loaded!\n");
-		return false;
-	}
-
-	// load player sprites
-	playerTexture = loadPNG("resources/sonic-sprites-v2.png");
-	if(playerTexture == nullptr) {
-		// cerr << "Player sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Player sprites not loaded!\n");
-		return false;
-	}
-	// load ring sprites
-	ringTexture = loadPNG("resources/ring-sprites.png");
-	if(ringTexture == nullptr) {
-		// cerr << "Ring sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ring sprites not loaded!\n");
+	if(!loadResources()) {
 		return false;
 	}
 
@@ -132,7 +98,6 @@ void Screen::shutDown()
 void Screen::prep()
 {
 	SDL_RenderClear(renderer);
-	SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255); // set window colour to white
 }
 
 void Screen::present()
@@ -141,10 +106,22 @@ void Screen::present()
 	SDL_RenderPresent(renderer);
 }
 
-void Screen::drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
+void Screen::drawFromTop(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
 {
+	// source rectangle
+	SDL_Rect srcrect = sprite;
 	// destination rectangle
-	SDL_Rect dstrect = {x, (y + sprite.y), sprite.w, sprite.h};
+	SDL_Rect dstrect = {x, (y + sprite.y), sprite.w, sprite.h}; // x pos, y pos, width, height
+
+	SDL_RenderCopyEx(renderer, tex, &sprite, &dstrect, NULL, NULL, flip);
+}
+
+void Screen::drawFromCenter(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
+{
+	// source rectangle
+	SDL_Rect srcrect = sprite;
+	// destination rectangle
+	SDL_Rect dstrect;
 
 	SDL_RenderCopyEx(renderer, tex, &sprite, &dstrect, NULL, NULL, flip);
 }
@@ -199,6 +176,48 @@ SDL_Texture* Screen::loadText(string text)
 	return textTexture;
 }
 
+bool Screen::loadResources()
+{
+	// load font
+	font = TTF_OpenFont("resources/NiseSegaSonic.ttf", 10);
+	if(font == nullptr) {
+		// cerr << "Font not loaded! TTF_Error: " << TTF_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Font not loaded!\n");
+		return false;
+	}
+
+	// load background
+	bgTexture = loadPNG("resources/background.png");
+	if(bgTexture == nullptr) {
+		// cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Background texture not loaded!\n");
+		return false;
+	}
+	// load tiles
+	tileTexture = loadPNG("resources/tiles.png");
+	if(tileTexture == nullptr) {
+		// cerr << "Tile texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Tile texture not loaded!\n");
+		return false;
+	}
+	// load player sprites
+	playerTexture = loadPNG("resources/sonic-sprites-v2.png");
+	if(playerTexture == nullptr) {
+		// cerr << "Player sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Player sprites not loaded!\n");
+		return false;
+	}
+	// load ring sprites
+	ringTexture = loadPNG("resources/ring-sprites.png");
+	if(ringTexture == nullptr) {
+		// cerr << "Ring sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ring sprites not loaded!\n");
+		return false;
+	}
+
+	return true; // all good!!
+}
+
 // CAMERA
 Camera::Camera()
 {
@@ -207,6 +226,8 @@ Camera::Camera()
 	c.y = pos.y;
 	c.w = SCREEN_WIDTH;
 	c.h = SCREEN_HEIGHT;
+
+	hitbox.set(pos, c.w, c.h);
 }
 
 void Camera::update(Position playerPos)
@@ -228,5 +249,5 @@ void Camera::update(Position playerPos)
 	c.x = pos.x;
 	c.y = pos.y;
 
-	hitbox.set(pos, c.w, c.h);
+	hitbox.update(pos);
 }

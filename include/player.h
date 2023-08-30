@@ -3,6 +3,7 @@
 #include "collision.h"
 #include "input.h"
 #include "screen.h"
+#include "tile.h"
 #include "object.h"
 #include "math.h"
 
@@ -30,11 +31,10 @@ enum ACTION {
 
 class Player: public Object {
 	public:
-		Player(Position pos = {0, 0}, SDL_Texture* tex = nullptr): Object(pos, tex) {}
+		Player(Position pos = {0, 0}, SDL_Texture* tex = nullptr): Object(pos, tex) { }
 
 		void create();
-		virtual void update();
-		virtual void animate();
+		virtual void update(Tile* tileList);
 
 		bool grounded;
 		float groundAngle;
@@ -49,6 +49,7 @@ class Player: public Object {
 		InputHandler input;
 
 		Collision collide;
+		void groundCollision(Tile* tile);
 		virtual bool objectCollision(Object* objB);
 
 	private:
@@ -67,8 +68,5 @@ class Player: public Object {
 		float setFriction(float speed);
 
 		void jump();
-		void jumpHeight();
-		void gravity();
-		void airDrag();
 		void airRotation();
 };

@@ -11,12 +11,9 @@ using std::stringstream;
 #include "items.h"
 #include "timer.h"
 
-const int MAX_RINGS = 10;
-const int MAX_TILES = 20;
-
 const Position startPos = {200, 200};
 
-const Position ringsMapping[10] = {
+Position ringMappings[MAX_RINGS] = {
 	{50, 150},
 	{50, 180},
 	{60, 180},
@@ -28,11 +25,5 @@ const Position ringsMapping[10] = {
 	{220, 180},
 	{230, 180}
 };
-
-/*const Position tileMappings[MAX_TILES] = {
-	{10, 235},
-	{20, 235},
-	{30, 235},
-};*/
 
 void debugText(Player player, Camera cam, Screen scr);

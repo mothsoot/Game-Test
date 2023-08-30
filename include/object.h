@@ -28,6 +28,7 @@ class Sprite {
         ~Sprite() {}
 
         SDL_Rect s;
+            // x, y, w, h
         SDL_Texture* tex;
 
         Position offset; // pos offset from centre of sprite
@@ -51,24 +52,26 @@ class Object {
 
         int getType() { return type; }
 
+        //void initCenterPos();
         Position getPos() { return pos; }
         int getxPos() { return pos.x; }
         int getyPos() { return pos.y; }
 
-
-        int HITBOX_HEIGHT;
-        int HITBOX_WIDTH;
         Hitbox getHitbox() { return hitbox; }
+        Hitbox hitbox;
 
         virtual bool objectCollision(Object* objB);
 
+        Sprite sprite;
+
     protected:
+        Position centerPos;
+        int hRadius, wRadius;
+
         Position pos;
-        Hitbox hitbox;
 
         int type;
 
-        Sprite sprite;
         int animFrame = 0;
         const int animSpeed = 10;
 

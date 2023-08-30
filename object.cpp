@@ -9,7 +9,7 @@ void Object::draw(Screen scr, Camera cam)
 {
     if(active) {
         if(checkCollision(hitbox, cam.hitbox)) {
-            scr.drawSprite((getxPos() - cam.pos.x), (getyPos() - cam.pos.y), sprite.s, sprite.tex, sprite.flip);
+            scr.drawFromTop((getxPos() - cam.pos.x), (getyPos() - cam.pos.y), sprite.s, sprite.tex, sprite.flip);
         }
     }
 }

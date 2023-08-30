@@ -2,6 +2,8 @@
 
 #include "object.h"
 
+const int MAX_RINGS = 10;
+
 class Ring: public Object {
     public:
         const int GRAVITY = 0.09375; // 24 subpixels
@@ -15,3 +17,5 @@ class Ring: public Object {
     private:
 
 };
+
+bool createRingList(Ring* &ringList, Position ringMappings[], SDL_Texture* ringTexture);

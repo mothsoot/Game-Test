@@ -2,13 +2,9 @@
 
 #include "screen.h"
 #include "math.h"
+// #include "tile.h"
 
-enum COLLISION_MODE {
-	FLOOR,
-	RWALL,
-	CEILING,
-	LWALL
-};
+const int GROUND_HEIGHT = 200;
 
 class Sensor {
     public:
@@ -20,6 +16,8 @@ class Sensor {
         int detected_height;
 
         int distance;
+
+        Position tilePos;
         float tileAngle;
         float tileID;
         
@@ -35,10 +33,22 @@ class Sensor {
 
 bool checkCollision(Hitbox boxA, Hitbox boxB);
 
+bool tileCollision(Hitbox tileBox, Hitbox playerBox, int type);
+bool tileCollisionAbove(int pBottom, int tTop);
+bool tileCollisionBelow(int pTop, int tBottom);
+bool tileCollisionRight(int pLeft, int tRight);
+bool tileCollisionLeft(int pRight, int tLeft);
+
 class Collision {
     public:
         Collision();
         ~Collision() {}
+
+        // tile collisions
+        bool floor;
+		bool lWall;
+		bool rWall;
+		bool ceiling;
 
         bool isFloor() { return floor; }
         bool islWall() { return lWall; }
@@ -46,15 +56,23 @@ class Collision {
         bool isCeiling() { return ceiling; }
         bool isNone();
 
-        void screenCollision(Position &pos, SDL_Rect sprite);
+        // screen collisions
+        bool isTopScr() { return topScr; }
+        bool isBottomScr() { return bottomScr; }
+        bool isLeftScr() { return leftScr; }
+        bool isRightScr() { return rightScr; }
+        bool isNoScr();
+
+        void screenCollision(Position &pos, Hitbox box, SDL_Rect sprite);
 
     private:
         void reset();
 
-        bool floor;
-		bool lWall;
-		bool rWall;
-		bool ceiling;
+        // screen collision flags
+        bool topScr;
+        bool bottomScr;
+        bool leftScr;
+        bool rightScr;
 
         /*bool wallCollision(Player player);
         bool groundCollision(Player player);

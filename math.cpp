@@ -54,16 +54,28 @@ Position Position::set(int xx, int yy)
 	return *this;
 }
 
-Hitbox Hitbox::set(Position p, int w, int h)
+Hitbox Hitbox::set(Position p, int w, int h, int offset)
+{
+	pos.set(p.x, (p.y + offset));
+	width = w;
+	height = h;
+
+	left = pos.x;
+	right = pos.x + width;
+	top = pos.y;
+	bottom = pos.y + height;
+
+	return *this;
+}
+
+void Hitbox::update(Position p)
 {
 	pos.set(p.x, p.y);
 
-	left = p.x;
-	right = p.x + (w * 2);
-	top = p.y;
-	bottom = p.y + (h * 2);
-
-	return *this;
+	left = pos.x;
+	right = pos.x + width;
+	top = pos.y;
+	bottom = pos.y + height;
 }
 
 int sign(float x)

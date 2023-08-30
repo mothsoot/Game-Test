@@ -23,30 +23,30 @@ const int LEVEL_HEIGHT = 300;
 
 // player sprites
 const SDL_Rect PLAYER_SPRITES_IDLE[1] = {
-    {0, 3, 22, 33}
+    {0, 9, 22, 33}
 };
 const SDL_Rect PLAYER_SPRITES_WALK[8] = {
-    {105, 1, 23, 34},
-    {128, 2, 25, 33},
-    {153, 2, 23, 33},
-    {176, 0, 21, 36},
-    {197, 2, 23, 33},
-    {220, 2, 25, 33},
-    {245, 2, 23, 24},
-    {268, 0, 21, 36}
+    {105, 8, 23, 34},
+    {128, 9, 25, 33},
+    {153, 9, 23, 33},
+    {176, 6, 21, 36},
+    {197, 9, 23, 33},
+    {220, 9, 25, 33},
+    {245, 8, 23, 24},
+    {268, 6, 21, 36}
 };
 const SDL_Rect PLAYER_SPRITES_LOOKUP[1] = {
-    {22, 0, 24, 36}
+    {22, 6, 24, 36}
 };
 const SDL_Rect PLAYER_SPRITES_CROUCH[1] = {
-    {46, 10, 28, 26}
+    {46, 16, 28, 26}
 };
 const SDL_Rect PLAYER_SPRITES_SKID[1] = {
-    {74, 0, 31, 36}
+    {74, 6, 31, 36}
 };
 const SDL_Rect PLAYER_SPRITES_JUMP[2] = {
     {289, 0, 27, 42},
-    {316, 0, 27, 39},
+    {316, 3, 27, 39},
 };
 
 // ring sprites
@@ -56,6 +56,11 @@ const SDL_Rect RING_SPRITES[4] = {
     {28, 0, 8, 16},
     {36, 0, 12, 16}
 };
+
+// tile sprites
+const SDL_Rect TILE_SPRITE_DIRT = {0, 0, 16, 16};
+const SDL_Rect TILE_SPRITE_GROUND = {16, 0, 16, 16};
+const SDL_Rect TILE_SPRITE_GRASS = {32, 0, 16, 16};
 
 bool openFile();
 
@@ -84,12 +89,16 @@ class Screen {
         bool startUp();
         void shutDown();
 
-        void drawSprite(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flips = SDL_FLIP_NONE);
+        void drawFromTop(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flips = SDL_FLIP_NONE);
+        void drawFromCenter(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flips = SDL_FLIP_NONE);
+
         void drawText(int x, int y);
         void drawBG(SDL_Rect cam);
 
         void prep();
         void present();
+
+        bool loadResources();
 
         SDL_Texture* loadPNG(string file);
         SDL_Texture* loadText(string text);
@@ -107,7 +116,7 @@ class Camera {
         Position pos;
 
         SDL_Rect c;
-        // int x, y, w, h
+            // int x, y, w, h
 
         Hitbox hitbox;
 

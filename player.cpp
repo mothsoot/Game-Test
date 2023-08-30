@@ -6,23 +6,20 @@ void Player::create()
     active = true;
     action = ACTION_NORMAL;
 
-	HITBOX_WIDTH = 10;
-	HITBOX_HEIGHT = 14;
-
     rings = 0;
 
     grounded = true;
 
-    hitbox.set(pos, HITBOX_WIDTH, HITBOX_HEIGHT);
+    sprite.s = PLAYER_SPRITES_IDLE[0];
+
+    hitbox.set(pos, sprite.s.w, sprite.s.h, sprite.s.y);
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
     groundAngle = 0;
-
-    sprite.s = PLAYER_SPRITES_IDLE[0];
 }
 
-void Player::update()
+void Player::update(Tile* tileList)
 {
     if(!active) {
         // player dead!!
@@ -31,26 +28,28 @@ void Player::update()
 
     // AIRBORNE
     if(!grounded) {
-        //setRadius(19, 9);
-
         groundSpeed = 0; // not on ground!
 
-        if((collide.islWall() && (xSpeed < 0)) || (collide.isrWall() && (xSpeed > 0))) {
-            // hit left wall while moving left
-            // hit right wall while moving right
+        if((collide.isLeftScr() && (xSpeed < 0)) || (collide.isRightScr() && (xSpeed > 0))) {
+            // hit left side of screen while moving left
+            // hit right side of screen while moving right
             xSpeed = 0;
         }
 
         if(action == ACTION_JUMP && !input.isSpace()) {
             // jump button released, adjust jump height
-            jumpHeight();
+            if(ySpeed < JUMP_RELEASE) {
+                ySpeed = JUMP_RELEASE;
+            }
         }
 
         // update xSpeed based on input
         xSpeed = setSpeed(xSpeed);
-
         // apply air resistance to xSpeed
-        airDrag();
+        if(-4 < ySpeed < 0) {
+            xSpeed -= ((xSpeed / 0.125) / 256);
+        }
+
         // apply gravity to ySpeed
         ySpeed += GRAVITY_FORCE;
 
@@ -61,6 +60,7 @@ void Player::update()
             ySpeed = -6;
         }
 
+        // if hit the floor
         if(collide.isFloor()) {
             ySpeed = 0;
             groundSpeed = xSpeed; // to keep momentum
@@ -73,8 +73,6 @@ void Player::update()
 
     // NORMAL
     if(grounded) {
-        //setRadius(19, 9);
-
         // adjust groundSpeed based on groundAngle
         groundSpeed -= SLOPE_FACTOR * sin(groundAngle);
 
@@ -82,14 +80,11 @@ void Player::update()
             action = ACTION_LOOKUP;
         } else if(input.isDown()) {
             action = ACTION_CROUCH;
-            //setRadius(14, 7);
         } else {
             action = ACTION_NORMAL;
         }
 
         if(input.isSpace()) {
-            action = ACTION_JUMP;
-            grounded = false;
             jump();
         }
 
@@ -97,9 +92,9 @@ void Player::update()
             // adjust groundSpeed based on input + friction & accel/decel
             groundSpeed = setSpeed(groundSpeed);
 
-            if((collide.islWall() && (groundSpeed < 0)) || (collide.isrWall() && (groundSpeed > 0))) {
-                // hit left wall while moving left
-                // hit right wall while moving right
+            if((collide.isLeftScr() && (groundSpeed < 0)) || (collide.isRightScr() && (groundSpeed > 0))) {
+                // hit left side of screen while moving left
+                // hit right side of screen while moving right
                 groundSpeed = 0;
             }
 
@@ -118,8 +113,6 @@ void Player::update()
             setySpeed();
 
             // }
-
-            // groundCollision();
             // groundAngle = groundSensor.tileAngle;
                 // update groundAngle
             // pos.y += groundSensor.distance;
@@ -128,21 +121,25 @@ void Player::update()
     }
 
     setSprite();
-    hitbox.set(pos, HITBOX_WIDTH, HITBOX_HEIGHT);
+    hitbox.set(pos, sprite.s.w, sprite.s.h, sprite.s.y);
 
     move();
+
+    // should be moved up higher later
+    for (int p = 0; p < MAX_TILES; p++) {
+        groundCollision(&tileList[p]);
+    }
 }
 
 void Player::move()
 {
     // move left/right
     pos.x += xSpeed;
-
     // move up/down
     pos.y += ySpeed;
 
     // if out of screen
-    collide.screenCollision(pos, sprite.s);
+    collide.screenCollision(pos, hitbox, sprite.s);
 }
 
 void Player::setSprite()
@@ -151,8 +148,17 @@ void Player::setSprite()
         case ACTION_NORMAL:
             sprite.s = PLAYER_SPRITES_IDLE[0];
 
-            // if groundSpeed != 0
-            animate();
+            // animate walk sprites
+            if(groundSpeed != 0) {
+                sprite.s = PLAYER_SPRITES_WALK[animFrame / animSpeed]; // slow
+                animFrame++;
+
+                if(animFrame / animSpeed > 7) {
+                    animFrame = 0;
+                }
+            } else {
+                animFrame = 0;
+            }
 
             if(input.isRight()) {
                 sprite.flip = SDL_FLIP_NONE;
@@ -198,21 +204,6 @@ void Player::setSprite()
     }
 }
 
-void Player::animate()
-{
-    if(groundSpeed != 0) {
-        sprite.s = PLAYER_SPRITES_WALK[animFrame / animSpeed]; // slow
-        animFrame++;
-
-        if(animFrame / animSpeed > 7) {
-            animFrame = 0;
-        }
-    } else {
-        // since its only walk sprites for now
-        animFrame = 0;
-    }
-}
-
 bool Player::objectCollision(Object* objB)
 {
     if(active && objB->active) {
@@ -227,6 +218,24 @@ bool Player::objectCollision(Object* objB)
         }
     }
     return false;
+}
+
+void Player::groundCollision(Tile* tile) //Tile tileList[])
+{
+    if(action != ACTION_JUMP || (action == ACTION_JUMP && ySpeed > 0)) {
+        /* for (int p = 0; p < MAX_TILES; p++) {
+            if(tileCollision(tileList[p].hitbox, hitbox, tileList[p].getType())) {
+                collide.floor = true;
+                pos.y = tileList[p].getyPos() - sprite.s.h;
+            }
+        }*/
+        if(tileCollision(tile->hitbox, hitbox, tile->getType())) {
+            collide.floor = true;
+            pos.y = tile->getyPos() - (sprite.s.h + sprite.s.y);
+        }
+    } else {
+        collide.floor = false;
+    }
 }
 
 float Player::setSpeed(float speed)
@@ -293,6 +302,7 @@ float Player::setSpeed(float speed)
             speed = setFriction(speed);
         }
     }
+
     return speed;
 }
 
@@ -332,30 +342,11 @@ float Player::setFriction(float speed)
 
 void Player::jump()
 {
+    action = ACTION_JUMP;
+    grounded = false;
+
     xSpeed -= JUMP_FORCE * sin(groundAngle);
     ySpeed -= JUMP_FORCE * cos(groundAngle);
-}
-
-void Player::jumpHeight()
-{
-    // checked before updating player position & gravity is calculated
-    if(ySpeed < -4) {
-        ySpeed = -4;
-    }
-}
-
-void Player::gravity()
-{
-    // for every step player is airborne
-    ySpeed += GRAVITY_FORCE;
-}
-
-void Player::airDrag()
-{
-    // calculated before gravity
-    if(-4 < ySpeed < 0) {
-        xSpeed -= ((xSpeed / 0.125) / 256);
-    }
 }
 
 void Player::airRotation()

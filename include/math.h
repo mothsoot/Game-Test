@@ -19,12 +19,14 @@ class Position {
 
 class Hitbox {
     public:
-        Hitbox(Position p = {0, 0}): pos(p) {}
+        Hitbox(Position p = {0, 0}, int w = 0, int h = 0): pos(p), width(w), height(h) {}
 
         Position pos;
+        int height, width;
         int left, right, top, bottom;
 
-        Hitbox set(Position p, int w, int h);
+        Hitbox set(Position p, int w, int h, int offset = 0);
+        void update(Position p);
 };
 
 int sign(float x); // get sign of x

@@ -20,6 +20,74 @@ bool checkCollision(Hitbox boxA, Hitbox boxB)
     return true;
 }
 
+bool tileCollision(Hitbox tileBox, Hitbox playerBox, int type)
+{
+    switch (type) {
+        case 0:
+            break;
+    
+        case 1: // TILE_TOPSOLID
+            if(tileCollisionAbove(playerBox.bottom, tileBox.top)) {
+
+                return true;
+            }
+            break;
+
+        case 2: // TILE_SIDEBOTTOMSOLID
+            if(tileCollisionLeft(playerBox.right, tileBox.left)
+                || tileCollisionRight(playerBox.left, tileBox.right)
+                || tileCollisionBelow(playerBox.top, tileBox.bottom)) {
+                
+                return true;
+            }
+            break;
+
+        case 3: // TILE_FULLSOLID
+            if(tileCollisionAbove(playerBox.bottom, tileBox.top) 
+                || tileCollisionLeft(playerBox.right, tileBox.left)
+                || tileCollisionRight(playerBox.left, tileBox.right)
+                || tileCollisionBelow(playerBox.top, tileBox.bottom)) {
+
+                return true;
+            }
+            break;
+    }
+
+    return false;
+}
+
+bool tileCollisionAbove(int pBottom, int tTop)
+{
+    if(pBottom < tTop) { // bottom of A is higher than top of B
+        return false;
+    }
+    return true;
+}
+
+bool tileCollisionBelow(int pTop, int tBottom)
+{
+    if(pTop > tBottom) { // top of A is lower than bottom of B
+        return false;
+    }
+    return true;
+}
+
+bool tileCollisionRight(int pLeft, int tRight)
+{
+    if(pLeft > tRight) { // left of A is further right than right of B
+        return false;
+    }
+    return true;
+}
+
+bool tileCollisionLeft(int pRight, int tLeft)
+{
+    if(pRight < tLeft) { // right of A is further left than left of B
+        return false;
+    }
+    return true;
+}
+
 Collision::Collision()
 {
     reset();
@@ -33,36 +101,49 @@ bool Collision::isNone()
     return false;
 }
 
+bool Collision::isNoScr()
+{
+    if(!bottomScr && !leftScr && !rightScr && !topScr) {
+        return true;
+    }
+    return false;
+}
+
 void Collision::reset()
 {
     floor = false;
     lWall = false;
     rWall = false;
     ceiling = false;
+
+    topScr = false;
+    leftScr = false;
+    rightScr = false;
+    bottomScr = false;
 }
 
-void Collision::screenCollision(Position &pos, SDL_Rect sprite)
+void Collision::screenCollision(Position &pos, Hitbox box, SDL_Rect sprite)
 {
 	if(pos.x <= 0) {
-        lWall = true;
+        leftScr = true;
         pos.x = 0;
     } else if(pos.x >= LEVEL_WIDTH - sprite.w) {
-        rWall = true;
+        rightScr = true;
         pos.x = LEVEL_WIDTH - sprite.w;
     } else {
-        lWall = false;
-        rWall = false;
+        leftScr = false;
+        rightScr = false;
     }
 
     if(pos.y <= 0) {
-        ceiling = true;
+        topScr = true;
         pos.y = 0;
-    } else if(pos.y >= 200) { // LEVEL_HEIGHT - 39) {
-        floor = true;
-        pos.y = 200; //LEVEL_HEIGHT - 39;
+    } else if(pos.y >= LEVEL_HEIGHT - sprite.h) {
+        bottomScr = true;
+        pos.y = LEVEL_HEIGHT - sprite.h;
     } else {
-        ceiling = false;
-        floor = false;
+        topScr = false;
+        bottomScr = false;
     }
 }
 
@@ -76,8 +157,13 @@ void Sensor::sensorA(bool grounded)
     } else {
         active = true;
 
-        pos.x; // = player.getxPos()
+        pos.x; // = player.getxPos();
         pos.y; // = player.getyPos() + player.gethRad();
+
+        //Tile* tile = getTile(pos);
+
+        //tilePos = tile->getPos();
+        //tileID = tile->getID();
     }
 }
 
