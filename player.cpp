@@ -227,8 +227,8 @@ bool Player::objectCol(Object* objB)
 
 void Player::groundCol(Tile* tile) //Tile tileList[])
 {
-    if(action != ACTION_JUMP) { // || (action == ACTION_JUMP && ySpeed > 0)) {
-        if(tileCol(tile->hitbox, hitbox, tile->getType())) {
+    if(action != ACTION_JUMP || (action == ACTION_JUMP && ySpeed > 0)) {
+        if(tileCol(tile->hitbox, hitbox, tile->getCol())) {
             col.floor = true;
             pos.y = tile->getyPos() - (sprite.s.h + sprite.s.y);
         }

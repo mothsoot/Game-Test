@@ -98,7 +98,7 @@ void game(Screen &screen, Camera cam, bool &quit)
 			break;
 
 		case 2:
-			screen.loadBGTex("resources/bg-01.png");
+			screen.loadBGTex("resources/bg-02.png");
 			screen.loadTileTex("resources/tiles-02.png");
 
 			tileList = createTileList(loadPosMap("layouts/tiles-pos-02.txt"), 

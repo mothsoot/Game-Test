@@ -53,6 +53,7 @@ class Tile {
         int getyPos() { return pos.y; }
 
         int getType() { return type; }
+        int getCol() { return col; }
 
         Sprite sprite;
         Hitbox hitbox;
