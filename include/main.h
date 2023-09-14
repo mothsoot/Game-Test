@@ -11,19 +11,11 @@ using std::stringstream;
 #include "items.h"
 #include "timer.h"
 
+int level;
+
 const Position startPos = {200, 200};
 
-Position ringMappings[MAX_RINGS] = {
-	{50, 150},
-	{50, 180},
-	{60, 180},
-	{70, 180},
-	{80, 180},
-	{120, 180},
-	{200, 180},
-	{210, 180},
-	{220, 180},
-	{230, 180}
-};
+void menu(Screen &screen, Camera cam, bool &quit);
+void game(Screen &screen, Camera cam, bool &quit);
 
 void debugText(Player player, Camera cam, Screen scr);

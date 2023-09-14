@@ -31,13 +31,13 @@ class Sensor {
         void sensorF(float speed);
 };
 
-bool checkCollision(Hitbox boxA, Hitbox boxB);
+bool checkCol(Hitbox boxA, Hitbox boxB);
 
-bool tileCollision(Hitbox tileBox, Hitbox playerBox, int type);
-bool tileCollisionAbove(int pBottom, int tTop);
-bool tileCollisionBelow(int pTop, int tBottom);
-bool tileCollisionRight(int pLeft, int tRight);
-bool tileCollisionLeft(int pRight, int tLeft);
+bool tileCol(Hitbox tileBox, Hitbox playerBox, int type);
+bool tileColAbove(int pBottom, int tTop);
+bool tileColBelow(int pTop, int tBottom);
+bool tileColRight(int pLeft, int tRight);
+bool tileColLeft(int pRight, int tLeft);
 
 class Collision {
     public:
@@ -45,10 +45,7 @@ class Collision {
         ~Collision() {}
 
         // tile collisions
-        bool floor;
-		bool lWall;
-		bool rWall;
-		bool ceiling;
+        bool floor, lWall, rWall, ceiling;
 
         bool isFloor() { return floor; }
         bool islWall() { return lWall; }
@@ -61,24 +58,17 @@ class Collision {
         bool isBottomScr() { return bottomScr; }
         bool isLeftScr() { return leftScr; }
         bool isRightScr() { return rightScr; }
-        bool isNoScr();
+        bool isNoneScr();
 
-        void screenCollision(Position &pos, Hitbox box, SDL_Rect sprite);
+        void screenCol(Position &pos, Hitbox box, SDL_Rect sprite);
 
     private:
         void reset();
 
         // screen collision flags
-        bool topScr;
-        bool bottomScr;
-        bool leftScr;
-        bool rightScr;
+        bool topScr, bottomScr, leftScr, rightScr;
 
-        /*bool wallCollision(Player player);
-        bool groundCollision(Player player);
-        bool ceilingCollision(Player player);
-
-        Sensor sensorA(Player player);
+        /*Sensor sensorA(Player player);
         Sensor sensorB(Player player);
         Sensor sensorC(Player player);
         Sensor sensorD(Player player);

@@ -33,8 +33,9 @@ class Player: public Object {
 	public:
 		Player(Position pos = {0, 0}, SDL_Texture* tex = nullptr): Object(pos, tex) { }
 
-		void create();
-		virtual void update(Tile* tileList);
+		virtual void create();
+		virtual void update(Tile* tileList, bool &quit);
+		virtual void animate();
 
 		bool grounded;
 		float groundAngle;
@@ -48,12 +49,11 @@ class Player: public Object {
 
 		InputHandler input;
 
-		Collision collide;
-		void groundCollision(Tile* tile);
-		virtual bool objectCollision(Object* objB);
+		Collision col;
+		void groundCol(Tile* tile);
+		virtual bool objectCol(Object* objB);
 
 	private:
-		void setSprite();
 		void move();
 
 		int action;

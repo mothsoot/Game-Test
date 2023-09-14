@@ -6,23 +6,25 @@ void Player::create()
     active = true;
     action = ACTION_NORMAL;
 
-    rings = 0;
-
     grounded = true;
 
     sprite.s = PLAYER_SPRITES_IDLE[0];
 
     hitbox.set(pos, sprite.s.w, sprite.s.h, sprite.s.y);
+        // position, width, height, y offset
     xSpeed = 0;
     ySpeed = 0;
     groundSpeed = 0;
     groundAngle = 0;
+
+    rings = 0;
 }
 
-void Player::update(Tile* tileList)
+void Player::update(Tile* tileList, bool &quit)
 {
     if(!active) {
         // player dead!!
+        quit = true;
         return;
     }
 
@@ -30,7 +32,7 @@ void Player::update(Tile* tileList)
     if(!grounded) {
         groundSpeed = 0; // not on ground!
 
-        if((collide.isLeftScr() && (xSpeed < 0)) || (collide.isRightScr() && (xSpeed > 0))) {
+        if((col.isLeftScr() && (xSpeed < 0)) || (col.isRightScr() && (xSpeed > 0))) {
             // hit left side of screen while moving left
             // hit right side of screen while moving right
             xSpeed = 0;
@@ -61,7 +63,7 @@ void Player::update(Tile* tileList)
         }
 
         // if hit the floor
-        if(collide.isFloor()) {
+        if(col.isFloor()) {
             ySpeed = 0;
             groundSpeed = xSpeed; // to keep momentum
             grounded = true;
@@ -92,7 +94,7 @@ void Player::update(Tile* tileList)
             // adjust groundSpeed based on input + friction & accel/decel
             groundSpeed = setSpeed(groundSpeed);
 
-            if((collide.isLeftScr() && (groundSpeed < 0)) || (collide.isRightScr() && (groundSpeed > 0))) {
+            if((col.isLeftScr() && (groundSpeed < 0)) || (col.isRightScr() && (groundSpeed > 0))) {
                 // hit left side of screen while moving left
                 // hit right side of screen while moving right
                 groundSpeed = 0;
@@ -120,14 +122,14 @@ void Player::update(Tile* tileList)
         }
     }
 
-    setSprite();
+    animate();
     hitbox.set(pos, sprite.s.w, sprite.s.h, sprite.s.y);
 
     move();
 
     // should be moved up higher later
     for (int p = 0; p < MAX_TILES; p++) {
-        groundCollision(&tileList[p]);
+        groundCol(&tileList[p]);
     }
 }
 
@@ -139,10 +141,13 @@ void Player::move()
     pos.y += ySpeed;
 
     // if out of screen
-    collide.screenCollision(pos, hitbox, sprite.s);
+    col.screenCol(pos, hitbox, sprite.s);
+    if(col.isBottomScr()) {
+        active = false;
+    }
 }
 
-void Player::setSprite()
+void Player::animate()
 {
     switch(action) {
         case ACTION_NORMAL:
@@ -204,10 +209,10 @@ void Player::setSprite()
     }
 }
 
-bool Player::objectCollision(Object* objB)
+bool Player::objectCol(Object* objB)
 {
     if(active && objB->active) {
-        if(checkCollision(hitbox, objB->getHitbox())) {
+        if(checkCol(hitbox, objB->getHitbox())) {
             switch(objB->getType()) {
                 case TYPE_RING:
                         rings++;
@@ -220,28 +225,20 @@ bool Player::objectCollision(Object* objB)
     return false;
 }
 
-void Player::groundCollision(Tile* tile) //Tile tileList[])
+void Player::groundCol(Tile* tile) //Tile tileList[])
 {
-    if(action != ACTION_JUMP || (action == ACTION_JUMP && ySpeed > 0)) {
-        /* for (int p = 0; p < MAX_TILES; p++) {
-            if(tileCollision(tileList[p].hitbox, hitbox, tileList[p].getType())) {
-                collide.floor = true;
-                pos.y = tileList[p].getyPos() - sprite.s.h;
-            }
-        }*/
-        if(tileCollision(tile->hitbox, hitbox, tile->getType())) {
-            collide.floor = true;
+    if(action != ACTION_JUMP) { // || (action == ACTION_JUMP && ySpeed > 0)) {
+        if(tileCol(tile->hitbox, hitbox, tile->getType())) {
+            col.floor = true;
             pos.y = tile->getyPos() - (sprite.s.h + sprite.s.y);
         }
     } else {
-        collide.floor = false;
+        col.floor = false;
     }
 }
 
 float Player::setSpeed(float speed)
 {
-    // float speed is temp, returned to either groundSpeed or xSpeed
-
     if(input.isLeft()) { // pressing left
         if(speed > 0) { // moving right
             if(grounded) {

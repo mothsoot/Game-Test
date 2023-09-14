@@ -4,10 +4,22 @@
 #include "object.h"
 #include "items.h"
 
+template <typename t>
+class List {
+    public:
+        t* item;
+        t* next;
+
+        loadPosMap();
+        loadIDMap();
+        loadColMap();
+};
+
+/*
 class List {
     private:
         struct Node {
-            Ring ring;
+            //Item item;
             Node* prev;
             Node* next;
         };
@@ -20,7 +32,7 @@ class List {
         ~List();
 
         bool insertBack();
-        bool remove(Node* ring);
+        bool removeFront(Node* ring);
         Ring search(int type, Position pos);
 
 
@@ -47,7 +59,7 @@ bool List::insertBack()
 		return true;
 }
 
-bool List::remove(Node* ring)
+bool List::removeFront(Node* ring)
 {
 	// i is item we want to remove
 	if(ring == nullptr) {
@@ -95,3 +107,4 @@ Ring List::search(int type, Position pos)
         cur = cur->next;
 		}
 }
+*/

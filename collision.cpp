@@ -1,6 +1,6 @@
 #include "collision.h"
 
-bool checkCollision(Hitbox boxA, Hitbox boxB)
+bool checkCol(Hitbox boxA, Hitbox boxB)
 {
     // if the side of A is outside B
     if(boxA.top >= boxB.bottom) { // top of A is lower than bottom of B
@@ -20,43 +20,51 @@ bool checkCollision(Hitbox boxA, Hitbox boxB)
     return true;
 }
 
-bool tileCollision(Hitbox tileBox, Hitbox playerBox, int type)
+bool tileCol(Hitbox tileBox, Hitbox playerBox, int type)
 {
     switch (type) {
-        case 0:
+        case 0: // TILE_NONE
+            return false;
             break;
     
         case 1: // TILE_TOPSOLID
-            if(tileCollisionAbove(playerBox.bottom, tileBox.top)) {
-
-                return true;
+            if(!tileColAbove(playerBox.bottom, tileBox.top)) {
+                return false;
             }
             break;
 
         case 2: // TILE_SIDEBOTTOMSOLID
-            if(tileCollisionLeft(playerBox.right, tileBox.left)
-                || tileCollisionRight(playerBox.left, tileBox.right)
-                || tileCollisionBelow(playerBox.top, tileBox.bottom)) {
-                
-                return true;
+            if(!tileColLeft(playerBox.right, tileBox.left)) {
+                return false;
+            }
+            if(!tileColRight(playerBox.left, tileBox.right)) {
+                return false;
+            }
+            if(!tileColBelow(playerBox.top, tileBox.bottom)) {
+                return false;
             }
             break;
 
         case 3: // TILE_FULLSOLID
-            if(tileCollisionAbove(playerBox.bottom, tileBox.top) 
-                || tileCollisionLeft(playerBox.right, tileBox.left)
-                || tileCollisionRight(playerBox.left, tileBox.right)
-                || tileCollisionBelow(playerBox.top, tileBox.bottom)) {
-
-                return true;
+            if(!tileColLeft(playerBox.right, tileBox.left)) {
+                return false;
+            }
+            if(!tileColRight(playerBox.left, tileBox.right)) {
+                return false;
+            }
+            if(!tileColAbove(playerBox.bottom, tileBox.top)) {
+                return false;
+            }
+            if(!tileColBelow(playerBox.top, tileBox.bottom)) {
+                return false;
             }
             break;
     }
 
-    return false;
+    return true;
 }
 
-bool tileCollisionAbove(int pBottom, int tTop)
+bool tileColAbove(int pBottom, int tTop)
 {
     if(pBottom < tTop) { // bottom of A is higher than top of B
         return false;
@@ -64,7 +72,7 @@ bool tileCollisionAbove(int pBottom, int tTop)
     return true;
 }
 
-bool tileCollisionBelow(int pTop, int tBottom)
+bool tileColBelow(int pTop, int tBottom)
 {
     if(pTop > tBottom) { // top of A is lower than bottom of B
         return false;
@@ -72,7 +80,7 @@ bool tileCollisionBelow(int pTop, int tBottom)
     return true;
 }
 
-bool tileCollisionRight(int pLeft, int tRight)
+bool tileColRight(int pLeft, int tRight)
 {
     if(pLeft > tRight) { // left of A is further right than right of B
         return false;
@@ -80,7 +88,7 @@ bool tileCollisionRight(int pLeft, int tRight)
     return true;
 }
 
-bool tileCollisionLeft(int pRight, int tLeft)
+bool tileColLeft(int pRight, int tLeft)
 {
     if(pRight < tLeft) { // right of A is further left than left of B
         return false;
@@ -101,7 +109,7 @@ bool Collision::isNone()
     return false;
 }
 
-bool Collision::isNoScr()
+bool Collision::isNoneScr()
 {
     if(!bottomScr && !leftScr && !rightScr && !topScr) {
         return true;
@@ -122,7 +130,7 @@ void Collision::reset()
     bottomScr = false;
 }
 
-void Collision::screenCollision(Position &pos, Hitbox box, SDL_Rect sprite)
+void Collision::screenCol(Position &pos, Hitbox box, SDL_Rect sprite)
 {
 	if(pos.x <= 0) {
         leftScr = true;
@@ -157,8 +165,8 @@ void Sensor::sensorA(bool grounded)
     } else {
         active = true;
 
-        pos.x; // = player.getxPos();
-        pos.y; // = player.getyPos() + player.gethRad();
+        pos.x; // = player.hitbox.pos.x
+        pos.y; // = player.hitbox.pos.y + player.hitbox.height;
 
         //Tile* tile = getTile(pos);
 

@@ -78,11 +78,11 @@ bool Screen::startUp() //SDL_Window* &window, SDL_Renderer* &renderer, SDL_Textu
 void Screen::shutDown()
 {
 	// deallocate resources
-	SDL_DestroyTexture(textTexture);
-	SDL_DestroyTexture(bgTexture);
-	SDL_DestroyTexture(tileTexture);
-	SDL_DestroyTexture(playerTexture);
-	SDL_DestroyTexture(ringTexture);
+	if(textTex != nullptr) { SDL_DestroyTexture(textTex); }
+	if(bgTex != nullptr) { SDL_DestroyTexture(bgTex); }
+	if(tileTex != nullptr) { SDL_DestroyTexture(tileTex); }
+	SDL_DestroyTexture(playerTex);
+	SDL_DestroyTexture(ringTex);
 
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
@@ -108,8 +108,6 @@ void Screen::present()
 
 void Screen::drawFromTop(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
 {
-	// source rectangle
-	SDL_Rect srcrect = sprite;
 	// destination rectangle
 	SDL_Rect dstrect = {x, (y + sprite.y), sprite.w, sprite.h}; // x pos, y pos, width, height
 
@@ -118,8 +116,6 @@ void Screen::drawFromTop(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_Re
 
 void Screen::drawFromCenter(int x, int y, SDL_Rect sprite, SDL_Texture* tex, SDL_RendererFlip flip)
 {
-	// source rectangle
-	SDL_Rect srcrect = sprite;
 	// destination rectangle
 	SDL_Rect dstrect;
 
@@ -130,24 +126,24 @@ void Screen::drawText(int x, int y)
 {
 	// get text width & height
 	int texW, texH;
-	SDL_QueryTexture(textTexture, NULL, NULL, &texW, &texH);
+	SDL_QueryTexture(textTex, NULL, NULL, &texW, &texH);
 
 	// destination rectangle
 	SDL_Rect dstrect = {x, y, texW, texH}; // x coord, y coord, image width, image height
 
-	SDL_RenderCopy(renderer, textTexture, NULL, &dstrect);
+	SDL_RenderCopy(renderer, textTex, NULL, &dstrect);
 }
 
 void Screen::drawBG(SDL_Rect cam)
 {
-	SDL_RenderCopy(renderer, bgTexture, &cam, NULL);
+	SDL_RenderCopy(renderer, bgTex, &cam, NULL);
 }
 
 SDL_Texture* Screen::loadPNG(string file)
 {
 	SDL_Surface* image = IMG_Load(file.c_str());
-	SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, image);
-	if(texture == nullptr) {
+	SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, image);
+	if(tex == nullptr) {
 		// cerr << "Error!! SDL_Error: " << SDL_GetError() << endl;
 		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Texture not loaded!\n");
 	}
@@ -155,7 +151,7 @@ SDL_Texture* Screen::loadPNG(string file)
 	// delete surface
 	SDL_FreeSurface(image);
 
-	return texture;
+	return tex;
 }
 
 SDL_Texture* Screen::loadText(string text)
@@ -169,11 +165,29 @@ SDL_Texture* Screen::loadText(string text)
 	}
 
 	// create texture
-	textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+	textTex = SDL_CreateTextureFromSurface(renderer, textSurface);
 
 	SDL_FreeSurface(textSurface);
 
-	return textTexture;
+	return textTex;
+}
+
+void Screen::loadBGTex(string file)
+{
+	bgTex = loadPNG(file);
+	if(bgTex == nullptr) {
+		// cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Background texture not loaded!\n");
+	}
+}
+
+void Screen::loadTileTex(string file)
+{
+	tileTex = loadPNG(file);
+	if(tileTex == nullptr) {
+		// cerr << "Tile texture not loaded! IMG_Error: " << IMG_GetError() << endl;
+		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Tile texture not loaded!\n");
+	}
 }
 
 bool Screen::loadResources()
@@ -187,7 +201,7 @@ bool Screen::loadResources()
 	}
 
 	// load background
-	bgTexture = loadPNG("resources/background.png");
+	/*bgTexture = loadPNG("resources/background.png");
 	if(bgTexture == nullptr) {
 		// cerr << "Background texture not loaded! IMG_Error: " << IMG_GetError() << endl;
 		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Background texture not loaded!\n");
@@ -199,17 +213,17 @@ bool Screen::loadResources()
 		// cerr << "Tile texture not loaded! IMG_Error: " << IMG_GetError() << endl;
 		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Tile texture not loaded!\n");
 		return false;
-	}
+	}*/
 	// load player sprites
-	playerTexture = loadPNG("resources/sonic-sprites-v2.png");
-	if(playerTexture == nullptr) {
+	playerTex = loadPNG("resources/sonic-sprites-v2.png");
+	if(playerTex == nullptr) {
 		// cerr << "Player sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
 		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Player sprites not loaded!\n");
 		return false;
 	}
 	// load ring sprites
-	ringTexture = loadPNG("resources/ring-sprites.png");
-	if(ringTexture == nullptr) {
+	ringTex = loadPNG("resources/ring-sprites.png");
+	if(ringTex == nullptr) {
 		// cerr << "Ring sprites not loaded! IMG_Error: " << IMG_GetError() << endl;
 		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Ring sprites not loaded!\n");
 		return false;

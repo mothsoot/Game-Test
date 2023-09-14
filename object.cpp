@@ -8,16 +8,16 @@ void Object::destroy()
 void Object::draw(Screen scr, Camera cam)
 {
     if(active) {
-        if(checkCollision(hitbox, cam.hitbox)) {
+        if(checkCol(hitbox, cam.hitbox)) {
             scr.drawFromTop((getxPos() - cam.pos.x), (getyPos() - cam.pos.y), sprite.s, sprite.tex, sprite.flip);
         }
     }
 }
 
-bool Object::objectCollision(Object* objB)
+bool Object::objectCol(Object* objB)
 {
     if(active && objB->active) {
-        if(checkCollision(hitbox, objB->hitbox)) {
+        if(checkCol(hitbox, objB->hitbox)) {
             return true;
         }
     }

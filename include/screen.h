@@ -18,7 +18,7 @@ using std::ifstream;
 const int SCREEN_WIDTH = 320;
 const int SCREEN_HEIGHT = 224;
 
-const int LEVEL_WIDTH = 500;
+const int LEVEL_WIDTH = 700;
 const int LEVEL_HEIGHT = 300;
 
 // player sprites
@@ -52,15 +52,18 @@ const SDL_Rect PLAYER_SPRITES_JUMP[2] = {
 // ring sprites
 const SDL_Rect RING_SPRITES[4] = {
     {0, 0, 16, 16},
-    {16, 0, 12, 16},
-    {28, 0, 8, 16},
-    {36, 0, 12, 16}
+    {16, 0, 16, 16},
+    {32, 0, 16, 16},
+    {48, 0, 16, 16}
 };
 
 // tile sprites
-const SDL_Rect TILE_SPRITE_DIRT = {0, 0, 16, 16};
-const SDL_Rect TILE_SPRITE_GROUND = {16, 0, 16, 16};
-const SDL_Rect TILE_SPRITE_GRASS = {32, 0, 16, 16};
+const SDL_Rect TILE_SPRITES[4] = {
+    {0, 0, 16, 16},
+    {16, 0, 16, 16},
+    {32, 0, 16, 16},
+    {48, 0, 16, 16}
+};
 
 bool openFile();
 
@@ -74,15 +77,12 @@ class Screen {
             GAME
         };
 
-        SDL_Window* window;
-        SDL_Renderer* renderer;
-        TTF_Font* font;
+        void loadBGTex(string file);
+        void loadTileTex(string file);
 
-        SDL_Texture* textTexture;
-        SDL_Texture* bgTexture;
-        SDL_Texture* tileTexture;
-        SDL_Texture* playerTexture;
-        SDL_Texture* ringTexture;
+        SDL_Texture* getPlayerTex() { return playerTex; }
+        SDL_Texture* getTileTex() { return tileTex; }
+        SDL_Texture* getRingTex() { return ringTex; }
 
         SDL_Colour textColour = {0, 0, 0}; // black
 
@@ -104,7 +104,15 @@ class Screen {
         SDL_Texture* loadText(string text);
 
     private:
+        SDL_Window* window;
+        SDL_Renderer* renderer;
+        TTF_Font* font;
 
+        SDL_Texture* textTex;
+        SDL_Texture* bgTex;
+        SDL_Texture* tileTex;
+        SDL_Texture* playerTex;
+        SDL_Texture* ringTex;
 };
 
 // camera stuff :P

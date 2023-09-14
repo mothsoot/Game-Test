@@ -4,7 +4,6 @@ int main(int argc, char* args[])
 {
 	// game flags
 	bool quit = false;
-	bool debug = false;
 
 	// initialize screen
 	Screen screen;
@@ -17,24 +16,102 @@ int main(int argc, char* args[])
 	// initialize camera
 	Camera cam;
 
+	menu(screen, cam, quit);
+	game(screen, cam, quit);
+
+	// shutdown tiles
+	/*for (int p = 0; p < MAX_TILES; p++) {
+		tileList[p].destroy();
+	}
+
+	// shutdown objects
+	player.destroy();
+	for (int p = 0; p < MAX_RINGS; p++) {
+		ringList[p].destroy();
+	}*/
+
+	// shutdown SDL
+	screen.shutDown();
+
+	return 0;
+}
+
+void menu(Screen &screen, Camera cam, bool &quit)
+{
+	InputHandler input;
+	bool menu = true;
+
+	screen.loadBGTex("resources/bg-menu.png");
+
+	stringstream text;
+	text << "Game time!! Click anywhere to begin.";
+	screen.loadText(text.str().c_str());
+
+	while (menu) {
+		SDL_Event e;
+		while (SDL_PollEvent(&e) != 0) {
+			if(e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
+				quit = true;
+				menu = false;
+			}
+			input.mouseState(e);
+		}
+		if(input.isMouseLeft()) { //&& (input.getMousePos() == button.pos)) {
+			menu = false;
+			level = 1;
+		}
+		if(input.isMouseRight()) {
+			menu = false;
+			level = 2;
+		}
+
+		// draw
+		screen.prep();
+
+		screen.drawBG(cam.c);
+		screen.drawText(40, 50);
+
+		screen.present();
+	}
+}
+
+void game(Screen &screen, Camera cam, bool &quit)
+{
+	bool debug = false;
+
 	Tile* tileList = nullptr;
-	if(!createTileList(tileList, screen.tileTexture)) {
-		// cerr << "Error!! tileList not created!\n";
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "tileList not created!\n");
-		quit = true;
+	Ring* ringList = nullptr;
+
+	switch (level) {
+		case 1:
+			// load background for level
+			screen.loadBGTex("resources/bg-01.png");
+			// load tile sprites for level
+			screen.loadTileTex("resources/tiles-01.png");
+
+			// load tile maps
+			tileList = createTileList(loadPosMap("layouts/tiles-pos-01.txt"), 
+				loadTypeMap("layouts/tiles-id-01.txt"), loadColMap("layouts/tiles-col-01.txt"));
+
+			// load ring map & create list
+			ringList = createRingList(loadRingPosMap("layouts/rings-pos-01.txt"), screen.getRingTex());
+			break;
+
+		case 2:
+			screen.loadBGTex("resources/bg-01.png");
+			screen.loadTileTex("resources/tiles-02.png");
+
+			tileList = createTileList(loadPosMap("layouts/tiles-pos-02.txt"), 
+				loadTypeMap("layouts/tiles-id-02.txt"), loadColMap("layouts/tiles-col-02.txt"));
+
+			ringList = createRingList(loadRingPosMap("layouts/rings-pos-02.txt"), screen.getRingTex());
+
+			break;
 	}
 
 	// initialize player
-	Player player(startPos, screen.playerTexture);
+	Player player(startPos, screen.getPlayerTex());
 	player.create();
-
-	// initialize rings
-	Ring* ringList = nullptr;
-	if(!createRingList(ringList, ringMappings, screen.ringTexture)) {
-		// cerr << "Error!! ringList not created!\n";
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "ringList not created!\n");
-		quit = true;
-	}
 
 	// handle events
 	while (!quit) {
@@ -49,7 +126,7 @@ int main(int argc, char* args[])
 			if(e.type == SDL_QUIT || e.key.keysym.sym == SDLK_ESCAPE) {
 				quit = true;
 			}
-			if(e.key.keysym.sym == SDLK_d) {
+			if(e.key.keysym.sym == SDLK_q) {
 				debug = true;
 			}
 
@@ -57,7 +134,7 @@ int main(int argc, char* args[])
 		}
 
 		// UPDATE
-		player.update(tileList);
+		player.update(tileList, quit);
 		// player.groundCollision(getTile(tileList, player.getPos()));
 
 		for (int p = 0; p < MAX_RINGS; p++) {
@@ -74,7 +151,7 @@ int main(int argc, char* args[])
 
 		// render sprites
 		for (int p = 0; p < MAX_RINGS; p++) {
-			if(!player.objectCollision(&ringList[p])) {
+			if(!player.objectCol(&ringList[p])) {
 				ringList[p].draw(screen, cam);
 			}
 		}
@@ -89,22 +166,6 @@ int main(int argc, char* args[])
 
 		screen.present();
 	}
-
-	// shutdown tiles
-	for (int p = 0; p < MAX_TILES; p++) {
-		tileList[p].destroy();
-	}
-
-	// shutdown objects
-	player.destroy();
-	for (int p = 0; p < MAX_RINGS; p++) {
-		ringList[p].destroy();
-	}
-
-	// shutdown SDL
-	screen.shutDown();
-
-	return 0;
 }
 
 // DEBUG STUFF
@@ -173,22 +234,22 @@ void debugText(Player player, Camera cam, Screen scr)
 	scr.drawText(1, (SCREEN_HEIGHT - 20));
 
 	collision << "Collide? ";
-	if(player.collide.isFloor()) {
+	if(player.col.isFloor()) {
 		collision << "floor";
 	}
-	if(player.collide.isBottomScr()) {
+	if(player.col.isBottomScr()) {
 		collision << "bottom";
 	}
-	if(player.collide.isLeftScr()) {
+	if(player.col.isLeftScr()) {
 		collision << "left";
 	}
-	if(player.collide.isRightScr()) {
+	if(player.col.isRightScr()) {
 		collision << "right";
 	}
-	if(player.collide.isTopScr()) {
+	if(player.col.isTopScr()) {
 		collision << "top";
 	}
-	if(player.collide.isNoScr() && !player.collide.isFloor()) {
+	if(player.col.isNoneScr() && !player.col.isFloor()) {
 		collision << "false";
 	}
 	collision << "\nGrounded? ";

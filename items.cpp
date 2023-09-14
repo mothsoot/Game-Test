@@ -34,16 +34,40 @@ void Ring::animate()
     }
 }
 
-bool createRingList(Ring* &ringList, Position ringMappings[], SDL_Texture* ringTexture)
+Ring* createRingList(Position posMap[], SDL_Texture* tex)
 {
-    ringList = new (nothrow) Ring[MAX_RINGS];
-	if(ringList == nullptr) {
-		// cerr << "Error!! ringList not created!\n";
-		SDL_LogError(SDL_LOG_CATEGORY_ERROR, "ringList not created!\n");
-        return false;
-	}
-	for (int p = 0; p < MAX_RINGS; p++) {
-		ringList[p].create(ringMappings[p], ringTexture);
-	}
-    return true;
+    Ring* ringList = new (nothrow) Ring[MAX_RINGS];
+    if(ringList == nullptr) {
+        // cerr << "Error!! ringList not created!\n";
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "ringList not created!\n");
+    }
+
+    for (int p = 0; p < MAX_RINGS; p++) {
+        ringList[p].create(posMap[p], tex);
+    }
+
+    return ringList;
+}
+
+Position* loadRingPosMap(string file)
+{
+    Position* posMap = new (nothrow) Position[MAX_RINGS];
+    ifstream inf;
+
+    inf.open(file);
+    if (!inf.is_open()) {
+        SDL_LogError(SDL_LOG_CATEGORY_ERROR, "Could not open file!\n");
+    }
+
+    for (int p = 0; p < MAX_RINGS; p++) {
+        int x, y;
+        inf >> x;
+        inf >> y;
+
+        posMap[p].set(x, y);
+    }
+
+    inf.close();
+
+    return posMap;
 }

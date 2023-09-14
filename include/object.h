@@ -44,7 +44,7 @@ class Object {
         void destroy();
         void draw(Screen scr, Camera cam);
 
-        //virtual void create() {}
+        virtual void create() {}
         virtual void update() {}
         virtual void animate() {}
 
@@ -52,7 +52,6 @@ class Object {
 
         int getType() { return type; }
 
-        //void initCenterPos();
         Position getPos() { return pos; }
         int getxPos() { return pos.x; }
         int getyPos() { return pos.y; }
@@ -60,14 +59,11 @@ class Object {
         Hitbox getHitbox() { return hitbox; }
         Hitbox hitbox;
 
-        virtual bool objectCollision(Object* objB);
+        virtual bool objectCol(Object* objB);
 
         Sprite sprite;
 
     protected:
-        Position centerPos;
-        int hRadius, wRadius;
-
         Position pos;
 
         int type;
